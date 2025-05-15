@@ -34,4 +34,11 @@ public class BookController: ControllerBase
         await _bookRepository.AddAsync(book);
         return Ok(book);
     }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Book>> UpdateBook(int id, [FromBody] Book book)
+    {
+        await _bookRepository.UpdateAsync(book);
+        return Ok(book);
+    }
 }
