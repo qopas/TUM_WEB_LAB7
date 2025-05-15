@@ -20,4 +20,11 @@ public class BookController: ControllerBase
         var books = _bookRepository.GetAllAsync();
         return Ok(books);
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Book>> GetBook(int id)
+    {
+        var book = _bookRepository.GetByIdAsync(id);
+        return Ok(book);
+    }
 }
