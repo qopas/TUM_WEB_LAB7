@@ -8,6 +8,7 @@ public class BookRentalDbContext : DbContext
     DbSet<Genre> Genres { get; set; }  
     DbSet<Book> Books { get; set; }
     DbSet<Customer> Customers { get; set; }
+    DbSet<Destination> Destinations { get; set; }
     public BookRentalDbContext(DbContextOptions<BookRentalDbContext> options)
         : base(options)
     {
