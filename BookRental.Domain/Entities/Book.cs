@@ -2,7 +2,7 @@
 
 public class Book
 {
-        
+    
     public int BookId { get; set; }
     public string Title { get; set; }
     public string Author { get; set; }
@@ -12,4 +12,10 @@ public class Book
     public decimal RentalPrice { get; set; }
     
     public Genre Genre { get; set; }
+    public ICollection<Rent> Rents { get; set; }
+
+    public Book()
+    {
+        Rents = new HashSet<Rent>();
+    }
 }

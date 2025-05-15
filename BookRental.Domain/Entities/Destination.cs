@@ -8,4 +8,10 @@ public class Destination
     public string City { get; set; }
     public string ContactPerson { get; set; }
     public string PhoneNumber { get; set; }
+    public ICollection<Rent> Rents { get; set; }
+
+    public Destination()
+    {
+        Rents = new HashSet<Rent>();
+    }
 }
