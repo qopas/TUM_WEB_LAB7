@@ -24,7 +24,7 @@ public class BookController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Book>> GetBook(int id)
     {
-        var book = _bookRepository.GetByIdAsync(id);
+        var book = await _bookRepository.GetByIdAsync(id);
         return Ok(book);
     }
 
@@ -40,5 +40,12 @@ public class BookController: ControllerBase
     {
         await _bookRepository.UpdateAsync(book);
         return Ok(book);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<Book>> DeleteBook(int id)
+    {
+        await _bookRepository.DeleteAsync(id);
+        return Ok($"Book with id: {id} deleted");
     }
 }
