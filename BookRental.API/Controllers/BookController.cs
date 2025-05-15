@@ -27,4 +27,11 @@ public class BookController: ControllerBase
         var book = _bookRepository.GetByIdAsync(id);
         return Ok(book);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<Book>> AddBook([FromBody] Book book)
+    {
+        await _bookRepository.AddAsync(book);
+        return Ok(book);
+    }
 }
