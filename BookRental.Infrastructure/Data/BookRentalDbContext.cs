@@ -5,7 +5,8 @@ namespace BookRental.Infrastructure.Data;
 
 public class BookRentalDbContext : DbContext
 {
-    DbSet<Genre> Genres { get; set; }   
+    DbSet<Genre> Genres { get; set; }  
+    DbSet<Book> Books { get; set; }
     public BookRentalDbContext(DbContextOptions<BookRentalDbContext> options)
         : base(options)
     {
