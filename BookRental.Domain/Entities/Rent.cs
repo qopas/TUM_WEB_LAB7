@@ -1,13 +1,13 @@
-﻿using BookRental.Domain.Enums;
+﻿using BookRental.Domain.Entities.Base;
+using BookRental.Domain.Enums;
 
 namespace BookRental.Domain.Entities;
 
-public class Rent
+public class Rent : BaseEntity
 {
-    public int RentId { get; set; }
-    public int BookId { get; set; }
-    public int CustomerId { get; set; }
-    public int DestinationId { get; set; }
+    public string BookId { get; set; }
+    public string CustomerId { get; set; }
+    public string DestinationId { get; set; }
     public DateTime RentDate { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime? ReturnDate { get; set; }

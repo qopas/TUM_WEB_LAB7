@@ -2,6 +2,7 @@ using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
 using BookRental.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,14 +15,20 @@ builder.Services.AddDbContext<BookRentalDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.MapControllers();
 app.Run();

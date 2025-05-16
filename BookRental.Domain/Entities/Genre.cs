@@ -1,12 +1,9 @@
-﻿namespace BookRental.Domain.Entities;
+﻿using BookRental.Domain.Entities.Base;
 
-public class Genre
+namespace BookRental.Domain.Entities;
+
+public class Genre : BaseEntity
 {
-    public Genre()
-    {
-        Books = new HashSet<Book>();
-    }
-    public int GenreId { get; set; }
     public string Name { get; set; }
-    public ICollection<Book> Books { get; set; }
+    public virtual ICollection<Book> Books { get; set; }
 }
