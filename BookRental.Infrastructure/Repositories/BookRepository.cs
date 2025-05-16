@@ -25,10 +25,7 @@ public class BookRepository : Repository<Book>, IBookRepository
             .Where(b => b.AvailableQuantity > 0)
             .ToListAsync();
     }
-
-
-
-
+    
     public async Task<Book> GetBookWithDetailsAsync(string id)
     {
         return await _dbContext.Books

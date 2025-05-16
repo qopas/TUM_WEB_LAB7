@@ -1,21 +1,31 @@
-﻿using Application.Mapping;
+﻿
+
+using Application.Mapping;
 using BookRental.Domain.DTOs.Rent;
 using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
+using BookRental.Domain.Enums;
+using BookRental.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RentController(IRepository<Rent> rentRepository) : ControllerBase
+public class RentController(BookRentalDbContext dbContext) : ControllerBase
 {
+    
     [HttpGet]
     [ProducesResponseType(typeof(List<RentDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRents()
     {
-        var rents = await rentRepository.GetAllAsync();
+        var rents = await dbContext.Set<Rent>()
+            .Include(r => r.Book)
+            .Include(r => r.Customer)
+            .Include(r => r.Destination)
+            .ToListAsync();
+            
         return Ok(rents.ToDtoList());
     }
 
@@ -25,11 +35,17 @@ public class RentController(IRepository<Rent> rentRepository) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRent(string id)
     {
-        var rent = await rentRepository.GetByIdAsync(id);
+        var rent = await dbContext.Set<Rent>()
+            .Include(r => r.Book)
+            .Include(r => r.Customer)
+            .Include(r => r.Destination)
+            .FirstOrDefaultAsync(r => r.Id == id);
+            
         if (rent == null)
         {
             return NotFound();
         }
+        
         return Ok(rent.ToDto());
     }
 
@@ -40,7 +56,16 @@ public class RentController(IRepository<Rent> rentRepository) : ControllerBase
     public async Task<IActionResult> CreateRent([FromBody] CreateRentDto createRent)
     {
         var rent = createRent.ToEntity();
-        var createdRent = await rentRepository.AddAsync(rent);
+        
+        await dbContext.Set<Rent>().AddAsync(rent);
+        await dbContext.SaveChangesAsync();
+        
+        var createdRent = await dbContext.Set<Rent>()
+            .Include(r => r.Book)
+            .Include(r => r.Customer)
+            .Include(r => r.Destination)
+            .FirstOrDefaultAsync(r => r.Id == rent.Id);
+            
         return Ok(createdRent.ToDto());
     }
 
@@ -50,12 +75,26 @@ public class RentController(IRepository<Rent> rentRepository) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateRent([FromBody] UpdateRentDto updateRent)
     {
-        var existingRent = await rentRepository.GetByIdAsync(updateRent.Id);
+        var existingRent = await dbContext.Set<Rent>()
+            .FirstOrDefaultAsync(r => r.Id == updateRent.Id);
+            
         if (existingRent == null)
         {
             return NotFound();
         }
-        await rentRepository.UpdateAsync(updateRent.ToEntity(existingRent));
+        
+   
+        existingRent.BookId = updateRent.BookId;
+        existingRent.CustomerId = updateRent.CustomerId;
+        existingRent.DestinationId = updateRent.DestinationId;
+        existingRent.RentDate = updateRent.RentDate;
+        existingRent.DueDate = updateRent.DueDate;
+        existingRent.ReturnDate = updateRent.ReturnDate;
+        existingRent.Status = updateRent.Status;
+        
+        dbContext.Set<Rent>().Update(existingRent);
+        await dbContext.SaveChangesAsync();
+        
         return Ok($"Rent with id: {updateRent.Id} was successfully updated");
     }
 
@@ -65,12 +104,17 @@ public class RentController(IRepository<Rent> rentRepository) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteRent(string id)
     {
-        var rent = await rentRepository.GetByIdAsync(id);
+        var rent = await dbContext.Set<Rent>()
+            .FirstOrDefaultAsync(r => r.Id == id);
+            
         if (rent == null)
         {
             return NotFound();
         }
-        await rentRepository.DeleteAsync(id);
+        
+        dbContext.Set<Rent>().Remove(rent);
+        await dbContext.SaveChangesAsync();
+        
         return Ok($"Rent with id: {id} deleted");
     }
     
@@ -80,16 +124,20 @@ public class RentController(IRepository<Rent> rentRepository) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ReturnBook(string id)
     {
-        var rent = await rentRepository.GetByIdAsync(id);
+        var rent = await dbContext.Set<Rent>()
+            .FirstOrDefaultAsync(r => r.Id == id);
+            
         if (rent == null)
         {
             return NotFound();
         }
         
         rent.ReturnDate = DateTime.UtcNow;
-        rent.Status = Domain.Enums.RentStatus.Returned;
+        rent.Status = RentStatus.Returned;
         
-        await rentRepository.UpdateAsync(rent);
+        dbContext.Set<Rent>().Update(rent);
+        await dbContext.SaveChangesAsync();
+        
         return Ok($"Book for rent with id: {id} was successfully returned");
     }
 }
