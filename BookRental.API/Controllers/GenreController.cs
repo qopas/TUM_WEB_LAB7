@@ -1,77 +1,73 @@
 ﻿using Application.Mapping;
+using Application.Mediator.Genres.Commands.CreateGenre;
+using Application.Mediator.Genres.Commands.DeleteGenre;
+using Application.Mediator.Genres.Commands.UpdateGenre;
+using Application.Mediator.Genres.Queries.GetGenreById;
+using Application.Mediator.Genres.Queries.GetGenres;
 using BookRental.Domain.DTOs.Genre;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class GenreController(IRepository<Genre> genreRepository)  : ControllerBase
+public class GenreController(IMediator mediator)  : ControllerBase
 {
 
     [HttpGet]
     [ProducesResponseType(typeof(List<GenreDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetGenres()
+     public async Task<IActionResult> GetGenres()
     {
-        var genres = await genreRepository.GetAllAsync();
-        return Ok(genres.ToDtoList());
+        var result = await mediator.Send( new GetGenresQuery());
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetGenre(string id)
     {
-        var genre = await genreRepository.GetByIdAsync(id);
-        if (genre == null)
+        var result = await mediator.Send(new GetGenreByIdQuery { Id = id });
+        if (result == null)
         {
             return NotFound();
         }
-        return Ok(genre.ToDto());
+        return Ok(result);
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateGenre([FromBody] CreateGenreDto createGenre)
+    public async Task<IActionResult> CreateGenre([FromBody] CreateGenreCommand createGenre)
     {
-        var genre = createGenre.ToEntity();
-        var createdGenre = await genreRepository.AddAsync(genre);
-        return Ok(createdGenre.ToDto());
+        var result = await mediator.Send(createGenre);
+        return Ok(result);
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreDto updateGenre)
+    public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreCommand updateGenre)
     {
-        var existingGenre = await genreRepository.GetByIdAsync(updateGenre.Id);
-        if (existingGenre == null)
+        var result = await mediator.Send(updateGenre);
+        
+        if (!result)
         {
             return NotFound();
         }
-        await genreRepository.UpdateAsync(updateGenre.ToEntity(existingGenre));
+        
         return Ok($"Genre with id: {updateGenre.Id} was successfully updated");
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteGenre(string id)
     {
-        var genre = await genreRepository.GetByIdAsync(id);
-        if (genre == null)
+        var result = await mediator.Send(new DeleteGenreCommand { Id = id });
+        if (!result)
         {
             return NotFound();
         }
-        await genreRepository.DeleteAsync(id);
         return Ok($"Genre with id: {id} deleted");
     }
 }
