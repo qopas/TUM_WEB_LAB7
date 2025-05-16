@@ -11,6 +11,8 @@ bld/
 [Ll]og/
 [Ll]ogs/
 /shelf/
+obj/
+bin/
 /workspace.xml
 # Rider ignored files
 /modules.xml
