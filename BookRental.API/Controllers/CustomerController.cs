@@ -8,21 +8,14 @@ namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomerController : ControllerBase
+public class CustomerController(IRepository<Customer> customerRepository) : ControllerBase
 {
-    private readonly IRepository<Customer> _customerRepository;
-
-    public CustomerController(IRepository<Customer> customerRepository)
-    {
-        _customerRepository = customerRepository;
-    }
-
     [HttpGet]
     [ProducesResponseType(typeof(List<CustomerDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCustomers()
     {
-        var customers = await _customerRepository.GetAllAsync();
+        var customers = await customerRepository.GetAllAsync();
         return Ok(customers.ToDtoList());
     }
 
@@ -32,7 +25,7 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCustomer(string id)
     {
-        var customer = await _customerRepository.GetByIdAsync(id);
+        var customer = await customerRepository.GetByIdAsync(id);
         if (customer == null)
         {
             return NotFound();
@@ -48,7 +41,7 @@ public class CustomerController : ControllerBase
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerDto createCustomer)
     {
         var customer = createCustomer.ToEntity();
-        var createdCustomer = await _customerRepository.AddAsync(customer);
+        var createdCustomer = await customerRepository.AddAsync(customer);
         return Ok(createdCustomer.ToDto());
     }
 
@@ -58,13 +51,13 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerDto updateCustomer)
     {
-        var existingCustomer = await _customerRepository.GetByIdAsync(updateCustomer.Id);
+        var existingCustomer = await customerRepository.GetByIdAsync(updateCustomer.Id);
         if (existingCustomer == null)
         {
             return NotFound();
         }
 
-        await _customerRepository.UpdateAsync(updateCustomer.ToEntity(existingCustomer));
+        await customerRepository.UpdateAsync(updateCustomer.ToEntity(existingCustomer));
         return Ok($"Customer with id: {updateCustomer.Id} was successfully updated");
     }
 
@@ -74,13 +67,13 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteCustomer(string id)
     {
-        var customer = await _customerRepository.GetByIdAsync(id);
+        var customer = await customerRepository.GetByIdAsync(id);
         if (customer == null)
         {
             return NotFound();
         }
 
-        await _customerRepository.DeleteAsync(id);
+        await customerRepository.DeleteAsync(id);
         return Ok($"Customer with id: {id} deleted");
     }
 }
