@@ -13,7 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Mediator\Genres\Commands\CreateGenre\" />
       <Folder Include="Mediator\Genres\Commands\DeleteGenre\" />
       <Folder Include="Mediator\Genres\Commands\UpdateGenre\" />
     </ItemGroup>
