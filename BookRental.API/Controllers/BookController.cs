@@ -10,14 +10,14 @@ namespace BookRental.Controllers;
 public class BookController(IBookRepository bookRepository) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
+    public async Task<IActionResult> GetBooks()
     {
         var books = await bookRepository.GetAllAsync();
         return Ok(books.ToDtoList());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Book>> GetBook(string id)
+    public async Task<IActionResult> GetBook(string id)
     {
         var book = await bookRepository.GetByIdAsync(id);
         if (book == null)
@@ -39,7 +39,7 @@ public class BookController(IBookRepository bookRepository) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<Book>> UpdateBook([FromBody] UpdateBookDto updateBook)
+    public async Task<IActionResult> UpdateBook([FromBody] UpdateBookDto updateBook)
     {
         var existingBook = await bookRepository.GetByIdAsync(updateBook.Id);
         if (existingBook == null)
@@ -51,7 +51,7 @@ public class BookController(IBookRepository bookRepository) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Book>> DeleteBook(string id)
+    public async Task<IActionResult> DeleteBook(string id)
     { 
         var book = await bookRepository.GetByIdAsync(id);
         if (book == null)

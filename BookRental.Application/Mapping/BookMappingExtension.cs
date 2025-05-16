@@ -7,8 +7,6 @@ public static class BookMappingExtension
 {
      public static BookDto ToDto(this Book book)
         {
-            if (book == null) return null;
-            
             return new BookDto
             {
                 Id = book.Id,
@@ -20,11 +18,9 @@ public static class BookMappingExtension
                 RentalPrice = book.RentalPrice
             };
         }
-        
-        // Convert DTOs to Entity
+     
         public static Book ToEntity(this CreateBookDto dto)
         {
-            if (dto == null) return null;
             
             return new Book
             {
@@ -39,8 +35,6 @@ public static class BookMappingExtension
         
         public static Book ToEntity(this UpdateBookDto dto, Book existingBook)
         {
-            if (dto == null || existingBook == null) return existingBook;
-            
             if (dto.Title != null)
                 existingBook.Title = dto.Title;
                 
@@ -64,6 +58,6 @@ public static class BookMappingExtension
         
         public static IEnumerable<BookDto> ToDtoList(this IEnumerable<Book> books)
         {
-            return books?.Select(b => b.ToDto());
+            return books.Select(b => b.ToDto());
         }
 }
