@@ -12,4 +12,15 @@
       <ProjectReference Include="..\BookRental.Infrastructure\BookRental.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Mediator\Genres\Commands\CreateGenre\" />
+      <Folder Include="Mediator\Genres\Commands\DeleteGenre\" />
+      <Folder Include="Mediator\Genres\Commands\UpdateGenre\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MediatR" Version="12.5.0" />
+      <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    </ItemGroup>
+
 </Project>
