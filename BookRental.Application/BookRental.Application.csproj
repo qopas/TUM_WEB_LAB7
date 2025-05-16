@@ -14,7 +14,6 @@
 
     <ItemGroup>
       <Folder Include="Mediator\Genres\Commands\DeleteGenre\" />
-      <Folder Include="Mediator\Genres\Commands\UpdateGenre\" />
     </ItemGroup>
 
     <ItemGroup>
