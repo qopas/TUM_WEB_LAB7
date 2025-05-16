@@ -1,8 +1,9 @@
-﻿namespace BookRental.Domain.Entities;
+﻿using BookRental.Domain.Entities.Base;
 
-public class Customer
+namespace BookRental.Domain.Entities;
+
+public class Customer : BaseEntity
 {
-    public int CustomerId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }

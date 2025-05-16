@@ -8,11 +8,7 @@ public class DestinationConfiguration : IEntityTypeConfiguration<Destination>
 {
     public void Configure(EntityTypeBuilder<Destination> builder)
     {
-        builder.HasKey(d => d.DestinationId);
-        
-        builder.Property(d => d.DestinationId)
-            .UseIdentityColumn()
-            .IsRequired();
+        builder.HasKey(d => d.Id);
         
         builder.Property(d => d.Name)
             .IsRequired()

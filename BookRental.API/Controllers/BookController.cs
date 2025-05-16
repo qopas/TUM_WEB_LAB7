@@ -1,75 +1,65 @@
-﻿using BookRental.Domain.Entities;
+﻿using Application.Mapping;
+using BookRental.Domain.DTOs.Book;
+using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class BookController: ControllerBase
+public class BookController(IBookRepository bookRepository) : ControllerBase
 {
-    private readonly IBookRepository _bookRepository;
-
-    public BookController(IBookRepository bookRepository)
-    {
-        _bookRepository = bookRepository;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
     {
-        var books = _bookRepository.GetAllAsync();
-        return Ok(books);
+        var books = await bookRepository.GetAllAsync();
+        return Ok(books.ToDtoList());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Book>> GetBook(int id)
+    public async Task<ActionResult<Book>> GetBook(string id)
     {
-        var book = await _bookRepository.GetByIdAsync(id);
+        var book = await bookRepository.GetByIdAsync(id);
         if (book == null)
         {
             return NotFound();
         }
-        return Ok(book);
+        return Ok(book.ToDto());
     }
 
     [HttpPost]
-    public async Task<ActionResult<Book>> AddBook([FromBody] Book book)
+    public async Task<IActionResult> CreateBook([FromBody] CreateBookDto createBook)
     {
-        if (book == null)
+        if (createBook == null)
         {
             return BadRequest();
         }
-        var createdBook = await _bookRepository.AddAsync(book);
-        return CreatedAtAction(nameof(GetBook), new { id = createdBook.BookId }, createdBook);
+        var createdBook = await bookRepository.AddAsync(createBook.ToEntity());
+        return CreatedAtAction(nameof(GetBook), new { id = createdBook.Id }, createdBook.ToDto());
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Book>> UpdateBook(int id, [FromBody] Book book)
+    [HttpPut]
+    public async Task<ActionResult<Book>> UpdateBook([FromBody] UpdateBookDto updateBook)
     {
-        if (id != book.BookId)
-        {
-            return BadRequest();
-        }
-
-        var existingBook = await _bookRepository.GetByIdAsync(id);
+        var existingBook = await bookRepository.GetByIdAsync(updateBook.Id);
         if (existingBook == null)
         {
             return NotFound();
         }
-        await _bookRepository.UpdateAsync(book);
-        return Ok(book);
+        await bookRepository.UpdateAsync(updateBook.ToEntity(existingBook));
+        return Ok($"Book with id: {updateBook.Id} was successfully updated");
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Book>> DeleteBook(int id)
+    public async Task<ActionResult<Book>> DeleteBook(string id)
     { 
-        var book = await _bookRepository.GetByIdAsync(id);
+        var book = await bookRepository.GetByIdAsync(id);
         if (book == null)
         {
             return NotFound();
         }
 
-        await _bookRepository.DeleteAsync(id);
+        await bookRepository.DeleteAsync(id);
         return Ok($"Book with id: {id} deleted");
     }
 }

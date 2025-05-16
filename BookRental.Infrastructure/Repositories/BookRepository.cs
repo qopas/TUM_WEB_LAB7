@@ -12,7 +12,7 @@ public class BookRepository : Repository<Book>, IBookRepository
     {
     }
 
-    public async Task<IReadOnlyList<Book>> GetBooksByGenreAsync(int genreId)
+    public async Task<IReadOnlyList<Book>> GetBooksByGenreAsync(string genreId)
     {
         return await _dbContext.Books
             .Where(b => b.GenreId == genreId)
@@ -25,14 +25,16 @@ public class BookRepository : Repository<Book>, IBookRepository
             .Where(b => b.AvailableQuantity > 0)
             .ToListAsync();
     }
-    
 
-    public async Task<Book> GetBookWithDetailsAsync(int id)
+
+
+
+    public async Task<Book> GetBookWithDetailsAsync(string id)
     {
         return await _dbContext.Books
             .Include(b => b.Genre)
             .Include(b => b.Rents)
             .ThenInclude(r => r.Customer)
-            .FirstOrDefaultAsync(b => b.BookId == id);
+            .FirstOrDefaultAsync(b => b.Id == id);
     }
 }

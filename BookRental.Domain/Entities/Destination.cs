@@ -1,8 +1,9 @@
-﻿namespace BookRental.Domain.Entities;
+﻿using BookRental.Domain.Entities.Base;
 
-public class Destination
+namespace BookRental.Domain.Entities;
+
+public class Destination : BaseEntity
 {
-    public int DestinationId { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
     public string City { get; set; }

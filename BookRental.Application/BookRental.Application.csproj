@@ -7,4 +7,9 @@
         <RootNamespace>Application</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BookRental.Domain\BookRental.Domain.csproj" />
+      <ProjectReference Include="..\BookRental.Infrastructure\BookRental.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

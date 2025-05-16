@@ -9,11 +9,7 @@ public class RentConfiguration : IEntityTypeConfiguration<Rent>
     public void Configure(EntityTypeBuilder<Rent> builder)
     {
 
-        builder.HasKey(r => r.RentId);
-        
-        builder.Property(r => r.RentId)
-            .UseIdentityColumn()
-            .IsRequired();
+        builder.HasKey(r => r.Id);
         
         builder.Property(r => r.RentDate)
             .IsRequired();
