@@ -14,9 +14,9 @@ public static class GenreMappingExtensions
         };
     }
 
-    public static List<GenreDto> ToDtoList(this IEnumerable<Genre> genres)
+    public static IEnumerable<GenreDto> ToDtoList(this IEnumerable<Genre> genres)
     {
-        return genres.Select(genre => genre.ToDto()).ToList();
+        return genres.Select(genre => genre.ToDto());
     }
 
     public static Genre ToEntity(this CreateGenreDto createGenreDto)
