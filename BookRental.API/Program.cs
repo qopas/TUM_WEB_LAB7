@@ -1,3 +1,4 @@
+using System.Reflection;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
 using BookRental.Infrastructure.Repositories;
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 builder.Services.AddDbContext<BookRentalDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
