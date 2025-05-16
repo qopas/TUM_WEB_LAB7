@@ -1,15 +1,12 @@
-﻿using BookRental.Domain.Entities.Base;
+﻿namespace BookRental.Domain.DTOs.Customer;
 
-namespace BookRental.Domain.Entities;
-
-public class Customer : BaseEntity
+public class UpdateCustomerDto
 {
+    public string Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
     public string Address { get; set; }
     public string City { get; set; }
-    public ICollection<Rent> Rents { get; set; }
-    
 }
