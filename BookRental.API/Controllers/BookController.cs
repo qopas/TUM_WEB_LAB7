@@ -35,7 +35,7 @@ public class BookController(IBookRepository bookRepository) : ControllerBase
             return BadRequest();
         }
         var createdBook = await bookRepository.AddAsync(createBook.ToEntity());
-        return CreatedAtAction(nameof(GetBook), new { id = createdBook.Id }, createdBook.ToDto());
+        return Ok(createdBook);
     }
 
     [HttpPut]
