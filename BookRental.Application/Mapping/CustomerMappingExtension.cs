@@ -19,9 +19,9 @@ public static class CustomerMappingExtensions
         };
     }
 
-    public static List<CustomerDto> ToDtoList(this IEnumerable<Customer> customers)
+    public static IEnumerable<CustomerDto> ToDtoList(this IEnumerable<Customer> customers)
     {
-        return customers.Select(customer => customer.ToDto()).ToList();
+        return customers.Select(customer => customer.ToDto());
     }
 
     public static Customer ToEntity(this CreateCustomerDto createCustomerDto)
