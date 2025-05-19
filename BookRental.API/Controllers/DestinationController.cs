@@ -1,13 +1,10 @@
 ﻿
 using Application.DTOs.Destination;
-using Application.Mapping;
 using Application.Mediator.Destination.Commands.CreateDestination;
 using Application.Mediator.Destination.Commands.DeleteDestination;
 using Application.Mediator.Destination.Commands.UpdateDestination;
 using Application.Mediator.Destination.Queries.GetDestinationById;
 using Application.Mediator.Destination.Queries.GetDestinations;
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

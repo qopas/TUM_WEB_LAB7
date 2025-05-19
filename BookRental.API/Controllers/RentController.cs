@@ -1,95 +1,79 @@
 ﻿using Application.DTOs.Rent;
-using Application.Mapping;
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
+using Application.Mediator.Rent.Commands.CreateRent;
+using Application.Mediator.Rent.Commands.DeleteRent;
+using Application.Mediator.Rent.Commands.UpdateRent;
+using Application.Mediator.Rent.Queries.GetRentById;
+using Application.Mediator.Rent.Queries.GetRents;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RentController(IRepository<Rent> rentRepository) : ControllerBase
+public class RentController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(List<RentDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<RentDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRents()
     {
-        var rents = await rentRepository.GetAllAsync();
-        return Ok(rents.ToDtoList());
+        var query = new GetRentsQuery();
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(RentDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRent(string id)
     {
-        var rent = await rentRepository.GetByIdAsync(id);
-        if (rent == null)
+        var query = new GetRentByIdQuery { Id = id };
+        var result = await mediator.Send(query);
+        
+        if (result == null)
         {
             return NotFound();
         }
-        return Ok(rent.ToDto());
+        
+        return Ok(result);
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(RentDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateRent([FromBody] CreateRentDto createRent)
+
+    public async Task<IActionResult> CreateRent([FromBody] CreateRentCommand command)
     {
-        var rent = createRent.ToEntity();
-        var createdRent = await rentRepository.AddAsync(rent);
-        return Ok(createdRent.ToDto());
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateRent([FromBody] UpdateRentDto updateRent)
+    public async Task<IActionResult> UpdateRent([FromBody] UpdateRentCommand command)
     {
-        var existingRent = await rentRepository.GetByIdAsync(updateRent.Id);
-        if (existingRent == null)
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-        await rentRepository.UpdateAsync(updateRent.ToEntity(existingRent));
-        return Ok($"Rent with id: {updateRent.Id} was successfully updated");
+        
+        return Ok($"Rent with id: {command.Id} was successfully updated");
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteRent(string id)
     {
-        var rent = await rentRepository.GetByIdAsync(id);
-        if (rent == null)
+        var command = new DeleteRentCommand { Id = id };
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-        await rentRepository.DeleteAsync(id);
+        
         return Ok($"Rent with id: {id} deleted");
     }
     
-    [HttpPut("{id}/return")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ReturnBook(string id)
-    {
-        var rent = await rentRepository.GetByIdAsync(id);
-        if (rent == null)
-        {
-            return NotFound();
-        }
-        
-        rent.ReturnDate = DateTime.UtcNow;
-        rent.Status = Domain.Enums.RentStatus.Returned;
-        
-        await rentRepository.UpdateAsync(rent);
-        return Ok($"Book for rent with id: {id} was successfully returned");
-    }
 }
