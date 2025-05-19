@@ -1,4 +1,5 @@
 using System.Reflection;
+using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
 using BookRental.Infrastructure.Repositories;
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<BookRentalDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

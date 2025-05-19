@@ -1,16 +1,15 @@
-﻿using BookRental.Domain.Interfaces.Repositories;
+﻿using BookRental.Domain.Interfaces;
+using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Customer.Commands.UpdateCustomer;
 
-public class UpdateCustomerCommandHandler(IRepository<BookRental.Domain.Entities.Customer> customerRepository)
+public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateCustomerCommand, bool>
 {
-
-
     public async Task<bool> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
-        var existingCustomer = await customerRepository.GetByIdAsync(request.Id);
+        var existingCustomer = await unitOfWork.Customers.GetByIdAsync(request.Id);
         if (existingCustomer == null)
         {
             return false;
@@ -23,7 +22,8 @@ public class UpdateCustomerCommandHandler(IRepository<BookRental.Domain.Entities
         existingCustomer.Address = request.Address;
         existingCustomer.City = request.City;
 
-        await customerRepository.UpdateAsync(existingCustomer);
+        await unitOfWork.Customers.UpdateAsync(existingCustomer);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

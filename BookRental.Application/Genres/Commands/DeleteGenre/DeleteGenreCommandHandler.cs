@@ -1,19 +1,21 @@
 ﻿using BookRental.Domain.Entities;
+using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Genres.Commands.DeleteGenre;
 
-public class DeleteGenreCommandHandler(IRepository<Genre> genreRepository): IRequestHandler<DeleteGenreCommand, bool>
+public class DeleteGenreCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<DeleteGenreCommand, bool>
 {
     public async Task<bool> Handle(DeleteGenreCommand request, CancellationToken cancellationToken)
     {
-        var genre = await genreRepository.GetByIdAsync(request.Id);
+        var genre = await unitOfWork.Genres.GetByIdAsync(request.Id);
         if (genre == null)
         {
             return false;
         }
-        await genreRepository.DeleteAsync(request.Id);
+        await unitOfWork.Genres.DeleteAsync(genre);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

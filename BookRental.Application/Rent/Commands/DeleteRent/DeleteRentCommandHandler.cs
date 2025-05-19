@@ -1,19 +1,21 @@
-﻿using BookRental.Domain.Interfaces.Repositories;
+﻿using BookRental.Domain.Interfaces;
+using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Rent.Commands.DeleteRent;
 
-public class DeleteRentCommandHandler(IRepository<BookRental.Domain.Entities.Rent> rentRepository) : IRequestHandler<DeleteRentCommand, bool>
+public class DeleteRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteRentCommand, bool>
 {
     public async Task<bool> Handle(DeleteRentCommand request, CancellationToken cancellationToken)
     {
-        var rent = await rentRepository.GetByIdAsync(request.Id);
+        var rent = await unitOfWork.Rents.GetByIdAsync(request.Id);
         if (rent == null)
         {
             return false;
         }
 
-        await rentRepository.DeleteAsync(request.Id);
+        await unitOfWork.Rents.DeleteAsync(rent);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

@@ -2,12 +2,13 @@
 using Application.DTOs.Rent;
 using Application.Mapping;
 using BookRental.Domain.Enums;
+using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Rent.Commands.CreateRent;
 
-public class CreateRentCommandHandler(IRepository<BookRental.Domain.Entities.Rent> rentRepository) : IRequestHandler<CreateRentCommand, RentDto>
+public class CreateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateRentCommand, RentDto>
 {
     public async Task<RentDto> Handle(CreateRentCommand request, CancellationToken cancellationToken)
     {
@@ -21,7 +22,8 @@ public class CreateRentCommandHandler(IRepository<BookRental.Domain.Entities.Ren
             Status = RentStatus.Active
         };
 
-        var createdRent = await rentRepository.AddAsync(rent);
+        var createdRent = await unitOfWork.Rents.AddAsync(rent);
+        await unitOfWork.SaveChangesAsync();
         return createdRent.ToDto();
     }
 }
