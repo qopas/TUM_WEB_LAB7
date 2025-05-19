@@ -1,79 +1,77 @@
 ﻿
 using Application.DTOs.Destination;
-using Application.Mapping;
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
+using Application.Mediator.Destination.Commands.CreateDestination;
+using Application.Mediator.Destination.Commands.DeleteDestination;
+using Application.Mediator.Destination.Commands.UpdateDestination;
+using Application.Mediator.Destination.Queries.GetDestinationById;
+using Application.Mediator.Destination.Queries.GetDestinations;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class DestinationController(IRepository<Destination> destinationRepository) : ControllerBase
+public class DestinationController(IMediator mediator) : ControllerBase
 {
-
-
     [HttpGet]
-    [ProducesResponseType(typeof(List<DestinationDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(IEnumerable<DestinationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDestinations()
     {
-        var destinations = await destinationRepository.GetAllAsync();
-        return Ok(destinations.ToDtoList());
+        var query = new GetDestinationsQuery();
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(DestinationDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDestination(string id)
     {
-        var destination = await destinationRepository.GetByIdAsync(id);
-        if (destination == null)
+        var query = new GetDestinationByIdQuery { Id = id };
+        var result = await mediator.Send(query);
+        
+        if (result == null)
         {
             return NotFound();
         }
-        return Ok(destination.ToDto());
+        
+        return Ok(result);
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(DestinationDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateDestination([FromBody] CreateDestinationDto createDestination)
+    public async Task<IActionResult> CreateDestination([FromBody] CreateDestinationCommand command)
     {
-        var destination = createDestination.ToEntity();
-        var createdDestination = await destinationRepository.AddAsync(destination);
-        return Ok(createdDestination.ToDto());
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateDestination([FromBody] UpdateDestinationDto updateDestination)
+    public async Task<IActionResult> UpdateDestination([FromBody] UpdateDestinationCommand command)
     {
-        var existingDestination = await destinationRepository.GetByIdAsync(updateDestination.Id);
-        if (existingDestination == null)
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-        await destinationRepository.UpdateAsync(updateDestination.ToEntity(existingDestination));
-        return Ok($"Destination with id: {updateDestination.Id} was successfully updated");
+        
+        return Ok($"Destination with id: {command.Id} was successfully updated");
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteDestination(string id)
     {
-        var destination = await destinationRepository.GetByIdAsync(id);
-        if (destination == null)
+        var command = new DeleteDestinationCommand { Id = id };
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-        await destinationRepository.DeleteAsync(id);
+        
         return Ok($"Destination with id: {id} deleted");
     }
 }
