@@ -1,13 +1,14 @@
-﻿using BookRental.Domain.Interfaces.Repositories;
+﻿using BookRental.Domain.Interfaces;
+using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Rent.Commands.UpdateRent;
 
-public class UpdateRentCommandHandler(IRepository<BookRental.Domain.Entities.Rent> rentRepository) : IRequestHandler<UpdateRentCommand, bool>
+public class UpdateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateRentCommand, bool>
 {
     public async Task<bool> Handle(UpdateRentCommand request, CancellationToken cancellationToken)
     {
-        var existingRent = await rentRepository.GetByIdAsync(request.Id);
+        var existingRent = await unitOfWork.Rents.GetByIdAsync(request.Id);
         if (existingRent == null)
         {
             return false;
@@ -21,7 +22,8 @@ public class UpdateRentCommandHandler(IRepository<BookRental.Domain.Entities.Ren
         existingRent.ReturnDate = request.ReturnDate;
         existingRent.Status = request.Status;
 
-        await rentRepository.UpdateAsync(existingRent);
+        await unitOfWork.Rents.UpdateAsync(existingRent);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

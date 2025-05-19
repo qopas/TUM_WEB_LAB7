@@ -14,7 +14,7 @@ public class DeleteGenreCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<
         {
             return false;
         }
-        await unitOfWork.Genres.DeleteAsync(request.Id);
+        await unitOfWork.Genres.DeleteAsync(genre);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

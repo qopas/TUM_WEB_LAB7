@@ -15,7 +15,7 @@ public class DeleteCustomerCommandHandler(IUnitOfWork unitOfWork)
             return false;
         }
 
-        await unitOfWork.Customers.DeleteAsync(request.Id);
+        await unitOfWork.Customers.DeleteAsync(customer);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

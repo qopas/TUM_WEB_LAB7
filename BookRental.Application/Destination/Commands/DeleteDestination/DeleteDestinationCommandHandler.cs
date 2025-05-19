@@ -15,7 +15,7 @@ public class DeleteDestinationCommandHandler(IUnitOfWork unitOfWork)
             return false;
         }
 
-        await unitOfWork.Destinations.DeleteAsync(request.Id);
+        await unitOfWork.Destinations.DeleteAsync(destination);
         await unitOfWork.SaveChangesAsync();
         return true;
     }
