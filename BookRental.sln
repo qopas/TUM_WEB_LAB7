@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRental.API", "BookRental.API\BookRental.API.csproj", "{D6A20761-0683-4F6E-B039-376AB757D0CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRental.Domain", "BookRental.Domain\BookRental.Domain.csproj", "{2C421141-AA35-439B-9CF1-A7DDE9439B90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRental.Infrastructure", "BookRental.Infrastructure\BookRental.Infrastructure.csproj", "{D299B25D-A787-49BE-BE21-3A911E57A24B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRental.Application", "BookRental.Application\BookRental.Application.csproj", "{F09B8361-8A55-4E3B-B30D-FE32E091CA72}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6A20761-0683-4F6E-B039-376AB757D0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A20761-0683-4F6E-B039-376AB757D0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A20761-0683-4F6E-B039-376AB757D0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A20761-0683-4F6E-B039-376AB757D0CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C421141-AA35-439B-9CF1-A7DDE9439B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C421141-AA35-439B-9CF1-A7DDE9439B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C421141-AA35-439B-9CF1-A7DDE9439B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C421141-AA35-439B-9CF1-A7DDE9439B90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D299B25D-A787-49BE-BE21-3A911E57A24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D299B25D-A787-49BE-BE21-3A911E57A24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D299B25D-A787-49BE-BE21-3A911E57A24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D299B25D-A787-49BE-BE21-3A911E57A24B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F09B8361-8A55-4E3B-B30D-FE32E091CA72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F09B8361-8A55-4E3B-B30D-FE32E091CA72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F09B8361-8A55-4E3B-B30D-FE32E091CA72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F09B8361-8A55-4E3B-B30D-FE32E091CA72}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
