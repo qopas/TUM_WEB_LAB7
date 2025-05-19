@@ -1,79 +1,80 @@
 ﻿using Application.DTOs.Customer;
 using Application.Mapping;
+using Application.Mediator.Customer.Commands.CreateCustomer;
+using Application.Mediator.Customer.Commands.DeleteCustomer;
+using Application.Mediator.Customer.Commands.UpdateCustomer;
+using Application.Mediator.Customer.Queries.GetCustomerById;
+using Application.Mediator.Customer.Queries.GetCustomers;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomerController(IRepository<Customer> customerRepository) : ControllerBase
+public class CustomerController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(List<CustomerDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCustomers()
     {
-        var customers = await customerRepository.GetAllAsync();
-        return Ok(customers.ToDtoList());
+        var query = new GetCustomersQuery();
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCustomer(string id)
     {
-        var customer = await customerRepository.GetByIdAsync(id);
-        if (customer == null)
+        var query = new GetCustomerByIdQuery { Id = id };
+        var result = await mediator.Send(query);
+        
+        if (result == null)
         {
             return NotFound();
         }
-
-        return Ok(customer.ToDto());
+        
+        return Ok(result);
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerDto createCustomer)
+
+    public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerCommand command)
     {
-        var customer = createCustomer.ToEntity();
-        var createdCustomer = await customerRepository.AddAsync(customer);
-        return Ok(createdCustomer.ToDto());
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerDto updateCustomer)
+    public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerCommand command)
     {
-        var existingCustomer = await customerRepository.GetByIdAsync(updateCustomer.Id);
-        if (existingCustomer == null)
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-
-        await customerRepository.UpdateAsync(updateCustomer.ToEntity(existingCustomer));
-        return Ok($"Customer with id: {updateCustomer.Id} was successfully updated");
+        
+        return Ok($"Customer with id: {command.Id} was successfully updated");
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteCustomer(string id)
     {
-        var customer = await customerRepository.GetByIdAsync(id);
-        if (customer == null)
+        var command = new DeleteCustomerCommand { Id = id };
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-
-        await customerRepository.DeleteAsync(id);
+        
         return Ok($"Customer with id: {id} deleted");
     }
 }
