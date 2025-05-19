@@ -4,7 +4,6 @@ using Application.Mediator.Book.Commands.DeleteBook;
 using Application.Mediator.Book.Commands.UpdateBook;
 using Application.Mediator.Book.Queries.GetBookById;
 using Application.Mediator.Book.Queries.GetBooks;
-using Application.Validators.Book;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +40,7 @@ public class BookController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateBook([FromBody] CreateBookCommand command)
     {
-        
+     
         var result = await mediator.Send(command);
         return Ok(result);
     }

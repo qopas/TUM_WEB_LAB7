@@ -1,4 +1,5 @@
 using System.Reflection;
+using Application;
 using Application.Book.Commands.CreateBook;
 using Application.Validators.Book;
 using BookRental.Domain.Interfaces;
@@ -15,15 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
-
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(CreateBookCommandHandler).Assembly));
-
 builder.Services.AddDbContext<BookRentalDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
         .UseLazyLoadingProxies()
 );
-
+builder.Services.AddApplicationServices();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
@@ -31,17 +28,9 @@ builder.Services.AddScoped<IDestinationRepository, DestinationRespository>();
 builder.Services.AddScoped<IRentRepository, RentRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateBookCommandValidator>();
-builder.Services
-    .AddControllers()
-    .AddFluentValidation(fv => 
-    {
-        fv.RegisterValidatorsFromAssemblyContaining<CreateBookCommandValidator>();
-        fv.ImplicitlyValidateChildProperties = true;
-    });
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 var app = builder.Build();
 
