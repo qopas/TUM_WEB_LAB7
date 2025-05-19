@@ -1,66 +1,75 @@
 ﻿using Application.DTOs.Book;
-using Application.Mapping;
-
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
+using Application.Mediator.Book.Commands.CreateBook;
+using Application.Mediator.Book.Commands.DeleteBook;
+using Application.Mediator.Book.Commands.UpdateBook;
+using Application.Mediator.Book.Queries.GetBookById;
+using Application.Mediator.Book.Queries.GetBooks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class BookController(IBookRepository bookRepository) : ControllerBase
+public class BookController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBooks()
     {
-        var books = await bookRepository.GetAllAsync();
-        return Ok(books.ToDtoList());
+        var query = new GetBooksQuery();
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBook(string id)
     {
-        var book = await bookRepository.GetByIdAsync(id);
-        if (book == null)
+        var query = new GetBookByIdQuery { Id = id };
+        var result = await mediator.Send(query);
+        
+        if (result == null)
         {
             return NotFound();
         }
-        return Ok(book.ToDto());
+        
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateBook([FromBody] CreateBookDto createBook)
+    [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateBook([FromBody] CreateBookCommand command)
     {
-        if (createBook == null)
-        {
-            return BadRequest();
-        }
-        var createdBook = await bookRepository.AddAsync(createBook.ToEntity());
-        return Ok(createdBook);
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateBook([FromBody] UpdateBookDto updateBook)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateBook([FromBody] UpdateBookCommand command)
     {
-        var existingBook = await bookRepository.GetByIdAsync(updateBook.Id);
-        if (existingBook == null)
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-        await bookRepository.UpdateAsync(updateBook.ToEntity(existingBook));
-        return Ok($"Book with id: {updateBook.Id} was successfully updated");
+        
+        return Ok($"Book with id: {command.Id} was successfully updated");
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteBook(string id)
-    { 
-        var book = await bookRepository.GetByIdAsync(id);
-        if (book == null)
+    {
+        var command = new DeleteBookCommand { Id = id };
+        var result = await mediator.Send(command);
+        
+        if (!result)
         {
             return NotFound();
         }
-
-        await bookRepository.DeleteAsync(id);
+        
         return Ok($"Book with id: {id} deleted");
     }
 }
