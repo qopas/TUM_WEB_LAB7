@@ -1,12 +1,13 @@
 ﻿using Application.DTOs.Customer;
 using Application.Mapping;
 using BookRental.Domain.Entities;
+using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Customer.Commands.CreateCustomer;
 
-public class CreateCustomerCommandHandler(IRepository<BookRental.Domain.Entities.Customer> customerRepository)
+public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<CreateCustomerCommand, CustomerDto>
 {
     public async Task<CustomerDto> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
@@ -21,7 +22,8 @@ public class CreateCustomerCommandHandler(IRepository<BookRental.Domain.Entities
             City = request.City
         };
 
-        var createdCustomer = await customerRepository.AddAsync(customer);
+        var createdCustomer = await unitOfWork.Customers.AddAsync(customer);
+        await unitOfWork.SaveChangesAsync();
         return createdCustomer.ToDto();
     }
 }
