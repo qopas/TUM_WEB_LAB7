@@ -8,6 +8,7 @@ public class UnitOfWork(
     BookRentalDbContext dbContext,
     IBookRepository bookRepository,
     IGenreRepository genreRepository,
+    IDestinationRepository destinationRepository,
     ICustomerRepository customerRepository,
     IRentRepository rentRepository)
     : IUnitOfWork
@@ -15,6 +16,7 @@ public class UnitOfWork(
     private bool _disposed = false;
     public IBookRepository Books { get; } = bookRepository;
     public IGenreRepository Genres { get; } = genreRepository;
+    public IDestinationRepository Destinations { get; } = destinationRepository;
     public ICustomerRepository Customers { get; } = customerRepository;
     public IRentRepository Rents { get; } = rentRepository;
 

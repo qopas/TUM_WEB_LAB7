@@ -1,14 +1,15 @@
-﻿using BookRental.Domain.Interfaces.Repositories;
+﻿using BookRental.Domain.Interfaces;
+using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Destination.Commands.UpdateDestination;
 
-public class UpdateDestinationCommandHandler(IRepository<BookRental.Domain.Entities.Destination> destinationRepository)
+public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateDestinationCommand, bool>
 {
     public async Task<bool> Handle(UpdateDestinationCommand request, CancellationToken cancellationToken)
     {
-        var existingDestination = await destinationRepository.GetByIdAsync(request.Id);
+        var existingDestination = await unitOfWork.Destinations.GetByIdAsync(request.Id);
         if (existingDestination == null)
         {
             return false;
@@ -20,7 +21,8 @@ public class UpdateDestinationCommandHandler(IRepository<BookRental.Domain.Entit
         existingDestination.ContactPerson = request.ContactPerson;
         existingDestination.PhoneNumber = request.PhoneNumber;
 
-        await destinationRepository.UpdateAsync(existingDestination);
+        await unitOfWork.Destinations.UpdateAsync(existingDestination);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

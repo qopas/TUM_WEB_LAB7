@@ -1,20 +1,22 @@
-﻿using BookRental.Domain.Interfaces.Repositories;
+﻿using BookRental.Domain.Interfaces;
+using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Mediator.Destination.Commands.DeleteDestination;
 
-public class DeleteDestinationCommandHandler(IRepository<BookRental.Domain.Entities.Destination> destinationRepository)
+public class DeleteDestinationCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<DeleteDestinationCommand, bool>
 {
     public async Task<bool> Handle(DeleteDestinationCommand request, CancellationToken cancellationToken)
     {
-        var destination = await destinationRepository.GetByIdAsync(request.Id);
+        var destination = await unitOfWork.Destinations.GetByIdAsync(request.Id);
         if (destination == null)
         {
             return false;
         }
 
-        await destinationRepository.DeleteAsync(request.Id);
+        await unitOfWork.Destinations.DeleteAsync(request.Id);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

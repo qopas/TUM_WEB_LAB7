@@ -8,6 +8,7 @@ public interface IUnitOfWork : IDisposable
     IGenreRepository Genres { get; }
     ICustomerRepository Customers { get; }
     IRentRepository Rents { get; }
+    IDestinationRepository Destinations { get; }
         
     Task<int> SaveChangesAsync();
 }
