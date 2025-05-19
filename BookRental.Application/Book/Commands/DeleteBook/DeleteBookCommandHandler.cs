@@ -15,6 +15,7 @@ public class DeleteBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         }
 
         await unitOfWork.Books.DeleteAsync(book);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

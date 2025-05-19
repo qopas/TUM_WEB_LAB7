@@ -21,6 +21,7 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         book.RentalPrice = request.RentalPrice;
 
         await unitOfWork.Books.UpdateAsync(book);
+        await unitOfWork.SaveChangesAsync();
         return true;
     }
 }

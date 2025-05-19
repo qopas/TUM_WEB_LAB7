@@ -22,6 +22,7 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         };
 
         var createdBook = await unitOfWork.Books.AddAsync(book);
+        await unitOfWork.SaveChangesAsync();
         return createdBook.ToDto();
     }
 }
