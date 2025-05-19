@@ -1,15 +1,16 @@
 ﻿using Application.DTOs.Book;
 using Application.Mapping;
-using BookRental.Domain.Interfaces.Repositories;
+using Application.Mediator.Book.Queries.GetBookById;
+using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Book.Queries.GetBookById;
+namespace Application.Book.Queries.GetBookById;
 
-public class GetBookByIdQueryHandler(IBookRepository bookRepository) : IRequestHandler<GetBookByIdQuery, BookDto>
+public class GetBookByIdQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetBookByIdQuery, BookDto>
 {
     public async Task<BookDto> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
     {
-        var book = await bookRepository.GetByIdAsync(request.Id);
+        var book = await unitOfWork.Books.GetByIdAsync(request.Id);
         return book?.ToDto();
     }
 }

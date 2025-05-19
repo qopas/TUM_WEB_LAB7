@@ -1,11 +1,10 @@
 ﻿using Application.DTOs.Book;
-using BookRental.Domain.Entities;
 
 namespace Application.Mapping;
 
 public static class BookMappingExtension
 {
-     public static BookDto ToDto(this Book book)
+     public static BookDto ToDto(this BookRental.Domain.Entities.Book book)
         {
             return new BookDto
             {
@@ -19,10 +18,10 @@ public static class BookMappingExtension
             };
         }
      
-        public static Book ToEntity(this CreateBookDto dto)
+        public static BookRental.Domain.Entities.Book ToEntity(this CreateBookDto dto)
         {
             
-            return new Book
+            return new BookRental.Domain.Entities.Book
             {
                 Title = dto.Title,
                 Author = dto.Author,
@@ -33,7 +32,7 @@ public static class BookMappingExtension
             };
         }
         
-        public static Book ToEntity(this UpdateBookDto dto, Book existingBook)
+        public static BookRental.Domain.Entities.Book ToEntity(this UpdateBookDto dto, BookRental.Domain.Entities.Book existingBook)
         {
             if (dto.Title != null)
                 existingBook.Title = dto.Title;
@@ -56,7 +55,7 @@ public static class BookMappingExtension
             return existingBook;
         }
         
-        public static IEnumerable<BookDto> ToDtoList(this IEnumerable<Book> books)
+        public static IEnumerable<BookDto> ToDtoList(this IEnumerable<BookRental.Domain.Entities.Book> books)
         {
             return books.Select(b => b.ToDto());
         }

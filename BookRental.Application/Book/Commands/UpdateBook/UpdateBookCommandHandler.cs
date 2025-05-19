@@ -1,13 +1,14 @@
-﻿using BookRental.Domain.Interfaces.Repositories;
+﻿using Application.Mediator.Book.Commands.UpdateBook;
+using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Book.Commands.UpdateBook;
+namespace Application.Book.Commands.UpdateBook;
 
-public class UpdateBookCommandHandler(IBookRepository bookRepository) : IRequestHandler<UpdateBookCommand, bool>
+public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookCommand, bool>
 {
     public async Task<bool> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
     {
-        var book = await bookRepository.GetByIdAsync(request.Id);
+        var book = await unitOfWork.Books.GetByIdAsync(request.Id);
         if (book == null)
         {
             return false;
@@ -19,7 +20,7 @@ public class UpdateBookCommandHandler(IBookRepository bookRepository) : IRequest
         book.AvailableQuantity = request.AvailableQuantity;
         book.RentalPrice = request.RentalPrice;
 
-        await bookRepository.UpdateAsync(book);
+        await unitOfWork.Books.UpdateAsync(book);
         return true;
     }
 }
