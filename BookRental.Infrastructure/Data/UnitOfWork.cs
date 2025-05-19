@@ -4,22 +4,19 @@ using BookRental.Infrastructure.Repositories;
 
 namespace BookRental.Infrastructure.Data;
 
-public class UnitOfWork(BookRentalDbContext dbContext) : IUnitOfWork
+public class UnitOfWork(
+    BookRentalDbContext dbContext,
+    IBookRepository bookRepository,
+    IGenreRepository genreRepository,
+    ICustomerRepository customerRepository,
+    IRentRepository rentRepository)
+    : IUnitOfWork
 {
-    private readonly Dictionary<Type, object> _repositories = new();
     private bool _disposed = false;
-
-    public IRepository<T> Repository<T>() where T : class
-    {
-        var type = typeof(T);
-
-        if (!_repositories.ContainsKey(type))
-        {
-            _repositories[type] = new Repository<T>(dbContext);
-        }
-
-        return (IRepository<T>)_repositories[type];
-    }
+    public IBookRepository Books { get; } = bookRepository;
+    public IGenreRepository Genres { get; } = genreRepository;
+    public ICustomerRepository Customers { get; } = customerRepository;
+    public IRentRepository Rents { get; } = rentRepository;
 
     public async Task<int> SaveChangesAsync()
     {
@@ -34,10 +31,8 @@ public class UnitOfWork(BookRentalDbContext dbContext) : IUnitOfWork
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed && disposing)
-        {
-            dbContext.Dispose();
-            _disposed = true;
-        }
+        if (_disposed || !disposing) return;
+        dbContext.Dispose();
+        _disposed = true;
     }
 }

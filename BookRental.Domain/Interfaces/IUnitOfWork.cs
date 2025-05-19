@@ -4,6 +4,10 @@ namespace BookRental.Domain.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IRepository<T> Repository<T>() where T : class;
+    IBookRepository Books { get; }
+    IGenreRepository Genres { get; }
+    ICustomerRepository Customers { get; }
+    IRentRepository Rents { get; }
+        
     Task<int> SaveChangesAsync();
 }
