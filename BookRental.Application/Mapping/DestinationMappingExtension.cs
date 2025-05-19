@@ -1,5 +1,5 @@
 ﻿
-using BookRental.Domain.DTOs.Destination;
+using Application.DTOs.Destination;
 using BookRental.Domain.Entities;
 namespace Application.Mapping;
 

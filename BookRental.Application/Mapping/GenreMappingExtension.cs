@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.DTOs.Genre;
+﻿using Application.DTOs.Genre;
 using BookRental.Domain.Entities;
 
 namespace Application.Mapping;

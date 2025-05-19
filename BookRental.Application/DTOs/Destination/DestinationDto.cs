@@ -1,7 +1,8 @@
-﻿namespace BookRental.Domain.DTOs.Destination;
+﻿namespace Application.DTOs.Destination;
 
-public class CreateDestinationDto
+public class DestinationDto
 {
+    public string Id { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
     public string City { get; set; }

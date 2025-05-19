@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.DTOs.Rent;
+﻿using Application.DTOs.Rent;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Enums;
 

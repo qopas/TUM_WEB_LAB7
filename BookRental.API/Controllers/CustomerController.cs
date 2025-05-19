@@ -1,5 +1,5 @@
-﻿using Application.Mapping;
-using BookRental.Domain.DTOs.Customer;
+﻿using Application.DTOs.Customer;
+using Application.Mapping;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;

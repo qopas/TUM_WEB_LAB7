@@ -1,6 +1,6 @@
 ﻿using BookRental.Domain.Enums;
 
-namespace BookRental.Domain.DTOs.Rent;
+namespace Application.DTOs.Rent;
 
 public class RentDto
 {

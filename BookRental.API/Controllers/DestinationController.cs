@@ -1,6 +1,6 @@
 ﻿
+using Application.DTOs.Destination;
 using Application.Mapping;
-using BookRental.Domain.DTOs.Destination;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;

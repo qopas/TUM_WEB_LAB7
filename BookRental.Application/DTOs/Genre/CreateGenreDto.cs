@@ -1,4 +1,4 @@
-﻿namespace BookRental.Domain.DTOs.Genre;
+﻿namespace Application.DTOs.Genre;
 
 public class CreateGenreDto
 {

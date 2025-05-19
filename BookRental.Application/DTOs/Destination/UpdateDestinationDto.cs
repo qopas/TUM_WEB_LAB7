@@ -1,4 +1,4 @@
-﻿namespace BookRental.Domain.DTOs.Destination;
+﻿namespace Application.DTOs.Destination;
 
 public class UpdateDestinationDto
 {

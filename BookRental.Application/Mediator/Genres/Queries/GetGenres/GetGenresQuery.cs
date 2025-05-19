@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.DTOs.Genre;
+﻿using Application.DTOs.Genre;
 using MediatR;
 
 namespace Application.Mediator.Genres.Queries.GetGenres;

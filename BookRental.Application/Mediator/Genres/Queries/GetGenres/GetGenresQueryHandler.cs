@@ -1,5 +1,5 @@
-﻿using Application.Mapping;
-using BookRental.Domain.DTOs.Genre;
+﻿using Application.DTOs.Genre;
+using Application.Mapping;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;

@@ -1,6 +1,6 @@
-﻿namespace BookRental.Domain.DTOs.Customer;
+﻿namespace Application.DTOs.Customer;
 
-public class CustomerDto
+public class UpdateCustomerDto
 {
     public string Id { get; set; }
     public string FirstName { get; set; }

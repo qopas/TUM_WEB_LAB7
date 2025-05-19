@@ -1,4 +1,4 @@
-﻿namespace BookRental.Domain.DTOs.Customer;
+﻿namespace Application.DTOs.Customer;
 
 public class CreateCustomerDto
 {

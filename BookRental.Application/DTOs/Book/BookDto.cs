@@ -1,4 +1,4 @@
-﻿namespace BookRental.Domain.DTOs.Book;
+﻿namespace Application.DTOs.Book;
 
 public class BookDto
 {

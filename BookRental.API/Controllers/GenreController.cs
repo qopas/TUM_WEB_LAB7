@@ -1,10 +1,10 @@
-﻿using Application.Mapping;
+﻿using Application.DTOs.Genre;
+using Application.Mapping;
 using Application.Mediator.Genres.Commands.CreateGenre;
 using Application.Mediator.Genres.Commands.DeleteGenre;
 using Application.Mediator.Genres.Commands.UpdateGenre;
 using Application.Mediator.Genres.Queries.GetGenreById;
 using Application.Mediator.Genres.Queries.GetGenres;
-using BookRental.Domain.DTOs.Genre;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;

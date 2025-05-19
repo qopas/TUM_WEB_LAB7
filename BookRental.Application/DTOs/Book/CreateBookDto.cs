@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BookRental.Domain.DTOs.Book;
+﻿namespace Application.DTOs.Book;
 
 public class CreateBookDto
 {
@@ -11,9 +9,9 @@ public class CreateBookDto
     public int AvailableQuantity { get; set; } 
     public decimal RentalPrice { get; set; }
     
-    public Entities.Book ToEntity()
+    public BookRental.Domain.Entities.Book ToEntity()
     {
-        return new Entities.Book
+        return new BookRental.Domain.Entities.Book
         {
             Title = Title,
             Author = Author,
