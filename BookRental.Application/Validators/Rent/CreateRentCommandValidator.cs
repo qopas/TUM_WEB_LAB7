@@ -6,32 +6,15 @@ namespace Application.Validators.Rent;
 
  public class CreateRentCommandValidator : AbstractValidator<CreateRentCommand>
     {
-        public CreateRentCommandValidator(IUnitOfWork unitOfWork)
+        public CreateRentCommandValidator()
         {
             RuleFor(r => r.BookId)
-                .NotEmpty().WithMessage("Book ID is required")
-                .MustAsync(async (bookId, cancellation) => {
-                    var book = await unitOfWork.Books.GetByIdAsync(bookId);
-                    return book != null;
-                }).WithMessage("Book not found")
-                .MustAsync(async (bookId, cancellation) => {
-                    var book = await unitOfWork.Books.GetByIdAsync(bookId);
-                    return book != null && book.AvailableQuantity > 0;
-                }).WithMessage("Book is not available for rent (no copies left)");
+                .NotEmpty().WithMessage("Book ID is required");
 
             RuleFor(r => r.CustomerId)
-                .NotEmpty().WithMessage("Customer ID is required")
-                .MustAsync(async (customerId, cancellation) => {
-                    var customer = await unitOfWork.Customers.GetByIdAsync(customerId);
-                    return customer != null;
-                }).WithMessage("Customer not found");
-
+                .NotEmpty().WithMessage("Customer ID is required");
             RuleFor(r => r.DestinationId)
-                .NotEmpty().WithMessage("Destination ID is required")
-                .MustAsync(async (destinationId, cancellation) => {
-                    var destination = await unitOfWork.Destinations.GetByIdAsync(destinationId);
-                    return destination != null;
-                }).WithMessage("Destination not found");
+                .NotEmpty().WithMessage("Destination ID is required");
 
             RuleFor(r => r.RentDate)
                 .NotEmpty().WithMessage("Rent date is required")
