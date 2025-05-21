@@ -1,13 +1,8 @@
-using System.Reflection;
 using Application;
-using Application.Book.Commands.CreateBook;
-using Application.Validators.Book;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
 using BookRental.Infrastructure.Repositories;
-using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 
