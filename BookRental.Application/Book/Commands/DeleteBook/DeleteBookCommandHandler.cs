@@ -13,7 +13,7 @@ public class DeleteBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             return false;
         }
 
-        await unitOfWork.Books.Delete(book);
+        await unitOfWork.Books.DeleteAsync(book);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

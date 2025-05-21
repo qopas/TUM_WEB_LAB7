@@ -13,7 +13,7 @@ public class DeleteRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             return false;
         }
 
-        await unitOfWork.Rents.Delete(rent);
+        await unitOfWork.Rents.DeleteAsync(rent);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

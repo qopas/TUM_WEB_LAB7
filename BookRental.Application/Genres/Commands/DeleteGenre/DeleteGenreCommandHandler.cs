@@ -12,7 +12,7 @@ public class DeleteGenreCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<
         {
             return false;
         }
-        await unitOfWork.Genres.Delete(genre);
+        await unitOfWork.Genres.DeleteAsync(genre);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

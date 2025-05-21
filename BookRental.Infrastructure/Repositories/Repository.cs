@@ -37,7 +37,7 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         return Task.CompletedTask;
     }
         
-    public Task Delete(T entity)
+    public Task DeleteAsync(T entity)
     {
         _dbContext.Set<T>().Remove(entity);
         return Task.CompletedTask;
@@ -48,7 +48,7 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         var entity = await GetByIdAsync(id);
         if (entity != null)
         {
-            Delete(entity);
+            DeleteAsync(entity);
         }
     }
 }
