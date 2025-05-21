@@ -1,6 +1,4 @@
-﻿
-using Application.DTOs.Rent;
-using Application.Mapping;
+﻿using Application.DTOs.Rent;
 using BookRental.Domain.Enums;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
@@ -24,6 +22,6 @@ public class CreateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 
         var createdRent = await unitOfWork.Rents.AddAsync(rent);
         await unitOfWork.SaveChangesAsync();
-        return createdRent.ToDto();
+        return RentDto.FromEntity(createdRent);
     }
 }

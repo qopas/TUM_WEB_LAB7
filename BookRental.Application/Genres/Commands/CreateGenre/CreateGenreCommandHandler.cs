@@ -1,6 +1,4 @@
-﻿
-using Application.DTOs.Genre;
-using Application.Mapping;
+﻿using Application.DTOs.Genre;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;

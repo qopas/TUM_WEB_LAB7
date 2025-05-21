@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Book;
-using Application.Mapping;
 using Application.Mediator.Book.Queries.GetBooks;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;

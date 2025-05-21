@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Customer;
-using Application.Mapping;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;

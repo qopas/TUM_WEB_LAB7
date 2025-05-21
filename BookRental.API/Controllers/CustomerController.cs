@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Customer;
-using Application.Mapping;
 using Application.Mediator.Customer.Commands.CreateCustomer;
 using Application.Mediator.Customer.Commands.DeleteCustomer;
 using Application.Mediator.Customer.Commands.UpdateCustomer;

@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Genre;
-using Application.Mapping;
 using Application.Mediator.Genres.Commands.CreateGenre;
 using Application.Mediator.Genres.Commands.DeleteGenre;
 using Application.Mediator.Genres.Commands.UpdateGenre;

@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Rent;
-using Application.Mapping;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
@@ -12,6 +11,6 @@ public class GetRentsQueryHandler(IUnitOfWork unitOfWork)
     public async Task<IEnumerable<RentDto>> Handle(GetRentsQuery request, CancellationToken cancellationToken)
     {
         var rents = unitOfWork.Rents.GetAll();
-        return rents.ToDtoList();
+        return RentDto.FromEntityList(rents);
     }
 }
