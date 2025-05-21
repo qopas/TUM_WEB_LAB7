@@ -8,9 +8,9 @@ namespace Application.Book.Queries.GetBooks;
 
 public class GetBooksQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetBooksQuery, IEnumerable<BookDto>>
 {
-    public async Task<IEnumerable<BookDto>> Handle(GetBooksQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<BookDto>> Handle(GetBooksQuery request, CancellationToken cancellationToken)
     {
         var books = unitOfWork.Books.GetAll();
-        return BookDto.FromEntityList(books);
+        return Task.FromResult(BookDto.FromEntityList(books));
     }
 }

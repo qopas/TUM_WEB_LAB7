@@ -8,9 +8,9 @@ namespace Application.Mediator.Customer.Queries.GetCustomers;
 public class GetCustomersQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetCustomersQuery, IEnumerable<CustomerDto>>
 {
-    public async Task<IEnumerable<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
         var customers =  unitOfWork.Customers.GetAll();
-        return  CustomerDto.FromEntityList(customers);
+        return  Task.FromResult(CustomerDto.FromEntityList(customers));
     }
 }
