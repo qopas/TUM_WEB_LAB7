@@ -8,7 +8,7 @@ public interface IRepository<T> where T : class
     IQueryable<T> GetAll();
     IQueryable<T> Find(Expression<Func<T, bool>> predicate);
     Task<T> AddAsync(T entity);
-    Task Update(T entity);
+    Task UpdateAsync(T entity);
     Task DeleteAsync(T entity);
-    Task Delete(string id);
+    Task DeleteAsync(string id);
 }

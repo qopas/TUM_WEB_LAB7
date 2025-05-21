@@ -31,7 +31,7 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         return entity;
     }
         
-    public Task Update(T entity)
+    public Task UpdateAsync(T entity)
     {
         _dbContext.Entry(entity).State = EntityState.Modified;
         return Task.CompletedTask;
@@ -43,12 +43,12 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         return Task.CompletedTask;
     }
         
-    public async Task Delete(string id)
+    public async Task DeleteAsync(string id)
     {
         var entity = await GetByIdAsync(id);
         if (entity != null)
         {
-            DeleteAsync(entity);
+            await DeleteAsync(entity);
         }
     }
 }
