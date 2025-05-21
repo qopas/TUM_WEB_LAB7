@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
 public class BookController(IMediator mediator) : ControllerBase
@@ -16,61 +17,95 @@ public class BookController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBooks()
     {
-        var query = new GetBooksQuery();
-        var result = await mediator.Send(query);
-        return Ok(result);
+        try
+        {
+            var query = new GetBooksQuery();
+            var result = await mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBook(string id)
     {
-        var query = new GetBookByIdQuery { Id = id };
-        var result = await mediator.Send(query);
-        
-        if (result == null)
+        try
         {
-            return NotFound();
+            var query = new GetBookByIdQuery { Id = id };
+            var result = await mediator.Send(query);
+            
+            if (result == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(result);
         }
-        
-        return Ok(result);
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateBook([FromBody] CreateBookCommand command)
     {
-     
-        var result = await mediator.Send(command);
-        return Ok(result);
+        try
+        {
+            var result = await mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateBook([FromBody] UpdateBookCommand command)
     {
-        var result = await mediator.Send(command);
-        
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await mediator.Send(command);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+            
+            return Ok($"Book with id: {command.Id} was successfully updated");
         }
-        
-        return Ok($"Book with id: {command.Id} was successfully updated");
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteBook(string id)
     {
-        var command = new DeleteBookCommand { Id = id };
-        var result = await mediator.Send(command);
-        
-        if (!result)
+        try
         {
-            return NotFound();
+            var command = new DeleteBookCommand { Id = id };
+            var result = await mediator.Send(command);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+            
+            return Ok($"Book with id: {id} deleted");
         }
-        
-        return Ok($"Book with id: {id} deleted");
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 }
