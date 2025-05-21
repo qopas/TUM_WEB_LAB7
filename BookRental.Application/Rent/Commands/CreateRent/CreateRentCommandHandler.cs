@@ -10,6 +10,15 @@ public class CreateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 {
     public async Task<RentDto> Handle(CreateRentCommand request, CancellationToken cancellationToken)
     {
+        var rent = Convert(request);
+
+        var createdRent = await unitOfWork.Rents.AddAsync(rent);
+        await unitOfWork.SaveChangesAsync();
+        return RentDto.FromEntity(createdRent);
+    }
+
+    private static BookRental.Domain.Entities.Rent Convert(CreateRentCommand request)
+    {
         var rent = new BookRental.Domain.Entities.Rent
         {
             BookId = request.BookId,
@@ -19,9 +28,6 @@ public class CreateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             DueDate = request.DueDate,
             Status = RentStatus.Active
         };
-
-        var createdRent = await unitOfWork.Rents.AddAsync(rent);
-        await unitOfWork.SaveChangesAsync();
-        return RentDto.FromEntity(createdRent);
+        return rent;
     }
 }

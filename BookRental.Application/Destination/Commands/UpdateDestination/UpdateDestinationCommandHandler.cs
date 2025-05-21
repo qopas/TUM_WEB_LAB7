@@ -9,10 +9,20 @@ public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<bool> Handle(UpdateDestinationCommand request, CancellationToken cancellationToken)
     {
+        var (existingDestination, handle) = await Convert(request);
+        if (!handle) return false;
+
+        await unitOfWork.Destinations.Update(existingDestination);
+        await unitOfWork.SaveChangesAsync();
+        return true;
+    }
+
+    private async Task<(BookRental.Domain.Entities.Destination? existingDestination, bool handle)> Convert(UpdateDestinationCommand request)
+    {
         var existingDestination = await unitOfWork.Destinations.GetByIdAsync(request.Id);
         if (existingDestination == null)
         {
-            return false;
+            return (existingDestination, false);
         }
 
         existingDestination.Name = request.Name;
@@ -20,9 +30,6 @@ public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork)
         existingDestination.City = request.City;
         existingDestination.ContactPerson = request.ContactPerson;
         existingDestination.PhoneNumber = request.PhoneNumber;
-
-        await unitOfWork.Destinations.Update(existingDestination);
-        await unitOfWork.SaveChangesAsync();
-        return true;
+        return (existingDestination, true);
     }
 }

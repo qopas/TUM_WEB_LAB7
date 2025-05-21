@@ -10,14 +10,21 @@ public class UpdateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler
 {
     public async Task<bool> Handle(UpdateGenreCommand request, CancellationToken cancellationToken)
     {
-        var existingGenre = await unitOfWork.Genres.GetByIdAsync(request.Id);
-        if (existingGenre == null)
-        {
-            return false;
-        }
-        existingGenre.Name = request.Name;
+        var (existingGenre, handle) = await Convert(request);
+        if (!handle) return false;
         await unitOfWork.Genres.Update(existingGenre);
         await unitOfWork.SaveChangesAsync();
         return true;
+    }
+
+    private async Task<(Genre? existingGenre, bool handle)> Convert(UpdateGenreCommand request)
+    {
+        var existingGenre = await unitOfWork.Genres.GetByIdAsync(request.Id);
+        if (existingGenre == null)
+        {
+            return (existingGenre, false);
+        }
+        existingGenre.Name = request.Name;
+        return (existingGenre, true);
     }
 }

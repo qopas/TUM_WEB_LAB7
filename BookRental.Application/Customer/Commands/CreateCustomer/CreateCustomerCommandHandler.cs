@@ -11,6 +11,15 @@ public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<CustomerDto> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
+        var customer = Convert(request);
+
+        var createdCustomer = await unitOfWork.Customers.AddAsync(customer);
+        await unitOfWork.SaveChangesAsync();
+        return CustomerDto.FromEntity(createdCustomer);
+    }
+
+    private static BookRental.Domain.Entities.Customer Convert(CreateCustomerCommand request)
+    {
         var customer = new BookRental.Domain.Entities.Customer
         {
             FirstName = request.FirstName,
@@ -20,9 +29,6 @@ public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork)
             Address = request.Address,
             City = request.City
         };
-
-        var createdCustomer = await unitOfWork.Customers.AddAsync(customer);
-        await unitOfWork.SaveChangesAsync();
-        return CustomerDto.FromEntity(createdCustomer);
+        return customer;
     }
 }

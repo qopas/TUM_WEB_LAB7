@@ -10,6 +10,15 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 {
     public async Task<BookDto> Handle(CreateBookCommand request, CancellationToken cancellationToken)
     {
+        var book = Convert(request);
+        
+        var createdBook = await unitOfWork.Books.AddAsync(book);
+        await unitOfWork.SaveChangesAsync();
+        return BookDto.FromEntity(createdBook);
+    }
+
+    private static BookRental.Domain.Entities.Book Convert(CreateBookCommand request)
+    {
         var book = new BookRental.Domain.Entities.Book
         {
             Title = request.Title,
@@ -19,9 +28,6 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             AvailableQuantity = request.AvailableQuantity,
             RentalPrice = request.RentalPrice
         };
-        
-        var createdBook = await unitOfWork.Books.AddAsync(book);
-        await unitOfWork.SaveChangesAsync();
-        return BookDto.FromEntity(createdBook);
+        return book;
     }
 }
