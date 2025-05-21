@@ -21,4 +21,5 @@ public class CreateBookDto
             RentalPrice = RentalPrice
         };
     }
+    
 }
