@@ -11,6 +11,6 @@ public class GetGenreByIdQueryHandler(IRepository<Genre> genreRepository) : IReq
     public async Task<GenreDto> Handle(GetGenreByIdQuery request, CancellationToken cancellationToken)
     {
         var genre = await genreRepository.GetByIdAsync(request.Id);
-        return genre?.ToDto();
+        return GenreDto.FromEntity(genre);
     }
 }

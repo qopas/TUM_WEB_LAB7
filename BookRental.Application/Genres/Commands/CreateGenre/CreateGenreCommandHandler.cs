@@ -18,6 +18,6 @@ public class CreateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler
         };
         var createdGendre = await unitOfWork.Genres.AddAsync(genre);
         await unitOfWork.SaveChangesAsync();
-        return createdGendre.ToDto();
+        return GenreDto.FromEntity(createdGendre);
     }
 }

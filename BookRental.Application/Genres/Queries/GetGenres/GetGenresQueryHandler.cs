@@ -12,6 +12,6 @@ public class GetGenresQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<Get
     public async Task<IEnumerable<GenreDto>> Handle(GetGenresQuery request, CancellationToken cancellationToken)
     {
         var genres =  unitOfWork.Genres.GetAll();
-        return genres.ToDtoList();
+        return GenreDto.FromEntityList(genres);
     }
 }
