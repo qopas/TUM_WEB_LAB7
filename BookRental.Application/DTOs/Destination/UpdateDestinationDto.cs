@@ -8,4 +8,15 @@ public class UpdateDestinationDto
     public string City { get; set; }
     public string ContactPerson { get; set; }
     public string PhoneNumber { get; set; }
+    
+    public static BookRental.Domain.Entities.Destination ApplyToEntity(UpdateDestinationDto dto, BookRental.Domain.Entities.Destination existingDestination)
+    {
+        existingDestination.Name = dto.Name;
+        existingDestination.Address = dto.Address;
+        existingDestination.City = dto.City;
+        existingDestination.ContactPerson = dto.ContactPerson;
+        existingDestination.PhoneNumber = dto.PhoneNumber;
+            
+        return existingDestination;
+    }
 }
