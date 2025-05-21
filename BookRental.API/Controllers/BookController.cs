@@ -37,12 +37,6 @@ public class BookController(IMediator mediator) : ControllerBase
         {
             var query = new GetBookByIdQuery { Id = id };
             var result = await mediator.Send(query);
-            
-            if (result == null)
-            {
-                return NotFound();
-            }
-            
             return Ok(result);
         }
         catch (Exception ex)
@@ -73,12 +67,6 @@ public class BookController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Book with id: {command.Id} was successfully updated");
         }
         catch (Exception ex)
@@ -95,12 +83,6 @@ public class BookController(IMediator mediator) : ControllerBase
         {
             var command = new DeleteBookCommand { Id = id };
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Book with id: {id} deleted");
         }
         catch (Exception ex)

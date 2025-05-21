@@ -37,12 +37,6 @@ public class RentController(IMediator mediator) : ControllerBase
         {
             var query = new GetRentByIdQuery { Id = id };
             var result = await mediator.Send(query);
-            
-            if (result == null)
-            {
-                return NotFound();
-            }
-            
             return Ok(result);
         }
         catch (Exception ex)
@@ -73,12 +67,6 @@ public class RentController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Rent with id: {command.Id} was successfully updated");
         }
         catch (Exception ex)
@@ -95,12 +83,6 @@ public class RentController(IMediator mediator) : ControllerBase
         {
             var command = new DeleteRentCommand { Id = id };
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Rent with id: {id} deleted");
         }
         catch (Exception ex)

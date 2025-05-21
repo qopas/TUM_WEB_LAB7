@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Customer;
 using BookRental.Domain.Interfaces;
+using BookRental.Infrastructure.Extensions;
 using MediatR;
 
 namespace Application.Customer.Queries.GetCustomerById;
@@ -9,7 +10,7 @@ public class GetCustomerByIdQueryHandler(IUnitOfWork unitOfWork)
 {
     public async Task<CustomerDto> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
     {
-        var customer = await unitOfWork.Customers.GetByIdAsync(request.Id);
+        var customer = await unitOfWork.Customers.GetByIdOrThrowAsync(request.Id);
         return CustomerDto.FromEntity(customer);
     }
 }

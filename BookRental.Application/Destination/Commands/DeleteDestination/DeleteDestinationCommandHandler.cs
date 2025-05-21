@@ -1,4 +1,5 @@
 ﻿using BookRental.Domain.Interfaces;
+using BookRental.Infrastructure.Extensions;
 using MediatR;
 
 namespace Application.Destination.Commands.DeleteDestination;
@@ -8,13 +9,7 @@ public class DeleteDestinationCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<bool> Handle(DeleteDestinationCommand request, CancellationToken cancellationToken)
     {
-        var destination = await unitOfWork.Destinations.GetByIdAsync(request.Id);
-        if (destination == null)
-        {
-            return false;
-        }
-
-        await unitOfWork.Destinations.DeleteAsync(destination);
+        await unitOfWork.Destinations.DeleteOrThrowAsync(request.Id);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

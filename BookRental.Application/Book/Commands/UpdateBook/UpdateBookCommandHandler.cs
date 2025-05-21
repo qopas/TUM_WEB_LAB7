@@ -1,4 +1,5 @@
 ﻿using BookRental.Domain.Interfaces;
+using BookRental.Infrastructure.Extensions;
 using MediatR;
 
 namespace Application.Book.Commands.UpdateBook;
@@ -10,14 +11,14 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         var (book, handle) = await Convert(request);
         if (!handle) return false;
 
-        await unitOfWork.Books.Update(book);
+        await unitOfWork.Books.UpdateAsync(book);
         await unitOfWork.SaveChangesAsync();
         return true;
     }
 
     private async Task<(BookRental.Domain.Entities.Book? book, bool handle)> Convert(UpdateBookCommand request)
     {
-        var book = await unitOfWork.Books.GetByIdAsync(request.Id);
+        var book = await unitOfWork.Books.GetByIdOrThrowAsync(request.Id);
         if (book == null)
         {
             return (book, false);

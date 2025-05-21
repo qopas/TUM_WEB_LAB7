@@ -1,4 +1,5 @@
 ﻿using BookRental.Domain.Interfaces;
+using BookRental.Infrastructure.Extensions;
 using MediatR;
 
 namespace Application.Genres.Commands.DeleteGenre;
@@ -7,12 +8,7 @@ public class DeleteGenreCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<
 {
     public async Task<bool> Handle(DeleteGenreCommand request, CancellationToken cancellationToken)
     {
-        var genre = await unitOfWork.Genres.GetByIdAsync(request.Id);
-        if (genre == null)
-        {
-            return false;
-        }
-        await unitOfWork.Genres.DeleteAsync(genre);
+        await unitOfWork.Genres.DeleteOrThrowAsync(request.Id);
         await unitOfWork.SaveChangesAsync();
         return true;
     }
