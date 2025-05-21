@@ -12,6 +12,6 @@ public class GetCustomersQueryHandler(IUnitOfWork unitOfWork)
     public async Task<IEnumerable<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
         var customers =  unitOfWork.Customers.GetAll();
-        return  customers.ToDtoList();
+        return  CustomerDto.FromEntityList(customers);
     }
 }

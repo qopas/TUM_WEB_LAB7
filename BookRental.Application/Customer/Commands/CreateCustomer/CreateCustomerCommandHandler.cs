@@ -24,6 +24,6 @@ public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork)
 
         var createdCustomer = await unitOfWork.Customers.AddAsync(customer);
         await unitOfWork.SaveChangesAsync();
-        return createdCustomer.ToDto();
+        return CustomerDto.FromEntity(createdCustomer);
     }
 }

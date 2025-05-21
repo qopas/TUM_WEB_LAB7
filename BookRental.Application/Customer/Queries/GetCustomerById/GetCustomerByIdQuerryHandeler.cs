@@ -11,6 +11,6 @@ public class GetCustomerByIdQueryHandler(IRepository<BookRental.Domain.Entities.
     public async Task<CustomerDto> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
     {
         var customer = await customerRepository.GetByIdAsync(request.Id);
-        return customer?.ToDto();
+        return CustomerDto.FromEntity(customer);
     }
 }
