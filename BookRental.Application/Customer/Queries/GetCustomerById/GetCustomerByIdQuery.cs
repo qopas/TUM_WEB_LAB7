@@ -1,9 +1,18 @@
 ﻿using Application.DTOs.Customer;
+using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Customer.Queries.GetCustomerById;
+namespace Application.Customer.Queries.GetCustomerById;
 
 public class GetCustomerByIdQuery : IRequest<CustomerDto>
 {
-    public string Id { get; set; }
+    public required string Id { get; init; }
+}
+public class GetCustomerByIdQueryValidator : AbstractValidator<GetCustomerByIdQuery>
+{
+    public GetCustomerByIdQueryValidator()
+    {
+        RuleFor(x => x.Id)
+            .NotEmpty().NotNull().WithMessage("Id is required");
+    }
 }

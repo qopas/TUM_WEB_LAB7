@@ -1,16 +1,15 @@
 ﻿using Application.DTOs.Customer;
-using Application.Mapping;
-using BookRental.Domain.Interfaces.Repositories;
+using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Customer.Queries.GetCustomers;
+namespace Application.Customer.Queries.GetCustomers;
 
-public class GetCustomersQueryHandler(IRepository<BookRental.Domain.Entities.Customer> customerRepository)
+public class GetCustomersQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetCustomersQuery, IEnumerable<CustomerDto>>
 {
-    public async Task<IEnumerable<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
-        var customers = await customerRepository.GetAllAsync();
-        return customers.ToDtoList();
+        var customers =  unitOfWork.Customers.GetAll();
+        return Task.FromResult(customers.Select(CustomerDto.FromEntity));
     }
 }

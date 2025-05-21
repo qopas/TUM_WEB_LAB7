@@ -1,16 +1,15 @@
 ﻿using Application.DTOs.Rent;
-using Application.Mapping;
-using BookRental.Domain.Interfaces.Repositories;
+using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Rent.Queries.GetRents;
+namespace Application.Rent.Queries.GetRents;
 
-public class GetRentsQueryHandler(IRepository<BookRental.Domain.Entities.Rent> rentRepository)
+public class GetRentsQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetRentsQuery, IEnumerable<RentDto>>
 {
-    public async Task<IEnumerable<RentDto>> Handle(GetRentsQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<RentDto>> Handle(GetRentsQuery request, CancellationToken cancellationToken)
     {
-        var rents = await rentRepository.GetAllAsync();
-        return rents.ToDtoList();
+        var rents = unitOfWork.Rents.GetAll();
+        return Task.FromResult(rents.Select(RentDto.FromEntity));
     }
 }

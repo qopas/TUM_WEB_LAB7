@@ -1,16 +1,14 @@
 ﻿using Application.DTOs.Genre;
-using Application.Mapping;
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
+using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Genres.Queries.GetGenres;
+namespace Application.Genres.Queries.GetGenres;
 
-public class GetGenresQueryHandler(IRepository<Genre> genreRepository) : IRequestHandler<GetGenresQuery, IEnumerable<GenreDto>>
+public class GetGenresQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetGenresQuery, IEnumerable<GenreDto>>
 {
-    public async Task<IEnumerable<GenreDto>> Handle(GetGenresQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<GenreDto>> Handle(GetGenresQuery request, CancellationToken cancellationToken)
     {
-        var genres = await genreRepository.GetAllAsync();
-        return genres.ToDtoList();
+        var genres =  unitOfWork.Genres.GetAll();
+        return Task.FromResult(genres.Select(GenreDto.FromEntity));
     }
 }

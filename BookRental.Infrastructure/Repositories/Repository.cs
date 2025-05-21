@@ -15,14 +15,14 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         return await _dbContext.Set<T>().FindAsync(id);
     }
         
-    public async Task<IReadOnlyList<T>> GetAllAsync()
+    public IQueryable<T> GetAll()
     {
-        return await _dbContext.Set<T>().ToListAsync();
+        return _dbContext.Set<T>().AsNoTracking();
     }
         
-    public async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    public IQueryable<T> Find(Expression<Func<T, bool>> predicate)
     {
-        return await _dbContext.Set<T>().Where(predicate).ToListAsync();
+        return _dbContext.Set<T>().Where(predicate);
     }
         
     public async Task<T> AddAsync(T entity)
@@ -31,14 +31,16 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         return entity;
     }
         
-    public async Task UpdateAsync(T entity)
+    public Task UpdateAsync(T entity)
     {
         _dbContext.Entry(entity).State = EntityState.Modified;
+        return Task.CompletedTask;
     }
         
-    public async Task DeleteAsync(T entity)
+    public Task DeleteAsync(T entity)
     {
         _dbContext.Set<T>().Remove(entity);
+        return Task.CompletedTask;
     }
         
     public async Task DeleteAsync(string id)

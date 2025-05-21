@@ -1,9 +1,18 @@
 ﻿using Application.DTOs.Book;
+using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Book.Queries.GetBookById;
+namespace Application.Book.Queries.GetBookById;
 
 public class GetBookByIdQuery : IRequest<BookDto>
 {
-    public string Id { get; set; }
+    public required string Id { get; init; }
+}
+public class GetBookByIdQueryValidator : AbstractValidator<GetBookByIdQuery>
+{
+    public GetBookByIdQueryValidator()
+    {
+        RuleFor(x => x.Id)
+            .NotEmpty().NotNull().WithMessage("Id is required");
+    }
 }

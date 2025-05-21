@@ -1,13 +1,11 @@
-﻿
+﻿using Application.Destination.Commands.CreateDestination;
+using Application.Destination.Commands.DeleteDestination;
+using Application.Destination.Commands.UpdateDestination;
+using Application.Destination.Queries.GetDestinationById;
+using Application.Destination.Queries.GetDestinations;
 using Application.DTOs.Destination;
-using Application.Mediator.Destination.Commands.CreateDestination;
-using Application.Mediator.Destination.Commands.DeleteDestination;
-using Application.Mediator.Destination.Commands.UpdateDestination;
-using Application.Mediator.Destination.Queries.GetDestinationById;
-using Application.Mediator.Destination.Queries.GetDestinations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
 namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
@@ -18,60 +16,95 @@ public class DestinationController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<DestinationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDestinations()
     {
-        var query = new GetDestinationsQuery();
-        var result = await mediator.Send(query);
-        return Ok(result);
+        try
+        {
+            var query = new GetDestinationsQuery();
+            var result = await mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(DestinationDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDestination(string id)
     {
-        var query = new GetDestinationByIdQuery { Id = id };
-        var result = await mediator.Send(query);
-        
-        if (result == null)
+        try
         {
-            return NotFound();
+            var query = new GetDestinationByIdQuery { Id = id };
+            var result = await mediator.Send(query);
+            
+            if (result == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(result);
         }
-        
-        return Ok(result);
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(DestinationDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateDestination([FromBody] CreateDestinationCommand command)
     {
-        var result = await mediator.Send(command);
-        return Ok(result);
+        try
+        {
+            var result = await mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateDestination([FromBody] UpdateDestinationCommand command)
     {
-        var result = await mediator.Send(command);
-        
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await mediator.Send(command);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+            
+            return Ok($"Destination with id: {command.Id} was successfully updated");
         }
-        
-        return Ok($"Destination with id: {command.Id} was successfully updated");
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteDestination(string id)
     {
-        var command = new DeleteDestinationCommand { Id = id };
-        var result = await mediator.Send(command);
-        
-        if (!result)
+        try
         {
-            return NotFound();
+            var command = new DeleteDestinationCommand { Id = id };
+            var result = await mediator.Send(command);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+            
+            return Ok($"Destination with id: {id} deleted");
         }
-        
-        return Ok($"Destination with id: {id} deleted");
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 }

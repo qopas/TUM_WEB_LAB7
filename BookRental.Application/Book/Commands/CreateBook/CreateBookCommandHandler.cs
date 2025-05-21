@@ -1,8 +1,5 @@
 ﻿using Application.DTOs.Book;
-using Application.Mapping;
-using Application.Mediator.Book.Commands.CreateBook;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Book.Commands.CreateBook;
@@ -10,6 +7,15 @@ namespace Application.Book.Commands.CreateBook;
 public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateBookCommand, BookDto>
 {
     public async Task<BookDto> Handle(CreateBookCommand request, CancellationToken cancellationToken)
+    {
+        var book = Convert(request);
+        
+        var createdBook = await unitOfWork.Books.AddAsync(book);
+        await unitOfWork.SaveChangesAsync();
+        return BookDto.FromEntity(createdBook);
+    }
+
+    private static BookRental.Domain.Entities.Book Convert(CreateBookCommand request)
     {
         var book = new BookRental.Domain.Entities.Book
         {
@@ -20,9 +26,6 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             AvailableQuantity = request.AvailableQuantity,
             RentalPrice = request.RentalPrice
         };
-
-        var createdBook = await unitOfWork.Books.AddAsync(book);
-        await unitOfWork.SaveChangesAsync();
-        return createdBook.ToDto();
+        return book;
     }
 }

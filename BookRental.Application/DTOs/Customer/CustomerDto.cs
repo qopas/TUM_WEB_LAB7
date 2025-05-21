@@ -9,4 +9,19 @@ public class CustomerDto
     public string PhoneNumber { get; set; }
     public string Address { get; set; }
     public string City { get; set; }
+    
+    public static CustomerDto FromEntity(BookRental.Domain.Entities.Customer customer)
+    {
+        return new CustomerDto
+        {
+            Id = customer.Id,
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            PhoneNumber = customer.PhoneNumber,
+            Address = customer.Address,
+            City = customer.City
+        };
+    }
+    
 }

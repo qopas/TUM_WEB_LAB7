@@ -1,16 +1,15 @@
 ﻿using Application.DTOs.Destination;
-using Application.Mapping;
-using BookRental.Domain.Interfaces.Repositories;
+using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Destination.Queries.GetDestinations;
+namespace Application.Destination.Queries.GetDestinations;
 
-public class GetDestinationsQueryHandler(IRepository<BookRental.Domain.Entities.Destination> destinationRepository)
+public class GetDestinationsQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetDestinationsQuery, IEnumerable<DestinationDto>>
 {
-    public async Task<IEnumerable<DestinationDto>> Handle(GetDestinationsQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<DestinationDto>> Handle(GetDestinationsQuery request, CancellationToken cancellationToken)
     {
-        var destinations = await destinationRepository.GetAllAsync();
-        return destinations.ToDtoList();
+        var destinations = unitOfWork.Destinations.GetAll();
+        return Task.FromResult(destinations.Select(DestinationDto.FromEntity));
     }
 }

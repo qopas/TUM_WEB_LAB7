@@ -15,4 +15,22 @@ public class RentDto
     public string BookTitle { get; set; }
     public string CustomerName { get; set; }
     public string DestinationName { get; set; }
+    public static RentDto FromEntity(BookRental.Domain.Entities.Rent rent)
+    {
+        return new RentDto
+        {
+            Id = rent.Id,
+            BookId = rent.BookId,
+            CustomerId = rent.CustomerId,
+            DestinationId = rent.DestinationId,
+            RentDate = rent.RentDate,
+            DueDate = rent.DueDate,
+            ReturnDate = rent.ReturnDate,
+            Status = rent.Status,
+            BookTitle = rent.Book?.Title,
+            CustomerName = rent.Customer != null ? $"{rent.Customer.FirstName} {rent.Customer.LastName}" : null,
+            DestinationName = rent.Destination?.Name
+        };
+    }
+    
 }

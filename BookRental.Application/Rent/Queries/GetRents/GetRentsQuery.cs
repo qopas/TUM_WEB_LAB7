@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.Rent;
 using MediatR;
 
-namespace Application.Mediator.Rent.Queries.GetRents;
+namespace Application.Rent.Queries.GetRents;
 
 public class GetRentsQuery : IRequest<IEnumerable<RentDto>>
 {

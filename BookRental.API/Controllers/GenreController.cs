@@ -1,12 +1,9 @@
 ﻿using Application.DTOs.Genre;
-using Application.Mapping;
-using Application.Mediator.Genres.Commands.CreateGenre;
-using Application.Mediator.Genres.Commands.DeleteGenre;
-using Application.Mediator.Genres.Commands.UpdateGenre;
-using Application.Mediator.Genres.Queries.GetGenreById;
-using Application.Mediator.Genres.Queries.GetGenres;
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces.Repositories;
+using Application.Genres.Commands.CreateGenre;
+using Application.Genres.Commands.DeleteGenre;
+using Application.Genres.Commands.UpdateGenre;
+using Application.Genres.Queries.GetGenreById;
+using Application.Genres.Queries.GetGenres;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,60 +11,94 @@ namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class GenreController(IMediator mediator)  : ControllerBase
+public class GenreController(IMediator mediator) : ControllerBase
 {
-
     [HttpGet]
     [ProducesResponseType(typeof(List<GenreDto>), StatusCodes.Status200OK)]
-     public async Task<IActionResult> GetGenres()
+    public async Task<IActionResult> GetGenres()
     {
-        var result = await mediator.Send( new GetGenresQuery());
-        return Ok(result);
+        try
+        {
+            var result = await mediator.Send(new GetGenresQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetGenre(string id)
     {
-        var result = await mediator.Send(new GetGenreByIdQuery { Id = id });
-        if (result == null)
+        try
         {
-            return NotFound();
+            var result = await mediator.Send(new GetGenreByIdQuery { Id = id });
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
-        return Ok(result);
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateGenre([FromBody] CreateGenreCommand createGenre)
     {
-        var result = await mediator.Send(createGenre);
-        return Ok(result);
+        try
+        {
+            var result = await mediator.Send(createGenre);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreCommand updateGenre)
     {
-        var result = await mediator.Send(updateGenre);
-        
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await mediator.Send(updateGenre);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+            
+            return Ok($"Genre with id: {updateGenre.Id} was successfully updated");
         }
-        
-        return Ok($"Genre with id: {updateGenre.Id} was successfully updated");
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteGenre(string id)
     {
-        var result = await mediator.Send(new DeleteGenreCommand { Id = id });
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await mediator.Send(new DeleteGenreCommand { Id = id });
+            if (!result)
+            {
+                return NotFound();
+            }
+            return Ok($"Genre with id: {id} deleted");
         }
-        return Ok($"Genre with id: {id} deleted");
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 }
