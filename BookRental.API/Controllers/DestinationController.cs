@@ -37,11 +37,6 @@ public class DestinationController(IMediator mediator) : ControllerBase
             var query = new GetDestinationByIdQuery { Id = id };
             var result = await mediator.Send(query);
             
-            if (result == null)
-            {
-                return NotFound();
-            }
-            
             return Ok(result);
         }
         catch (Exception ex)
@@ -72,12 +67,6 @@ public class DestinationController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Destination with id: {command.Id} was successfully updated");
         }
         catch (Exception ex)
@@ -94,12 +83,6 @@ public class DestinationController(IMediator mediator) : ControllerBase
         {
             var command = new DeleteDestinationCommand { Id = id };
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Destination with id: {id} deleted");
         }
         catch (Exception ex)

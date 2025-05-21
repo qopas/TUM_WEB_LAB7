@@ -35,10 +35,6 @@ public class GenreController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(new GetGenreByIdQuery { Id = id });
-            if (result == null)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
         catch (Exception ex)
@@ -69,12 +65,6 @@ public class GenreController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(updateGenre);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Genre with id: {updateGenre.Id} was successfully updated");
         }
         catch (Exception ex)
@@ -90,10 +80,6 @@ public class GenreController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(new DeleteGenreCommand { Id = id });
-            if (!result)
-            {
-                return NotFound();
-            }
             return Ok($"Genre with id: {id} deleted");
         }
         catch (Exception ex)

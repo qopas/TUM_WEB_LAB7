@@ -38,11 +38,6 @@ public class CustomerController(IMediator mediator) : ControllerBase
             var query = new GetCustomerByIdQuery { Id = id };
             var result = await mediator.Send(query);
             
-            if (result == null)
-            {
-                return NotFound();
-            }
-            
             return Ok(result);
         }
         catch (Exception ex)
@@ -73,12 +68,6 @@ public class CustomerController(IMediator mediator) : ControllerBase
         try
         {
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Customer with id: {command.Id} was successfully updated");
         }
         catch (Exception ex)
@@ -95,12 +84,6 @@ public class CustomerController(IMediator mediator) : ControllerBase
         {
             var command = new DeleteCustomerCommand { Id = id };
             var result = await mediator.Send(command);
-            
-            if (!result)
-            {
-                return NotFound();
-            }
-            
             return Ok($"Customer with id: {id} deleted");
         }
         catch (Exception ex)
