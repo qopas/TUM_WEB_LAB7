@@ -23,9 +23,5 @@ public class BookDto
             RentalPrice = book.RentalPrice
         };
     }
-        
-    public static IEnumerable<BookDto> FromEntityList(IEnumerable<BookRental.Domain.Entities.Book> books)
-    {
-        return books.Select(FromEntity);
-    }
+    
 }

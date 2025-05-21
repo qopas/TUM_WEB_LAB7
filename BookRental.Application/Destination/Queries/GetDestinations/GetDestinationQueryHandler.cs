@@ -9,7 +9,7 @@ public class GetDestinationsQueryHandler(IUnitOfWork unitOfWork)
 {
     public Task<IEnumerable<DestinationDto>> Handle(GetDestinationsQuery request, CancellationToken cancellationToken)
     {
-        var destinations =  unitOfWork.Destinations.GetAll();
-        return Task.FromResult(DestinationDto.FromEntityList(destinations));
+        var destinations = unitOfWork.Destinations.GetAll();
+        return Task.FromResult(destinations.Select(DestinationDto.FromEntity));
     }
 }

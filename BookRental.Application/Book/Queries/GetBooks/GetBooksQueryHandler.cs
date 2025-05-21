@@ -9,6 +9,6 @@ public class GetBooksQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetB
     public Task<IEnumerable<BookDto>> Handle(GetBooksQuery request, CancellationToken cancellationToken)
     {
         var books = unitOfWork.Books.GetAll();
-        return Task.FromResult(BookDto.FromEntityList(books));
+        return Task.FromResult(books.Select(BookDto.FromEntity));
     }
 }

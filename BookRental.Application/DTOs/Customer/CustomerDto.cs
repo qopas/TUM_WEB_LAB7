@@ -23,9 +23,5 @@ public class CustomerDto
             City = customer.City
         };
     }
-        
-    public static IEnumerable<CustomerDto> FromEntityList(IEnumerable<BookRental.Domain.Entities.Customer> customers)
-    {
-        return customers.Select(FromEntity);
-    }
+    
 }

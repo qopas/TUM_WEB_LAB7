@@ -10,6 +10,6 @@ public class GetRentsQueryHandler(IUnitOfWork unitOfWork)
     public Task<IEnumerable<RentDto>> Handle(GetRentsQuery request, CancellationToken cancellationToken)
     {
         var rents = unitOfWork.Rents.GetAll();
-        return Task.FromResult(RentDto.FromEntityList(rents));
+        return Task.FromResult(rents.Select(RentDto.FromEntity));
     }
 }

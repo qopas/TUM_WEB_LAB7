@@ -10,6 +10,6 @@ public class GetCustomersQueryHandler(IUnitOfWork unitOfWork)
     public Task<IEnumerable<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
         var customers =  unitOfWork.Customers.GetAll();
-        return  Task.FromResult(CustomerDto.FromEntityList(customers));
+        return Task.FromResult(customers.Select(CustomerDto.FromEntity));
     }
 }

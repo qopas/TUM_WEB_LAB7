@@ -13,9 +13,5 @@ public class GenreDto
             Name = genre.Name
         };
     }
-        
-    public static IEnumerable<GenreDto> FromEntityList(IEnumerable<BookRental.Domain.Entities.Genre> genres)
-    {
-        return genres.Select(FromEntity);
-    }
+    
 }

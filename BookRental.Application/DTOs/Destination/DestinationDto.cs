@@ -21,9 +21,5 @@ public class DestinationDto
             PhoneNumber = destination.PhoneNumber
         };
     }
-        
-    public static IEnumerable<DestinationDto> FromEntityList(IEnumerable<BookRental.Domain.Entities.Destination> destinations)
-    {
-        return destinations.Select(FromEntity);
-    }
+    
 }

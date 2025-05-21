@@ -32,9 +32,5 @@ public class RentDto
             DestinationName = rent.Destination?.Name
         };
     }
-        
-    public static IEnumerable<RentDto> FromEntityList(IEnumerable<BookRental.Domain.Entities.Rent> rents)
-    {
-        return rents.Select(FromEntity);
-    }
+    
 }
