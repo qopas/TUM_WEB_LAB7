@@ -20,9 +20,9 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             AvailableQuantity = request.AvailableQuantity,
             RentalPrice = request.RentalPrice
         };
-
+        
         var createdBook = await unitOfWork.Books.AddAsync(book);
         await unitOfWork.SaveChangesAsync();
-        return createdBook.ToDto();
+        return BookDto.FromEntity(createdBook);
     }
 }

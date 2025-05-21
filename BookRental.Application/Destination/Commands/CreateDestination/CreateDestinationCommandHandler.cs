@@ -9,10 +9,19 @@ namespace Application.Mediator.Destination.Commands.CreateDestination;
 public class CreateDestinationCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<CreateDestinationCommand, DestinationDto>
 {
-
     public async Task<DestinationDto> Handle(CreateDestinationCommand request, CancellationToken cancellationToken)
     {
-        var destination = new BookRental.Domain.Entities.Destination
+        var destination = Convert(request);
+
+        var createdDestination = await unitOfWork.Destinations.AddAsync(destination);
+        await unitOfWork.SaveChangesAsync();
+
+        return DestinationDto.FromEntity(createdDestination);
+    }
+
+    private static BookRental.Domain.Entities.Destination Convert(CreateDestinationCommand request)
+    {
+        return new BookRental.Domain.Entities.Destination
         {
             Name = request.Name,
             Address = request.Address,
@@ -20,9 +29,5 @@ public class CreateDestinationCommandHandler(IUnitOfWork unitOfWork)
             ContactPerson = request.ContactPerson,
             PhoneNumber = request.PhoneNumber
         };
-
-        var createdDestination = await unitOfWork.Destinations.AddAsync(destination);
-        await unitOfWork.SaveChangesAsync();
-        return createdDestination.ToDto();
     }
 }

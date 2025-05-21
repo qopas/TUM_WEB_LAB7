@@ -21,7 +21,7 @@ public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork)
         existingDestination.ContactPerson = request.ContactPerson;
         existingDestination.PhoneNumber = request.PhoneNumber;
 
-        await unitOfWork.Destinations.UpdateAsync(existingDestination);
+        await unitOfWork.Destinations.Update(existingDestination);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

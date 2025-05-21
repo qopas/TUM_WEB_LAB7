@@ -11,7 +11,7 @@ public class GetBooksQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetB
 {
     public async Task<IEnumerable<BookDto>> Handle(GetBooksQuery request, CancellationToken cancellationToken)
     {
-        var books = await unitOfWork.Books.GetAllAsync();
-        return books.ToDtoList();
+        var books = unitOfWork.Books.GetAll();
+        return BookDto.FromEntityList(books);
     }
 }

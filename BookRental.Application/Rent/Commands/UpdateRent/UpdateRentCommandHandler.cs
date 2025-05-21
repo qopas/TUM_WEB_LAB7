@@ -22,7 +22,7 @@ public class UpdateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         existingRent.ReturnDate = request.ReturnDate;
         existingRent.Status = request.Status;
 
-        await unitOfWork.Rents.UpdateAsync(existingRent);
+        await unitOfWork.Rents.Update(existingRent);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

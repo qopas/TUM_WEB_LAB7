@@ -22,7 +22,7 @@ public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork)
         existingCustomer.Address = request.Address;
         existingCustomer.City = request.City;
 
-        await unitOfWork.Customers.UpdateAsync(existingCustomer);
+        await unitOfWork.Customers.Update(existingCustomer);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

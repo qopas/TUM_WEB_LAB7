@@ -16,7 +16,7 @@ public class UpdateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler
             return false;
         }
         existingGenre.Name = request.Name;
-        await unitOfWork.Genres.UpdateAsync(existingGenre);
+        await unitOfWork.Genres.Update(existingGenre);
         await unitOfWork.SaveChangesAsync();
         return true;
     }
