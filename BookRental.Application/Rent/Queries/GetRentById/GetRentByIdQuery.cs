@@ -1,9 +1,9 @@
 ﻿using Application.DTOs.Rent;
 using MediatR;
 
-namespace Application.Mediator.Rent.Queries.GetRentById;
+namespace Application.Rent.Queries.GetRentById;
 
 public class GetRentByIdQuery : IRequest<RentDto>
 {
-    public string Id { get; set; }
+    public required  string Id { get; init; }
 }

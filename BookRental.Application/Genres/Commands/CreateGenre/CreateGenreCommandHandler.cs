@@ -1,10 +1,9 @@
 ﻿using Application.DTOs.Genre;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Genres.Commands.CreateGenre;
+namespace Application.Genres.Commands.CreateGenre;
 
 public class CreateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateGenreCommand, GenreDto>
 {

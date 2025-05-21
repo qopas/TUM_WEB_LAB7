@@ -1,8 +1,7 @@
 ﻿using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Customer.Commands.UpdateCustomer;
+namespace Application.Customer.Commands.UpdateCustomer;
 
 public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateCustomerCommand, bool>

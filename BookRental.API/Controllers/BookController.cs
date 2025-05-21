@@ -1,9 +1,9 @@
-﻿using Application.DTOs.Book;
-using Application.Mediator.Book.Commands.CreateBook;
-using Application.Mediator.Book.Commands.DeleteBook;
-using Application.Mediator.Book.Commands.UpdateBook;
-using Application.Mediator.Book.Queries.GetBookById;
-using Application.Mediator.Book.Queries.GetBooks;
+﻿using Application.Book.Commands.CreateBook;
+using Application.Book.Commands.DeleteBook;
+using Application.Book.Commands.UpdateBook;
+using Application.Book.Queries.GetBookById;
+using Application.Book.Queries.GetBooks;
+using Application.DTOs.Book;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

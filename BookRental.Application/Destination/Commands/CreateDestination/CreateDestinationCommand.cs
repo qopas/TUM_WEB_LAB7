@@ -3,7 +3,7 @@ using Application.DTOs.Destination;
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Destination.Commands.CreateDestination;
+namespace Application.Destination.Commands.CreateDestination;
 
 public class CreateDestinationCommand : IRequest<DestinationDto>
 {

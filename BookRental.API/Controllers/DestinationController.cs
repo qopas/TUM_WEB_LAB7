@@ -1,10 +1,10 @@
 ﻿
+using Application.Destination.Commands.CreateDestination;
+using Application.Destination.Commands.DeleteDestination;
+using Application.Destination.Commands.UpdateDestination;
+using Application.Destination.Queries.GetDestinationById;
+using Application.Destination.Queries.GetDestinations;
 using Application.DTOs.Destination;
-using Application.Mediator.Destination.Commands.CreateDestination;
-using Application.Mediator.Destination.Commands.DeleteDestination;
-using Application.Mediator.Destination.Commands.UpdateDestination;
-using Application.Mediator.Destination.Queries.GetDestinationById;
-using Application.Mediator.Destination.Queries.GetDestinations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

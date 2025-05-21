@@ -1,9 +1,8 @@
 ﻿using Application.DTOs.Customer;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Customer.Queries.GetCustomers;
+namespace Application.Customer.Queries.GetCustomers;
 
 public class GetCustomersQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetCustomersQuery, IEnumerable<CustomerDto>>

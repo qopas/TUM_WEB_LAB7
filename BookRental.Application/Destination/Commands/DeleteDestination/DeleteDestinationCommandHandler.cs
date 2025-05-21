@@ -1,8 +1,7 @@
 ﻿using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Destination.Commands.DeleteDestination;
+namespace Application.Destination.Commands.DeleteDestination;
 
 public class DeleteDestinationCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<DeleteDestinationCommand, bool>

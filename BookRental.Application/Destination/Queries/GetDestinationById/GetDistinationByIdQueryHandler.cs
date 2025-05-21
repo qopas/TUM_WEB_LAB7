@@ -1,9 +1,8 @@
 ﻿using Application.DTOs.Destination;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Destination.Queries.GetDestinationById;
+namespace Application.Destination.Queries.GetDestinationById;
 
 public class GetDestinationByIdQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetDestinationByIdQuery, DestinationDto>

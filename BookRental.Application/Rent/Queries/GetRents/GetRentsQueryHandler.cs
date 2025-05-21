@@ -1,9 +1,8 @@
 ﻿using Application.DTOs.Rent;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Rent.Queries.GetRents;
+namespace Application.Rent.Queries.GetRents;
 
 public class GetRentsQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetRentsQuery, IEnumerable<RentDto>>

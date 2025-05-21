@@ -1,4 +1,5 @@
-﻿using Application.Mediator.Genres.Commands.UpdateGenre;
+﻿using Application.Genres.Commands.UpdateGenre;
+using Application.Mediator.Genres.Commands.UpdateGenre;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;

@@ -2,16 +2,16 @@
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Book.Commands.CreateBook;
+namespace Application.Book.Commands.CreateBook;
 
 public class CreateBookCommand : IRequest<BookDto>
 {
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public DateTime PublicationDate { get; set; }
-    public string GenreId { get; set; }
-    public int AvailableQuantity { get; set; }
-    public decimal RentalPrice { get; set; }
+    public required string Title { get; init; }
+    public required string Author { get; init; }
+    public required DateTime PublicationDate { get; init; }
+    public required string GenreId { get; init; }
+    public required int AvailableQuantity { get; init; }
+    public required decimal RentalPrice { get; init; }
 }
 public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
 {

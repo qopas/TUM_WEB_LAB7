@@ -1,8 +1,7 @@
 ﻿using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Rent.Commands.UpdateRent;
+namespace Application.Rent.Commands.UpdateRent;
 
 public class UpdateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateRentCommand, bool>
 {

@@ -1,8 +1,8 @@
 ﻿using MediatR;
 
-namespace Application.Mediator.Destination.Commands.DeleteDestination;
+namespace Application.Destination.Commands.DeleteDestination;
 
 public class DeleteDestinationCommand : IRequest<bool>
 {
-    public string Id { get; set; }
+    public required string Id { get; init; }
 }

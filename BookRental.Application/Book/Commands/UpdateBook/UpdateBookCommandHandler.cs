@@ -1,5 +1,4 @@
-﻿using Application.Mediator.Book.Commands.UpdateBook;
-using BookRental.Domain.Interfaces;
+﻿using BookRental.Domain.Interfaces;
 using MediatR;
 
 namespace Application.Book.Commands.UpdateBook;

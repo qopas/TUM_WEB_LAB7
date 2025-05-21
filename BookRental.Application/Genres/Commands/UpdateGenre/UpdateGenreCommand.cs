@@ -2,12 +2,12 @@
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Genres.Commands.UpdateGenre;
+namespace Application.Genres.Commands.UpdateGenre;
 
 public class UpdateGenreCommand : IRequest<bool>
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
+    public required string Id { get; init; }
+    public required string Name { get; init; }
 }
 public class UpdateGenreCommandValidator : AbstractValidator<UpdateGenreCommand>
 {

@@ -1,9 +1,9 @@
 ﻿using Application.DTOs.Rent;
-using Application.Mediator.Rent.Commands.CreateRent;
-using Application.Mediator.Rent.Commands.DeleteRent;
-using Application.Mediator.Rent.Commands.UpdateRent;
-using Application.Mediator.Rent.Queries.GetRentById;
-using Application.Mediator.Rent.Queries.GetRents;
+using Application.Rent.Commands.CreateRent;
+using Application.Rent.Commands.DeleteRent;
+using Application.Rent.Commands.UpdateRent;
+using Application.Rent.Queries.GetRentById;
+using Application.Rent.Queries.GetRents;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,15 +2,15 @@
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Rent.Commands.CreateRent;
+namespace Application.Rent.Commands.CreateRent;
 
 public class CreateRentCommand : IRequest<RentDto>
 {
-    public string BookId { get; set; }
-    public string CustomerId { get; set; }
-    public string DestinationId { get; set; }
-    public DateTime RentDate { get; set; }
-    public DateTime DueDate { get; set; }
+    public required string BookId { get; init; }
+    public required string CustomerId { get; init; }
+    public required string DestinationId { get; init; }
+    public required DateTime RentDate { get; init; }
+    public required DateTime DueDate { get; init; }
 }
 public class CreateRentCommandValidator : AbstractValidator<CreateRentCommand>
 {

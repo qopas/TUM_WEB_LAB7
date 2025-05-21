@@ -1,10 +1,8 @@
 ﻿using Application.DTOs.Customer;
-using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Customer.Commands.CreateCustomer;
+namespace Application.Customer.Commands.CreateCustomer;
 
 public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<CreateCustomerCommand, CustomerDto>

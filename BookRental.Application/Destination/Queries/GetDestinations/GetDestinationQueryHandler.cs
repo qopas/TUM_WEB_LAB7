@@ -2,7 +2,7 @@
 using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Destination.Queries.GetDestinations;
+namespace Application.Destination.Queries.GetDestinations;
 
 public class GetDestinationsQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetDestinationsQuery, IEnumerable<DestinationDto>>

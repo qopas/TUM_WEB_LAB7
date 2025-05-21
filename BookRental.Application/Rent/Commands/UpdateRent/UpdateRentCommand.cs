@@ -2,18 +2,18 @@
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Rent.Commands.UpdateRent;
+namespace Application.Rent.Commands.UpdateRent;
 
 public class UpdateRentCommand : IRequest<bool>
 {
-    public string Id { get; set; }
-    public string BookId { get; set; }
-    public string CustomerId { get; set; }
-    public string DestinationId { get; set; }
-    public DateTime RentDate { get; set; }
-    public DateTime DueDate { get; set; }
-    public DateTime? ReturnDate { get; set; }
-    public RentStatus Status { get; set; }
+    public required string Id { get; init; }
+    public required string BookId { get; init; }
+    public required string CustomerId { get; init; }
+    public required string DestinationId { get; init; }
+    public required DateTime RentDate { get; init; }
+    public required DateTime DueDate { get; init; }
+    public required DateTime? ReturnDate { get; init; }
+    public required RentStatus Status { get; init; }
 }
 public class UpdateRentCommandValidator : AbstractValidator<UpdateRentCommand>
 {

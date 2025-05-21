@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Book;
-using Application.Mediator.Book.Queries.GetBookById;
 using BookRental.Domain.Interfaces;
 using MediatR;
 

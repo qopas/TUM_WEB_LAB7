@@ -1,9 +1,7 @@
-﻿using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
+﻿using BookRental.Domain.Interfaces;
 using MediatR;
 
-namespace Application.Mediator.Genres.Commands.DeleteGenre;
+namespace Application.Genres.Commands.DeleteGenre;
 
 public class DeleteGenreCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<DeleteGenreCommand, bool>
 {

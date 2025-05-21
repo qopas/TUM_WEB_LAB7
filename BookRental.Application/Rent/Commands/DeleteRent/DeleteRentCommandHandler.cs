@@ -1,8 +1,7 @@
 ﻿using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Rent.Commands.DeleteRent;
+namespace Application.Rent.Commands.DeleteRent;
 
 public class DeleteRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteRentCommand, bool>
 {

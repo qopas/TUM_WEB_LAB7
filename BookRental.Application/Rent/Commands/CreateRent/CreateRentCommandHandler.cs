@@ -1,10 +1,9 @@
 ﻿using Application.DTOs.Rent;
 using BookRental.Domain.Enums;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Rent.Commands.CreateRent;
+namespace Application.Rent.Commands.CreateRent;
 
 public class CreateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateRentCommand, RentDto>
 {

@@ -2,17 +2,17 @@
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Customer.Commands.UpdateCustomer;
+namespace Application.Customer.Commands.UpdateCustomer;
 
 public class UpdateCustomerCommand : IRequest<bool>
 {
-    public string Id { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
+    public required string Id { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    public required string Email { get; init; }
+    public required string PhoneNumber { get; init; }
+    public required string Address { get; init; }
+    public required string City { get; init; }
 }
 public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCommand>
 {

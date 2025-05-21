@@ -2,16 +2,16 @@
 using FluentValidation;
 using MediatR;
 
-namespace Application.Mediator.Destination.Commands.UpdateDestination;
+namespace Application.Destination.Commands.UpdateDestination;
 
 public class UpdateDestinationCommand : IRequest<bool>
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
-    public string ContactPerson { get; set; }
-    public string PhoneNumber { get; set; }
+    public required string Id { get; init; }
+    public required string Name { get; init; }
+    public required string Address { get; init; }
+    public required string City { get; init; }
+    public required string ContactPerson { get; init; }
+    public required string PhoneNumber { get; init; }
 }
 public class UpdateDestinationCommandValidator : AbstractValidator<UpdateDestinationCommand>
 {

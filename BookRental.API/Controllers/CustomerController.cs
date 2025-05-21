@@ -1,9 +1,9 @@
-﻿using Application.DTOs.Customer;
-using Application.Mediator.Customer.Commands.CreateCustomer;
-using Application.Mediator.Customer.Commands.DeleteCustomer;
-using Application.Mediator.Customer.Commands.UpdateCustomer;
-using Application.Mediator.Customer.Queries.GetCustomerById;
-using Application.Mediator.Customer.Queries.GetCustomers;
+﻿using Application.Customer.Commands.CreateCustomer;
+using Application.Customer.Commands.DeleteCustomer;
+using Application.Customer.Commands.UpdateCustomer;
+using Application.Customer.Queries.GetCustomerById;
+using Application.Customer.Queries.GetCustomers;
+using Application.DTOs.Customer;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using MediatR;

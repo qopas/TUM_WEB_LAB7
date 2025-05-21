@@ -1,10 +1,8 @@
 ﻿using Application.DTOs.Genre;
-using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Application.Mediator.Genres.Queries.GetGenreById;
+namespace Application.Genres.Queries.GetGenreById;
 
 public class GetGenreByIdQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetGenreByIdQuery, GenreDto>
 {

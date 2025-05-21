@@ -1,8 +1,8 @@
 ﻿using MediatR;
 
-namespace Application.Mediator.Rent.Commands.DeleteRent;
+namespace Application.Rent.Commands.DeleteRent;
 
 public class DeleteRentCommand : IRequest<bool>
 {
-    public string Id { get; set; }
+    public required string Id { get; init; }
 }
