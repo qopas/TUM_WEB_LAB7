@@ -1,4 +1,5 @@
 ﻿using BookRental.Domain.Interfaces;
+using BookRental.Infrastructure.Extensions;
 using MediatR;
 
 namespace Application.Book.Commands.DeleteBook;
@@ -7,13 +8,7 @@ public class DeleteBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 {
     public async Task<bool> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
     {
-        var book = await unitOfWork.Books.GetByIdAsync(request.Id);
-        if (book == null)
-        {
-            return false;
-        }
-
-        await unitOfWork.Books.DeleteAsync(book);
+        await unitOfWork.Books.DeleteOrThrowAsync(request.Id);
         await unitOfWork.SaveChangesAsync();
         return true;
     }

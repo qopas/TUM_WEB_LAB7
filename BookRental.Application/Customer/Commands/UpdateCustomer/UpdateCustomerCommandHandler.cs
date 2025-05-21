@@ -1,4 +1,5 @@
 ﻿using BookRental.Domain.Interfaces;
+using BookRental.Infrastructure.Extensions;
 using MediatR;
 
 namespace Application.Customer.Commands.UpdateCustomer;
@@ -11,14 +12,14 @@ public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork)
         var (existingCustomer, handle) = await Convert(request);
         if (!handle) return false;
 
-        await unitOfWork.Customers.Update(existingCustomer);
+        await unitOfWork.Customers.UpdateAsync(existingCustomer);
         await unitOfWork.SaveChangesAsync();
         return true;
     }
 
     private async Task<(BookRental.Domain.Entities.Customer existingCustomer, bool handle)> Convert(UpdateCustomerCommand request)
     {
-        var existingCustomer = await unitOfWork.Customers.GetByIdAsync(request.Id);
+        var existingCustomer = await unitOfWork.Customers.GetByIdOrThrowAsync(request.Id);
         if (existingCustomer == null)
         {
             return (existingCustomer, false);
