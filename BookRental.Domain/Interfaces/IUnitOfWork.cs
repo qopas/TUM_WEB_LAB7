@@ -7,6 +7,7 @@ public interface IUnitOfWork : IDisposable
     IBookRepository Books { get; }
     IGenreRepository Genres { get; }
     ICustomerRepository Customers { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
     IRentRepository Rents { get; }
     IDestinationRepository Destinations { get; }
         

@@ -10,7 +10,8 @@ public class UnitOfWork(
     IGenreRepository genreRepository,
     IDestinationRepository destinationRepository,
     ICustomerRepository customerRepository,
-    IRentRepository rentRepository)
+    IRentRepository rentRepository,
+    IRefreshTokenRepository refreshTokenRepository)
     : IUnitOfWork
 {
     private bool _disposed = false;
@@ -18,6 +19,7 @@ public class UnitOfWork(
     public IGenreRepository Genres { get; } = genreRepository;
     public IDestinationRepository Destinations { get; } = destinationRepository;
     public ICustomerRepository Customers { get; } = customerRepository;
+    public IRefreshTokenRepository RefreshTokens { get; } = refreshTokenRepository;
     public IRentRepository Rents { get; } = rentRepository;
 
     public async Task<int> SaveChangesAsync()
