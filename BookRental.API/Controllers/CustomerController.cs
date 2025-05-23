@@ -11,84 +11,42 @@ namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomerController(IMediator mediator) : ControllerBase
+public class CustomerController(IMediator mediator):BaseApiController
 {
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCustomers()
     {
-        try
-        {
-            var query = new GetCustomersQuery();
-            var result = await mediator.Send(query);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(new GetCustomersQuery()));
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCustomer(string id)
     {
-        try
-        {
-            var query = new GetCustomerByIdQuery { Id = id };
-            var result = await mediator.Send(query);
-            
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(new GetCustomerByIdQuery { Id = id }));
+      
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerCommand command)
     {
-        try
-        {
-            var result = await mediator.Send(command);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(command));
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerCommand command)
     {
-        try
-        {
-            var result = await mediator.Send(command);
-            return Ok($"Customer with id: {command.Id} was successfully updated");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(command));
+       
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteCustomer(string id)
     {
-        try
-        {
-            var command = new DeleteCustomerCommand { Id = id };
-            var result = await mediator.Send(command);
-            return Ok($"Customer with id: {id} deleted");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(new DeleteCustomerCommand { Id = id }));
     }
 }

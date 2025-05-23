@@ -11,80 +11,41 @@ namespace BookRental.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class GenreController(IMediator mediator) : ControllerBase
+public class GenreController(IMediator mediator) : BaseApiController
 {
     [HttpGet]
     [ProducesResponseType(typeof(List<GenreDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetGenres()
     {
-        try
-        {
-            var result = await mediator.Send(new GetGenresQuery());
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(new GetGenresQuery()));
+      
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetGenre(string id)
     {
-        try
-        {
-            var result = await mediator.Send(new GetGenreByIdQuery { Id = id });
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(new GetGenreByIdQuery { Id = id }));
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateGenre([FromBody] CreateGenreCommand createGenre)
     {
-        try
-        {
-            var result = await mediator.Send(createGenre);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(createGenre));
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreCommand updateGenre)
     {
-        try
-        {
-            var result = await mediator.Send(updateGenre);
-            return Ok($"Genre with id: {updateGenre.Id} was successfully updated");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(updateGenre));
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteGenre(string id)
     {
-        try
-        {
-            var result = await mediator.Send(new DeleteGenreCommand { Id = id });
-            return Ok($"Genre with id: {id} deleted");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
+        return await ExecuteAsync(async () => await mediator.Send(new DeleteGenreCommand { Id = id }));
     }
 }
