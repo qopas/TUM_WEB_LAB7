@@ -1,10 +1,11 @@
 ﻿using BookRental.Domain.Interfaces;
 using BookRental.Infrastructure.Extensions;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Commands.UpdateBook;
 
-public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookCommand, bool>
+public class UpdateBookCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer) : IRequestHandler<UpdateBookCommand, bool>
 {
     public async Task<bool> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
     {
@@ -18,7 +19,7 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 
     private async Task<(BookRental.Domain.Entities.Book? book, bool handle)> Convert(UpdateBookCommand request)
     {
-        var book = await unitOfWork.Books.GetByIdOrThrowAsync(request.Id);
+        var book = await unitOfWork.Books.GetByIdOrThrowAsync(request.Id, localizer);
         if (book == null)
         {
             return (book, false);

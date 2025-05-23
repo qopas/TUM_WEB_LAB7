@@ -1,10 +1,11 @@
 ﻿using BookRental.Domain.Interfaces;
 using BookRental.Infrastructure.Extensions;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Destination.Commands.UpdateDestination;
 
-public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork)
+public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer)
     : IRequestHandler<UpdateDestinationCommand, bool>
 {
     public async Task<bool> Handle(UpdateDestinationCommand request, CancellationToken cancellationToken)
@@ -19,7 +20,7 @@ public class UpdateDestinationCommandHandler(IUnitOfWork unitOfWork)
 
     private async Task<(BookRental.Domain.Entities.Destination? existingDestination, bool handle)> Convert(UpdateDestinationCommand request)
     {
-        var existingDestination = await unitOfWork.Destinations.GetByIdOrThrowAsync(request.Id);
+        var existingDestination = await unitOfWork.Destinations.GetByIdOrThrowAsync(request.Id, localizer);
         if (existingDestination == null)
         {
             return (existingDestination, false);
