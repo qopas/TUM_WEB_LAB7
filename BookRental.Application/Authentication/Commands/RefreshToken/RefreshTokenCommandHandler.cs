@@ -20,27 +20,21 @@ namespace Application.Authentication.Commands.RefreshToken
     {
         public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            try
+            var validationResult = await ValidateTokensAsync(request, cancellationToken);
+            if (!validationResult.IsValid)
+                throw new ApplicationException(validationResult.Error);
+
+            return await unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-                var validationResult = await ValidateTokensAsync(request, cancellationToken);
-                if (!validationResult.IsValid)
-                    return AuthResponseDto.CreateFailure(new[] { validationResult.Error });
-
                 validationResult.RefreshToken.Used = true;
-                await unitOfWork.RefreshTokens.UpdateAsync(validationResult.RefreshToken);
                 await unitOfWork.SaveChangesAsync();
-
 
                 var user = await userManager.FindByIdAsync(validationResult.UserId);
                 if (user == null)
-                    return AuthResponseDto.CreateFailure(new[] { "User not found" });
+                    throw new ApplicationException("User not found");
 
                 return await tokenGenerationService.GenerateAuthenticationResult(user);
-            }
-            catch (Exception ex)
-            {
-                return AuthResponseDto.CreateFailure(new[] { "An error occurred during token refresh" + ex.Message });
-            }
+            });
         }
 
         private async Task<ValidationResult> ValidateTokensAsync(RefreshTokenCommand request, CancellationToken cancellationToken)

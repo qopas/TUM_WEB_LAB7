@@ -1,6 +1,7 @@
 ﻿using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BookRental.Infrastructure.Data;
@@ -28,6 +29,25 @@ public class UnitOfWork(
     public async Task<int> SaveChangesAsync()
     {
         return await dbContext.SaveChangesAsync();
+    }
+    
+    public async Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action)
+    {
+        return await dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        {
+            using var transaction = await dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var result = await action();
+                await transaction.CommitAsync();
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        });
     }
     public async Task BeginTransactionAsync()
     {

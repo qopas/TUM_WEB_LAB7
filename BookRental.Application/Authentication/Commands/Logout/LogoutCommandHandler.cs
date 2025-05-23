@@ -1,45 +1,35 @@
-﻿using BookRental.Domain.Interfaces;
+﻿using Application.Authentication.Commands.Login;
+using Application.DTOs.Authentication;
+using Application.Service;
+using BookRental.Domain.Entities;
+using BookRental.Domain.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Authentication.Commands.Logout;
 
-public class LogoutCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<LogoutCommand, bool>
+public class LoginCommandHandler(
+    UserManager<ApplicationUser> userManager,
+    ITokenGenerationService tokenGenerationService)
+    : IRequestHandler<LoginCommand, AuthResponseDto>
 {
-    public async Task<bool> Handle(LogoutCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        try
-        {
-            if (!string.IsNullOrEmpty(request.RefreshToken))
-            {
-                var refreshToken = await unitOfWork.RefreshTokens
-                    .Find(rt => rt.Token == request.RefreshToken && rt.UserId == request.UserId)
-                    .FirstOrDefaultAsync(cancellationToken);
+        var user = await userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+            throw new ApplicationException("Invalid login credentials");
 
-                if (refreshToken != null)
-                {
-                    refreshToken.Invalidated = true;
-                    await unitOfWork.RefreshTokens.UpdateAsync(refreshToken);
-                }
-            }
-            else
-            {
-                var userRefreshTokens = unitOfWork.RefreshTokens
-                    .Find(rt => rt.UserId == request.UserId && !rt.Invalidated);
+        if (!user.LockoutEnabled)
+            throw new ApplicationException("User account is deactivated");
 
-                foreach (var token in userRefreshTokens)
-                {
-                    token.Invalidated = true;
-                    await unitOfWork.RefreshTokens.UpdateAsync(token);
-                }
-            }
+        var passwordValid = await userManager.CheckPasswordAsync(user, request.Password);
+        if (!passwordValid)
+            throw new ApplicationException("Invalid login credentials");
 
-            await unitOfWork.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
+        user.LastLoginAt = DateTime.UtcNow;
+        await userManager.UpdateAsync(user);
+
+        return await tokenGenerationService.GenerateAuthenticationResult(user);
     }
 }
