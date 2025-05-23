@@ -8,31 +8,38 @@ public class LogoutCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<Logo
 {
     public async Task<bool> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrEmpty(request.RefreshToken))
+        try
         {
-            var refreshToken = await unitOfWork.RefreshTokens
-                .Find(rt => rt.Token == request.RefreshToken && rt.UserId == request.UserId)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (refreshToken != null)
+            if (!string.IsNullOrEmpty(request.RefreshToken))
             {
-                refreshToken.Invalidated = true;
-                await unitOfWork.RefreshTokens.UpdateAsync(refreshToken);
+                var refreshToken = await unitOfWork.RefreshTokens
+                    .Find(rt => rt.Token == request.RefreshToken && rt.UserId == request.UserId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (refreshToken != null)
+                {
+                    refreshToken.Invalidated = true;
+                    await unitOfWork.RefreshTokens.UpdateAsync(refreshToken);
+                }
             }
+            else
+            {
+                var userRefreshTokens = unitOfWork.RefreshTokens
+                    .Find(rt => rt.UserId == request.UserId && !rt.Invalidated);
+
+                foreach (var token in userRefreshTokens)
+                {
+                    token.Invalidated = true;
+                    await unitOfWork.RefreshTokens.UpdateAsync(token);
+                }
+            }
+
+            await unitOfWork.SaveChangesAsync();
+            return true;
         }
-        else
+        catch (Exception ex)
         {
-            var userRefreshTokens =  unitOfWork.RefreshTokens
-                .Find(rt => rt.UserId == request.UserId && !rt.Invalidated);
-
-            foreach (var token in userRefreshTokens)
-            {
-                token.Invalidated = true;
-                await unitOfWork.RefreshTokens.UpdateAsync(token);
-            }
+            return false;
         }
-
-        await unitOfWork.SaveChangesAsync();
-        return true;
     }
 }

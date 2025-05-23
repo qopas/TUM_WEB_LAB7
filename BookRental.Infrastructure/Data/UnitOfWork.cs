@@ -1,6 +1,7 @@
 ﻿using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BookRental.Infrastructure.Data;
 
@@ -14,6 +15,8 @@ public class UnitOfWork(
     IRefreshTokenRepository refreshTokenRepository)
     : IUnitOfWork
 {
+    private IDbContextTransaction _transaction;
+    
     private bool _disposed = false;
     public IBookRepository Books { get; } = bookRepository;
     public IGenreRepository Genres { get; } = genreRepository;
@@ -25,6 +28,36 @@ public class UnitOfWork(
     public async Task<int> SaveChangesAsync()
     {
         return await dbContext.SaveChangesAsync();
+    }
+    public async Task BeginTransactionAsync()
+    {
+        _transaction = await dbContext.Database.BeginTransactionAsync();
+    }
+
+    public async Task CommitTransactionAsync()
+    {
+        try
+        {
+            await _transaction.CommitAsync();
+        }
+        finally
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+    }
+
+    public async Task RollbackTransactionAsync()
+    {
+        try
+        {
+            await _transaction.RollbackAsync();
+        }
+        finally
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
     }
 
     public void Dispose()

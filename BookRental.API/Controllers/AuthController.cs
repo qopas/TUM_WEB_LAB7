@@ -43,7 +43,6 @@ public class AuthController(IMediator mediator) : ControllerBase
     {
 
         var result = await mediator.Send(command);
-
         if (!result.Success)
             return BadRequest(result);
 
