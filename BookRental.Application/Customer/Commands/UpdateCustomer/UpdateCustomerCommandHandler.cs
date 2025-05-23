@@ -28,8 +28,6 @@ public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork, IStringLocaliz
 
         existingCustomer.FirstName = request.FirstName;
         existingCustomer.LastName = request.LastName;
-        existingCustomer.Email = request.Email;
-        existingCustomer.PhoneNumber = request.PhoneNumber;
         existingCustomer.Address = request.Address;
         existingCustomer.City = request.City;
         return (existingCustomer, true);
