@@ -1,14 +1,12 @@
-﻿using Application.Genres.Commands.UpdateGenre;
-using Application.Mediator.Genres.Commands.UpdateGenre;
-using BookRental.Domain.Entities;
+﻿using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Extensions;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
-namespace Application.Mediator.Genres.Commands.UpdateGenre;
+namespace Application.Genres.Commands.UpdateGenre;
 
-public class UpdateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateGenreCommand, bool>
+public class UpdateGenreCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer) : IRequestHandler<UpdateGenreCommand, bool>
 {
     public async Task<bool> Handle(UpdateGenreCommand request, CancellationToken cancellationToken)
     {
@@ -21,7 +19,7 @@ public class UpdateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler
 
     private async Task<(Genre? existingGenre, bool handle)> Convert(UpdateGenreCommand request)
     {
-        var existingGenre = await unitOfWork.Genres.GetByIdOrThrowAsync(request.Id);
+        var existingGenre = await unitOfWork.Genres.GetByIdOrThrowAsync(request.Id, localizer);
         if (existingGenre == null)
         {
             return (existingGenre, false);
