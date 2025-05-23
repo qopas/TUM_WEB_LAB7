@@ -1,9 +1,10 @@
 ﻿using BookRental.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookRental.Infrastructure.Data;
 
-public class BookRentalDbContext : DbContext
+public class BookRentalDbContext : IdentityDbContext<ApplicationUser>
 {
    public DbSet<Genre> Genres { get; set; }  
    public DbSet<Book> Books { get; set; }

@@ -22,8 +22,6 @@ public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork)
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
             Address = request.Address,
             City = request.City
         };

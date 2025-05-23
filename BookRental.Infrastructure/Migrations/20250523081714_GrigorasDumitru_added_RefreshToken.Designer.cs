@@ -4,6 +4,7 @@ using BookRental.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRental.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRentalDbContext))]
-    partial class BookRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250523081714_GrigorasDumitru_added_RefreshToken")]
+    partial class GrigorasDumitru_added_RefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
