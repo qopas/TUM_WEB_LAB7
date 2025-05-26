@@ -1,8 +1,11 @@
 ﻿  using Application.DTOs.Authentication;
+  using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Mvc;
 
   namespace BookRental.Controllers;
-
+  
+  [Authorize]
+  [Route("api/[controller]")]
   public abstract class BaseApiController() : ControllerBase
   {
       protected async Task<IActionResult> ExecuteAsync<T>(Func<Task<T>> action)
