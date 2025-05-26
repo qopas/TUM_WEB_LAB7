@@ -1,0 +1,313 @@
+﻿@model IEnumerable<BookViewModel>
+@{
+    ViewData["Title"] = "Books";
+    Layout = "_Layout";
+}
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-gray-900">Books Management</h1>
+            <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Add New Book
+            </button>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <table id="booksTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Publication Date</th>
+                <th>Available Qty</th>
+                <th>Rental Price</th>
+                <th>Genre</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var book in Model)
+            {
+            <tr data-book-id="@book.Id">
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td data-order="@book.PublicationDate.ToString("yyyy-MM-dd")">@book.PublicationDate.ToString("MMM dd, yyyy")</td>
+                <td data-order="@book.AvailableQuantity">
+                    <span class="badge @(book.AvailableQuantity > 0 ? "bg-success" : "bg-danger")">
+                        @book.AvailableQuantity
+                    </span>
+                </td>
+                <td data-order="@book.RentalPrice">$@book.RentalPrice.ToString("F2")</td>
+                <td data-genre-id="@book.GenreId">@book.GenreId</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-primary edit-btn" data-book-id="@book.Id">
+                            Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-book-id="@book.Id">
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookModalLabel">Add New Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="bookForm">
+                <div class="modal-body">
+                    <input type="hidden" id="bookId" name="Id">
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="bookTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="bookTitle" name="Title" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="bookGenre" class="form-label">Genre <span class="text-danger">*</span></label>
+                            <select class="form-select" id="bookGenre" name="GenreId" required>
+                                <option value="">Select Genre</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bookAuthor" class="form-label">Author <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="bookAuthor" name="Author" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="bookDate" class="form-label">Publication Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="bookDate" name="PublicationDate" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bookQuantity" class="form-label">Available Quantity <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="bookQuantity" name="AvailableQuantity" min="0" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="bookPrice" class="form-label">Rental Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="bookPrice" name="RentalPrice" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        Save Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this book?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    Delete Book
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    let table;
+    let genresCache = null;
+    let bookToDelete = null;
+    
+    table = $('#booksTable').DataTable({
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'asc']],
+        columnDefs: [
+            {
+                targets: [6], 
+                orderable: false,
+                searchable: false
+            }
+        ]
+    });
+
+    async function loadGenres() {
+        if (genresCache) {
+            return genresCache;
+        }
+
+        try {
+            const response = await fetch('/Genre/GetGenresNames');
+            if (response.ok) {
+                genresCache = await response.json();
+                return genresCache;
+            }
+        } catch (error) {
+            console.error('Error loading genres:', error);
+            showAlert('Error loading genres', 'danger');
+        }
+        return [];
+    }
+
+    async function populateGenres(selectedId = '') {
+        const genreSelect = $('#bookGenre');
+        genreSelect.html('<option value="">Loading...</option>');
+
+        const genres = await loadGenres();
+        let options = '<option value="">Select Genre</option>';
+
+        genres.forEach(genre => {
+            const selected = genre.id == selectedId ? 'selected' : '';
+            options += `<option value="${genre.id}" ${selected}>${genre.name}</option>`;
+        });
+
+        genreSelect.html(options);
+    }
+    
+
+    $('#addBookBtn').on('click', async function() {
+        $('#bookModalLabel').text('Add New Book');
+        $('#bookForm')[0].reset();
+        $('#bookId').val('');
+        await populateGenres();
+        $('#bookModal').modal('show');
+    });
+
+    $(document).on('click', '.edit-btn', async function() {
+        const bookId = $(this).data('book-id');
+        const row = $(this).closest('tr');
+
+        const rowData = table.row(row).data();
+        const cells = row.find('td');
+
+        $('#bookModalLabel').text('Edit Book');
+        $('#bookId').val(bookId);
+        $('#bookTitle').val($(cells[0]).text());
+        $('#bookAuthor').val($(cells[1]).text());
+
+        const dateOrder = $(cells[2]).data('order');
+        $('#bookDate').val(dateOrder);
+
+        const quantity = $(cells[3]).find('.badge').text().trim();
+        $('#bookQuantity').val(quantity);
+
+        const price = $(cells[4]).text().replace('$', '');
+        $('#bookPrice').val(price);
+        
+        const genreId = $(cells[5]).data('genre-id');
+        await populateGenres(genreId);
+
+        $('#bookModal').modal('show');
+    });
+    
+    $(document).on('click', '.delete-btn', function() {
+        bookToDelete = $(this).data('book-id');
+        $('#deleteModal').modal('show');
+    });
+    
+    $('#confirmDelete').on('click', function() {
+        if (bookToDelete) {
+            deleteBook(bookToDelete);
+        }
+    });
+    
+    $('#bookForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const isEdit = $('#bookId').val() !== '';
+        const url = isEdit ? '/Book/Edit' : '/Book/Create';
+        
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        submitBtn.html('Saving...').prop('disabled', true);
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                $('#bookModal').modal('hide');
+                showAlert(`Book ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error(`Failed to ${isEdit ? 'update' : 'create'} book`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(`Error ${isEdit ? 'updating' : 'creating'} book. Please try again.`, 'danger');
+        })
+        .finally(() => {
+            submitBtn.html(originalText).prop('disabled', false);
+        });
+    });
+    
+    function deleteBook(bookId) {
+        const formData = new FormData();
+        formData.append('id', bookId);
+
+        fetch(`/Book/Delete/${bookId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                $('#deleteModal').modal('hide');
+                showAlert('Book deleted successfully!', 'success');
+                const row = $(`tr[data-book-id="${bookId}"]`);
+                table.row(row).remove().draw();
+
+                bookToDelete = null;
+            } else {
+                throw new Error('Failed to delete book');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Error deleting book. Please try again.', 'danger');
+        });
+    }
+    
+    $('#bookModal').on('hidden.bs.modal', function() {
+        $('#bookForm')[0].reset();
+        $('#bookId').val('');
+    });
+    
+    $('#deleteModal').on('hidden.bs.modal', function() {
+        bookToDelete = null;
+    });
+});
+</script>
+}

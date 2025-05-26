@@ -54,20 +54,9 @@ public class AuthController(IMediator mediator) : BaseWebController
     {
         return await ExecuteAsync(async () =>
         {
-            var command = new RegisterCommand
-            {
-                Email = model.Email,
-                Password = model.Password,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Address = model.Address,
-                City = model.City,
-                PhoneNumber = model.PhoneNumber
-            };
-
-            var result = await mediator.Send(command);
+            var result = await mediator.Send(model.ConvertToRegisterCommand());
             await SignInUserAsync(result.UserId, result.Token, model.Email);
-        }, "Index");
+        }, "Index", "Home");  
     }
 
     [HttpPost]

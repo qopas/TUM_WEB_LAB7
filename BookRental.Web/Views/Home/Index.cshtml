@@ -1,8 +1,28 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="bg-white rounded-lg shadow p-6">
+    <h1 class="text-2xl font-bold text-gray-900 mb-4">Welcome to BookRental</h1>
+    <p class="text-gray-600">Manage your book rental business efficiently.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-blue-900">Books</h3>
+            <p class="text-blue-700 mt-2">Manage your book inventory</p>
+            <a asp-controller="Book" asp-action="Index" class="text-blue-600 hover:text-blue-800 mt-4 inline-block">View Books →</a>
+        </div>
+        
+        <div class="bg-green-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-green-900">Customers</h3>
+            <p class="text-green-700 mt-2">Manage customer information</p>
+            <a asp-controller="Customer" asp-action="Index" class="text-green-600 hover:text-green-800 mt-4 inline-block">View Customers →</a>
+        </div>
+        
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-purple-900">Rentals</h3>
+            <p class="text-purple-700 mt-2">Track book rentals</p>
+            <a asp-controller="Rent" asp-action="Index" class="text-purple-600 hover:text-purple-800 mt-4 inline-block">View Rentals →</a>
+        </div>
+    </div>
 </div>
