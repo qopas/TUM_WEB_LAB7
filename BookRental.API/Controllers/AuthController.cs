@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Controllers;
 
-[Route("api/[controller]")]
+
 [ApiController]
 public class AuthController(IMediator mediator) : BaseApiController
 {
+    [AllowAnonymous]
     [HttpPost("register")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterCommand command)
@@ -21,6 +22,7 @@ public class AuthController(IMediator mediator) : BaseApiController
         return await ExecuteAsync(async () => await mediator.Send(command));
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
@@ -36,7 +38,7 @@ public class AuthController(IMediator mediator) : BaseApiController
     }
 
     [HttpPost("logout")]
-    [Authorize]
+    
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
     {
