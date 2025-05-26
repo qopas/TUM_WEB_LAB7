@@ -53,4 +53,93 @@ window.removeToast = function(toastId) {
         }, 300);
     }
 };
-        
+window.apiGet = async function(url, options = {}) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Request failed' }));
+            throw new Error(error.error || 'Request failed');
+        }
+        const data = await response.json();
+
+        if (options.onSuccess) {
+            options.onSuccess(data);
+        }
+
+        return data;
+    } catch (error) {
+        console.error('API GET Error:', error);
+        if (options.showError !== false) {
+            showAlert(error.message, 'danger');
+        }
+        if (options.onError) {
+            options.onError(error);
+        }
+        throw error;
+    }
+};
+
+window.apiPost = async function(url, data, options = {}) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: data
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Request failed' }));
+            throw new Error(error.error || 'Request failed');
+        }
+        const result = await response.json();
+
+        if (options.successMessage) {
+            showAlert(options.successMessage, 'success');
+        }
+
+        if (options.onSuccess) {
+            options.onSuccess(result);
+        }
+
+        return result;
+    } catch (error) {
+        console.error('API POST Error:', error);
+        if (options.showError !== false) {
+            showAlert(error.message, 'danger');
+        }
+        if (options.onError) {
+            options.onError(error);
+        }
+        throw error;
+    }
+};
+
+window.apiDelete = async function(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Request failed' }));
+            throw new Error(error.error || 'Request failed');
+        }
+        const result = await response.json();
+
+        if (options.successMessage) {
+            showAlert(options.successMessage, 'success');
+        }
+
+        if (options.onSuccess) {
+            options.onSuccess(result);
+        }
+
+        return result;
+    } catch (error) {
+        console.error('API DELETE Error:', error);
+        if (options.showError !== false) {
+            showAlert(error.message, 'danger');
+        }
+        if (options.onError) {
+            options.onError(error);
+        }
+        throw error;
+    }
+};

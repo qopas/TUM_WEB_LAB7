@@ -3,65 +3,31 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using MediatR;
 
 namespace BookRental.Web.Controllers;
 
 [Authorize]
 public abstract class BaseWebController : Controller
 {
-    protected async Task<IActionResult> ExecuteJsonAsync<T>(Func<Task<T>> action)
+    protected async Task<IActionResult> ExecuteAsync<T>(Func<Task<T>> action)
     {
         try
         {
             var result = await action();
-            return Json(result);
+            return Ok(result);
         }
         catch (Exception ex)
         {
             return BadRequest(new { error = ex.Message });
         }
     }
-    protected async Task<IActionResult> ExecuteAsync<T>(Func<Task<T>> action)
-    {
-        if (!ModelState.IsValid)
-            return View();
 
+    protected async Task<IActionResult> ExecuteViewAsync<T>(Func<Task<T>> action)
+    {
         try
         {
             var result = await action();
             return View(result);
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View();
-        }
-    }
-    protected async Task<IActionResult> ExecuteAsync(Func<Task> action, string redirectAction = "Index", string? redirectController = null)
-    {
-        if (!ModelState.IsValid)
-            return View();
-        try
-        {
-            await action();
-            return RedirectToAction(redirectAction, redirectController);
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View();
-        }
-    }
-
-    protected async Task<IActionResult> ExecuteWithResultAsync(Func<Task<IActionResult>> action)
-    {
-        if (!ModelState.IsValid)
-            return View();
-
-        try
-        {
-            return await action();
         }
         catch (Exception ex)
         {
