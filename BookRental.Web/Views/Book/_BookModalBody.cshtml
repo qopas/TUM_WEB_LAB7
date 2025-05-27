@@ -1,11 +1,12 @@
-﻿@model BookViewModel
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+@model BookViewModel
 @{
     var isEdit = !string.IsNullOrEmpty(Model.Id);
     var formAction = isEdit ? "/Book/Edit" : "/Book/Create";
-    var modalTitle = isEdit ? "Edit Book" : "Add New Book";
 }
 
-<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Book">
+<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="@Localizer["Book"]">
     @if (isEdit)
     {
         <input type="hidden" name="Id" value="@Model.Id" />
@@ -13,44 +14,44 @@
 
     <div class="row">
         <div class="col-md-8 mb-3">
-            <label for="bookTitle" class="form-label">Title <span class="text-danger">*</span></label>
+            <label for="bookTitle" class="form-label">@Localizer["Title"] <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="bookTitle" name="Title" value="@Model.Title" required maxlength="200">
-            <div class="invalid-feedback">Please provide a valid title.</div>
+            <div class="invalid-feedback">@Localizer["PleaseProvideValidTitle"]</div>
         </div>
         <div class="col-md-4 mb-3">
-            <label for="bookGenre" class="form-label">Genre <span class="text-danger">*</span></label>
+            <label for="bookGenre" class="form-label">@Localizer["Genre"] <span class="text-danger">*</span></label>
             <select class="form-select" id="bookGenre" name="GenreId" required data-selected-value="@Model.GenreId">
-                <option value="">Loading...</option>
+                <option value="">@Localizer["Loading"]...</option>
             </select>
-            <div class="invalid-feedback">Please select a genre.</div>
+            <div class="invalid-feedback">@Localizer["PleaseSelectGenre"]</div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="bookAuthor" class="form-label">Author <span class="text-danger">*</span></label>
+            <label for="bookAuthor" class="form-label">@Localizer["Author"] <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="bookAuthor" name="Author" value="@Model.Author" required maxlength="100">
-            <div class="invalid-feedback">Please provide a valid author name.</div>
+            <div class="invalid-feedback">@Localizer["PleaseProvideValidAuthor"]</div>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="bookDate" class="form-label">Publication Date <span class="text-danger">*</span></label>
+            <label for="bookDate" class="form-label">@Localizer["PublicationDate"] <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="bookDate" name="PublicationDate" value="@Model.PublicationDate.ToString("yyyy-MM-dd")" required>
-            <div class="invalid-feedback">Please provide a valid publication date.</div>
+            <div class="invalid-feedback">@Localizer["PleaseProvideValidPublicationDate"]</div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="bookQuantity" class="form-label">Available Quantity <span class="text-danger">*</span></label>
+            <label for="bookQuantity" class="form-label">@Localizer["AvailableQuantity"] <span class="text-danger">*</span></label>
             <input type="number" class="form-control" id="bookQuantity" name="AvailableQuantity" value="@Model.AvailableQuantity" min="0" required>
-            <div class="invalid-feedback">Please provide a valid quantity (0 or greater).</div>
+            <div class="invalid-feedback">@Localizer["PleaseProvideValidQuantity"]</div>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="bookPrice" class="form-label">Rental Price <span class="text-danger">*</span></label>
-            <div class="input-group">
+            <label for="bookPrice" class="form-label">@Localizer["RentalPrice"] <span class="text-danger">*</span></label>
+            <div class="input-group has-validation">
                 <span class="input-group-text">$</span>
                 <input type="number" class="form-control" id="bookPrice" name="RentalPrice" value="@Model.RentalPrice" step="0.01" min="0" required>
-                <div class="invalid-feedback">Please provide a valid price (0 or greater).</div>
+                <div class="invalid-feedback">@Localizer["PleaseProvideValidPrice"]</div>
             </div>
         </div>
     </div>
@@ -64,7 +65,7 @@ $(document).ready(function() {
         
         apiRequest('/Genre/GetGenresNames', { showError: false })
             .then(genres => {
-                let options = '<option value="">Select Genre</option>';
+                let options = '<option value="">@Html.Raw(Localizer["SelectGenre"])</option>';
                 
                 genres.forEach(genre => {
                     const selected = genre.id === selectedValue ? 'selected' : '';
@@ -74,7 +75,7 @@ $(document).ready(function() {
                 genreSelect.innerHTML = options;
             })
             .catch(error => {
-                genreSelect.innerHTML = '<option value="">Error loading genres</option>';
+                genreSelect.innerHTML = '<option value="">@Html.Raw(Localizer["ErrorLoadingGenres"])</option>';
             });
     }
 });

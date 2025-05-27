@@ -78,8 +78,10 @@ window.apiRequest = async function(url, options = {}) {
         const response = await fetch(url, fetchOptions);
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Request failed' }));
-            throw new Error(error.error || 'Request failed');
+            const error = await response.json().catch(() => ({
+                error: window.localizedStrings?.requestFailed || 'Request failed'
+            }));
+            throw new Error(error.error || window.localizedStrings?.requestFailed || 'Request failed');
         }
 
         const result = await response.json();
@@ -117,7 +119,7 @@ window.openModal = async function(partialUrl, options = {}) {
     try {
         const response = await fetch(partialUrl);
         if (!response.ok) {
-            throw new Error('Failed to load modal content');
+            throw new Error(window.localizedStrings?.failedToLoadModal || 'Failed to load modal content');
         }
 
         const html = await response.text();
@@ -126,13 +128,15 @@ window.openModal = async function(partialUrl, options = {}) {
         const form = tempDiv.querySelector('form');
 
         if (!form) {
-            throw new Error('No form found in modal content');
+            throw new Error(window.localizedStrings?.noFormFound || 'No form found in modal content');
         }
 
         const formAction = form.dataset.action;
         const operation = form.dataset.operation;
         const entity = form.dataset.entity;
-        const modalTitle = operation === 'edit' ? `Edit ${entity}` : `Add New ${entity}`;
+        const modalTitle = operation === 'edit' ?
+            `${window.localizedStrings?.edit || 'Edit'} ${entity}` :
+            `${window.localizedStrings?.addNew || 'Add New'} ${entity}`;
 
         const modalHtml = `
             <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
@@ -140,15 +144,15 @@ window.openModal = async function(partialUrl, options = {}) {
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="dynamicModalLabel">${modalTitle}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${window.localizedStrings?.close || 'Close'}"></button>
                         </div>
                         <div class="modal-body">
                             ${html}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${window.localizedStrings?.cancel || 'Cancel'}</button>
                             <button type="button" class="btn btn-primary" id="modalSubmitBtn">
-                                Save ${entity}
+                                ${window.localizedStrings?.save || 'Save'} ${entity}
                             </button>
                         </div>
                     </div>
@@ -167,7 +171,7 @@ window.openModal = async function(partialUrl, options = {}) {
 
     } catch (error) {
         console.error('Error opening modal:', error);
-        showAlert('Error loading form', 'danger');
+        showAlert(window.localizedStrings?.errorLoadingForm || 'Error loading form', 'danger');
     }
 };
 
@@ -182,13 +186,17 @@ function submitModalForm(formAction, operation, entity, onSuccess) {
     const submitBtn = document.getElementById('modalSubmitBtn');
     const originalText = submitBtn.innerHTML;
 
-    submitBtn.innerHTML = 'Saving...';
+    submitBtn.innerHTML = window.localizedStrings?.saving || 'Saving...';
     submitBtn.disabled = true;
+
+    const successMessage = operation === 'edit' ?
+        `${entity} ${window.localizedStrings?.updatedSuccessfully || 'updated successfully!'}` :
+        `${entity} ${window.localizedStrings?.createdSuccessfully || 'created successfully!'}`;
 
     apiRequest(formAction, {
         method: 'POST',
         data: formData,
-        successMessage: `${entity} ${operation === 'edit' ? 'updated' : 'created'} successfully!`,
+        successMessage: successMessage,
         onSuccess: () => {
             $('#dynamicModal').modal('hide');
             if (onSuccess) {
@@ -208,4 +216,9 @@ function validateForm(form) {
 
     form.classList.add('was-validated');
     return false;
+}
+function changeCulture(culture) {
+    const cookieValue = `c=${culture}|uic=${culture}`;
+    document.cookie = `.AspNetCore.Culture=${cookieValue}; path=/; max-age=31536000`;
+    window.location.reload();
 }

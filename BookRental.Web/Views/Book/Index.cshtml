@@ -1,14 +1,16 @@
-﻿@model IEnumerable<BookViewModel>
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+@model IEnumerable<BookViewModel>
 @{
-ViewData["Title"] = "Books";
+    ViewData["Title"] = Localizer["Books"];
 }
 
 <div class="bg-white rounded-lg shadow">
     <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex justify-between items-center">
-            <h1 class="text-xl font-semibold text-gray-900">Books Management</h1>
+            <h1 class="text-xl font-semibold text-gray-900">@Localizer["BooksManagement"]</h1>
             <button id="addBookBtn" onclick="addBook()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                Add New Book
+                @Localizer["AddNewBook"]
             </button>
         </div>
     </div>
@@ -17,13 +19,13 @@ ViewData["Title"] = "Books";
         <table id="booksTable" class="table table-striped table-bordered" style="width:100%">
             <thead>
             <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Publication Date</th>
-                <th>Available Qty</th>
-                <th>Rental Price</th>
-                <th>Genre</th>
-                <th>Actions</th>
+                <th>@Localizer["Title"]</th>
+                <th>@Localizer["Author"]</th>
+                <th>@Localizer["PublicationDate"]</th>
+                <th>@Localizer["AvailableQty"]</th>
+                <th>@Localizer["RentalPrice"]</th>
+                <th>@Localizer["Genre"]</th>
+                <th>@Localizer["Actions"]</th>
             </tr>
             </thead>
         </table>
@@ -48,7 +50,7 @@ ViewData["Title"] = "Books";
                 {
                     data: 'publicationDate',
                     render: function(data) {
-                        return new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                        return new Date(data).toLocaleDateString();
                     }
                 },
                 {
@@ -70,15 +72,15 @@ ViewData["Title"] = "Books";
                     searchable: false,
                     render: function(data) {
                         return `
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editBook('${data}')">
-                            Edit
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteBook('${data}')">
-                            Delete
-                        </button>
-                    </div>
-                `;
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editBook('${data}')">
+                                    @Html.Raw(Localizer["Edit"])
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteBook('${data}')">
+                                    @Html.Raw(Localizer["Delete"])
+                                </button>
+                            </div>
+                        `;
                     }
                 }
             ],
@@ -101,15 +103,15 @@ ViewData["Title"] = "Books";
     }
 
     function deleteBook(bookId) {
-        if (confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
+        if (confirm('@Html.Raw(Localizer["ConfirmDeleteBook"])')) {
             apiRequest(`/Book/Delete/${bookId}`, {
                 method: 'POST',
-                successMessage: 'Book deleted successfully!',
+                successMessage: '@Html.Raw(Localizer["BookDeletedSuccessfully"])',
                 onSuccess: () => {
                     table.ajax.reload(null, false);
                 }
             });
         }
-}
+    }
 </script>
 }
