@@ -1,0 +1,50 @@
+﻿@model DestinationViewModel
+@{
+    var isEdit = !string.IsNullOrEmpty(Model.Id);
+    var formAction = isEdit ? "/Destination/Edit" : "/Destination/Create";
+    var modalTitle = isEdit ? "Edit Destination" : "Add New Destination";
+}
+
+<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Destination">
+    @if (isEdit)
+    {
+        <input type="hidden" name="Id" value="@Model.Id" />
+    }
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="destinationName" class="form-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="destinationName" name="Name" value="@Model.Name" required maxlength="100">
+            <div class="invalid-feedback">Please provide a valid destination name.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="destinationCity" class="form-label">City <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="destinationCity" name="City" value="@Model.City" required maxlength="100" 
+                   pattern="^[a-zA-Z\s]+$" title="City should only contain letters and spaces">
+            <div class="invalid-feedback">Please provide a valid city name (letters and spaces only).</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <label for="destinationAddress" class="form-label">Address <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="destinationAddress" name="Address" rows="3" required maxlength="200">@Model.Address</textarea>
+            <div class="invalid-feedback">Please provide a valid address.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="destinationContact" class="form-label">Contact Person <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="destinationContact" name="ContactPerson" value="@Model.ContactPerson" required maxlength="100" 
+                   pattern="^[a-zA-Z\s]+$" title="Contact person name should only contain letters and spaces">
+            <div class="invalid-feedback">Please provide a valid contact person name (letters and spaces only).</div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="destinationPhone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+            <input type="tel" class="form-control" id="destinationPhone" name="PhoneNumber" value="@Model.PhoneNumber" required maxlength="20" 
+                   pattern="[0-9+\-\s\(\)]+" title="Please enter a valid phone number">
+            <div class="invalid-feedback">Please provide a valid phone number.</div>
+        </div>
+    </div>
+</form>

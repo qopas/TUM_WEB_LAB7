@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Application.Book.Commands.CreateBook;
+﻿
 using Application.Book.Commands.DeleteBook;
-using Application.Book.Commands.UpdateBook;
 using Application.Book.Queries.GetBookById;
 using Application.Book.Queries.GetBooks;
 using BookRental.Web.Models;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookRental.Web.Controllers;
 
@@ -28,17 +27,24 @@ public class BookController(IMediator mediator) : BaseWebController
         {
             var books = await mediator.Send(new GetBooksQuery());
             return new { 
-                data = books.Select(book => new {
-                    id = book.Id,
-                    title = book.Title,
-                    author = book.Author,
-                    publicationDate = book.PublicationDate,
-                    availableQuantity = book.AvailableQuantity,
-                    rentalPrice = book.RentalPrice,
-                    genreId = book.GenreId
-                })
+                data = books.Select(BookViewModel.FromDto)
             };
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetModalBody(string? id = null)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return PartialView("_BookModalBody", new BookViewModel());
+        }
+        else
+        {
+            var book = await mediator.Send(new GetBookByIdQuery { Id = id });
+            var viewModel = BookViewModel.FromDto(book);
+            return PartialView("_BookModalBody", viewModel);
+        }
     }
 
     [HttpGet]

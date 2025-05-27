@@ -28,12 +28,24 @@ public class GenreController(IMediator mediator) : BaseWebController
         {
             var genres = await mediator.Send(new GetGenresQuery());
             return new { 
-                data = genres.Select(genre => new {
-                    id = genre.Id,
-                    name = genre.Name
-                })
+                data = genres.Select(GenreViewModel.FromDto)
             };
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetModalBody(string? id = null)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return PartialView("_GenreModalBody", new GenreViewModel());
+        }
+        else
+        {
+            var genre = await mediator.Send(new GetGenreByIdQuery { Id = id });
+            var viewModel = GenreViewModel.FromDto(genre);
+            return PartialView("_GenreModalBody", viewModel);
+        }
     }
 
     [HttpGet]

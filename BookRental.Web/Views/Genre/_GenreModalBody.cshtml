@@ -1,0 +1,20 @@
+﻿@model GenreViewModel
+@{
+    var isEdit = !string.IsNullOrEmpty(Model.Id);
+    var formAction = isEdit ? "/Genre/Edit" : "/Genre/Create";
+    var modalTitle = isEdit ? "Edit Genre" : "Add New Genre";
+}
+
+<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Genre">
+    @if (isEdit)
+    {
+        <input type="hidden" name="Id" value="@Model.Id" />
+    }
+
+    <div class="mb-3">
+        <label for="genreName" class="form-label">Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="genreName" name="Name" value="@Model.Name" required maxlength="50" 
+               pattern="^[a-zA-Z\s]+$" title="Genre name should only contain letters and spaces">
+        <div class="invalid-feedback">Please provide a valid genre name (letters and spaces only, max 50 characters).</div>
+    </div>
+</form>

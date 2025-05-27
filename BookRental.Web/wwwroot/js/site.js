@@ -53,93 +53,159 @@ window.removeToast = function(toastId) {
         }, 300);
     }
 };
-window.apiGet = async function(url, options = {}) {
+
+window.apiRequest = async function(url, options = {}) {
+    const defaults = {
+        method: 'GET',
+        data: null,
+        showError: true,
+        successMessage: null,
+        onSuccess: null,
+        onError: null
+    };
+
+    const config = { ...defaults, ...options };
+
     try {
-        const response = await fetch(url);
+        const fetchOptions = {
+            method: config.method,
+        };
+
+        if (config.data && (config.method === 'POST' || config.method === 'PUT' || config.method === 'PATCH')) {
+            fetchOptions.body = config.data;
+        }
+
+        const response = await fetch(url, fetchOptions);
+
         if (!response.ok) {
             const error = await response.json().catch(() => ({ error: 'Request failed' }));
             throw new Error(error.error || 'Request failed');
         }
-        const data = await response.json();
 
-        if (options.onSuccess) {
-            options.onSuccess(data);
-        }
-
-        return data;
-    } catch (error) {
-        console.error('API GET Error:', error);
-        if (options.showError !== false) {
-            showAlert(error.message, 'danger');
-        }
-        if (options.onError) {
-            options.onError(error);
-        }
-        throw error;
-    }
-};
-
-window.apiPost = async function(url, data, options = {}) {
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            body: data
-        });
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Request failed' }));
-            throw new Error(error.error || 'Request failed');
-        }
         const result = await response.json();
 
-        if (options.successMessage) {
-            showAlert(options.successMessage, 'success');
+        if (config.successMessage) {
+            showAlert(config.successMessage, 'success');
         }
 
-        if (options.onSuccess) {
-            options.onSuccess(result);
+        if (config.onSuccess) {
+            config.onSuccess(result);
         }
 
         return result;
     } catch (error) {
-        console.error('API POST Error:', error);
-        if (options.showError !== false) {
+        console.error(`API ${config.method} Error:`, error);
+        if (config.showError !== false) {
             showAlert(error.message, 'danger');
         }
-        if (options.onError) {
-            options.onError(error);
+        if (config.onError) {
+            config.onError(error);
         }
         throw error;
     }
 };
 
-window.apiDelete = async function(url, options = {}) {
+window.openModal = async function(partialUrl, options = {}) {
+    const defaults = {
+        modalSize: 'modal-xl',
+        onSuccess: null,
+        onError: null
+    };
+
+    const config = { ...defaults, ...options };
+
     try {
-        const response = await fetch(url, {
-            method: 'POST'
-        });
+        const response = await fetch(partialUrl);
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Request failed' }));
-            throw new Error(error.error || 'Request failed');
-        }
-        const result = await response.json();
-
-        if (options.successMessage) {
-            showAlert(options.successMessage, 'success');
+            throw new Error('Failed to load modal content');
         }
 
-        if (options.onSuccess) {
-            options.onSuccess(result);
+        const html = await response.text();
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const form = tempDiv.querySelector('form');
+
+        if (!form) {
+            throw new Error('No form found in modal content');
         }
 
-        return result;
+        const formAction = form.dataset.action;
+        const operation = form.dataset.operation;
+        const entity = form.dataset.entity;
+        const modalTitle = operation === 'edit' ? `Edit ${entity}` : `Add New ${entity}`;
+
+        const modalHtml = `
+            <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
+                <div class="modal-dialog ${config.modalSize}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="dynamicModalLabel">${modalTitle}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ${html}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="modalSubmitBtn">
+                                Save ${entity}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#dynamicModal').remove();
+        $('body').append(modalHtml);
+
+        $('#modalSubmitBtn').on('click', function() {
+            submitModalForm(formAction, operation, entity, config.onSuccess);
+        });
+
+        $('#dynamicModal').modal('show');
+
     } catch (error) {
-        console.error('API DELETE Error:', error);
-        if (options.showError !== false) {
-            showAlert(error.message, 'danger');
-        }
-        if (options.onError) {
-            options.onError(error);
-        }
-        throw error;
+        console.error('Error opening modal:', error);
+        showAlert('Error loading form', 'danger');
     }
 };
+
+function submitModalForm(formAction, operation, entity, onSuccess) {
+    const form = document.querySelector('#dynamicModal form');
+
+    if (!validateForm(form)) {
+        return;
+    }
+
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('modalSubmitBtn');
+    const originalText = submitBtn.innerHTML;
+
+    submitBtn.innerHTML = 'Saving...';
+    submitBtn.disabled = true;
+
+    apiRequest(formAction, {
+        method: 'POST',
+        data: formData,
+        successMessage: `${entity} ${operation === 'edit' ? 'updated' : 'created'} successfully!`,
+        onSuccess: () => {
+            $('#dynamicModal').modal('hide');
+            if (onSuccess) {
+                onSuccess();
+            }
+        }
+    }).finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function validateForm(form) {
+    if (form.checkValidity()) {
+        return true;
+    }
+
+    form.classList.add('was-validated');
+    return false;
+}

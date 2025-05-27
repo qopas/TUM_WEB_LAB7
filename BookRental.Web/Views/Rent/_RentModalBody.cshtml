@@ -1,0 +1,165 @@
+﻿@model RentViewModel
+@{
+    var isEdit = !string.IsNullOrEmpty(Model.Id);
+    var formAction = isEdit ? "/Rent/Edit" : "/Rent/Create";
+    var modalTitle = isEdit ? "Edit Rental" : "Add New Rental";
+}
+
+<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Rental">
+    @if (isEdit)
+    {
+        <input type="hidden" name="Id" value="@Model.Id" />
+    }
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="rentBook" class="form-label">Book <span class="text-danger">*</span></label>
+            <select class="form-select" id="rentBook" name="BookId" required data-selected-value="@Model.BookId">
+                <option value="">Loading...</option>
+            </select>
+            <div class="invalid-feedback">Please select a book.</div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="rentCustomer" class="form-label">Customer <span class="text-danger">*</span></label>
+            <select class="form-select" id="rentCustomer" name="CustomerId" required data-selected-value="@Model.CustomerId">
+                <option value="">Loading...</option>
+            </select>
+            <div class="invalid-feedback">Please select a customer.</div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="rentDestination" class="form-label">Destination <span class="text-danger">*</span></label>
+            <select class="form-select" id="rentDestination" name="DestinationId" required data-selected-value="@Model.DestinationId">
+                <option value="">Loading...</option>
+            </select>
+            <div class="invalid-feedback">Please select a destination.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="rentDate" class="form-label">Rent Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="rentDate" name="RentDate" value="@Model.RentDate.ToString("yyyy-MM-dd")" required>
+            <div class="invalid-feedback">Please provide a valid rent date.</div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="dueDate" class="form-label">Due Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="dueDate" name="DueDate" value="@Model.DueDate.ToString("yyyy-MM-dd")" required>
+            <div class="invalid-feedback">Please provide a valid due date that is after the rent date.</div>
+        </div>
+        @if (isEdit)
+        {
+            <div class="col-md-4 mb-3">
+                <label for="returnDate" class="form-label">Return Date</label>
+                <input type="date" class="form-control" id="returnDate" name="ReturnDate" value="@(Model.ReturnDate?.ToString("yyyy-MM-dd"))">
+            </div>
+        }
+    </div>
+
+    @if (isEdit)
+    {
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="rentStatus" class="form-label">Status</label>
+                <select class="form-select" id="rentStatus" name="Status">
+                    @{
+                        var statusValue = (int)Model.Status;
+                    }
+                    <option value="0" selected="@(statusValue == 0)">Active</option>
+                    <option value="1" selected="@(statusValue == 1)">Returned</option>
+                    <option value="2" selected="@(statusValue == 2)">Overdue</option>
+                </select>
+            </div>
+        </div>
+    }
+</form>
+
+<script>
+$(document).ready(function() {
+    Promise.all([
+        loadBooks(),
+        loadCustomers(), 
+        loadDestinations()
+    ]).then(() => {
+        setupDateValidation();
+    });
+
+    async function loadBooks() {
+        const bookSelect = document.getElementById('rentBook');
+        const selectedValue = bookSelect.dataset.selectedValue;
+        
+        try {
+            const response = await apiRequest('/Book/GetBooksData', { showError: false });
+            const books = response.data || [];
+            
+            let options = '<option value="">Select Book</option>';
+            books.forEach(book => {
+                const selected = book.id === selectedValue ? 'selected' : '';
+                options += `<option value="${book.id}" ${selected}>${book.title} by ${book.author}</option>`;
+            });
+            
+            bookSelect.innerHTML = options;
+        } catch (error) {
+            bookSelect.innerHTML = '<option value="">Error loading books</option>';
+        }
+    }
+
+    async function loadCustomers() {
+        const customerSelect = document.getElementById('rentCustomer');
+        const selectedValue = customerSelect.dataset.selectedValue;
+        
+        try {
+            const response = await apiRequest('/Customer/GetCustomersData', { showError: false });
+            const customers = response.data || [];
+            
+            let options = '<option value="">Select Customer</option>';
+            customers.forEach(customer => {
+                const selected = customer.id === selectedValue ? 'selected' : '';
+                options += `<option value="${customer.id}" ${selected}>${customer.firstName} ${customer.lastName}</option>`;
+            });
+            
+            customerSelect.innerHTML = options;
+        } catch (error) {
+            customerSelect.innerHTML = '<option value="">Error loading customers</option>';
+        }
+    }
+
+    async function loadDestinations() {
+        const destinationSelect = document.getElementById('rentDestination');
+        const selectedValue = destinationSelect.dataset.selectedValue;
+        
+        try {
+            const response = await apiRequest('/Destination/GetDestinationsData', { showError: false });
+            const destinations = response.data || [];
+            
+            let options = '<option value="">Select Destination</option>';
+            destinations.forEach(destination => {
+                const selected = destination.id === selectedValue ? 'selected' : '';
+                options += `<option value="${destination.id}" ${selected}>${destination.name}</option>`;
+            });
+            
+            destinationSelect.innerHTML = options;
+        } catch (error) {
+            destinationSelect.innerHTML = '<option value="">Error loading destinations</option>';
+        }
+    }
+
+    function setupDateValidation() {
+        const rentDateInput = document.getElementById('rentDate');
+        const dueDateInput = document.getElementById('dueDate');
+        
+        function validateDates() {
+            const rentDate = new Date(rentDateInput.value);
+            const dueDate = new Date(dueDateInput.value);
+            
+            if (rentDateInput.value && dueDateInput.value && dueDate <= rentDate) {
+                dueDateInput.setCustomValidity('Due date must be after rent date');
+            } else {
+                dueDateInput.setCustomValidity('');
+            }
+        }
+        
+        rentDateInput.addEventListener('change', validateDates);
+        dueDateInput.addEventListener('change', validateDates);
+    }
+});
+</script>
