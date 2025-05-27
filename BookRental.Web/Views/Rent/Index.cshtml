@@ -1,0 +1,395 @@
+﻿@model IEnumerable<RentViewModel>
+@{
+    ViewData["Title"] = "Rentals";
+    Layout = "_Layout";
+}
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-gray-900">Rentals Management</h1>
+            <button id="addRentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Add New Rental
+            </button>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <table id="rentsTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+            <tr>
+                <th>Book</th>
+                <th>Customer</th>
+                <th>Destination</th>
+                <th>Rent Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="rentModal" tabindex="-1" aria-labelledby="rentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rentModalLabel">Add New Rental</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rentForm" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="rentId" name="Id">
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="rentBook" class="form-label">Book <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rentBook" name="BookId" required>
+                                <option value="">Select Book</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a book.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="rentCustomer" class="form-label">Customer <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rentCustomer" name="CustomerId" required>
+                                <option value="">Select Customer</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a customer.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="rentDestination" class="form-label">Destination <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rentDestination" name="DestinationId" required>
+                                <option value="">Select Destination</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a destination.</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="rentDate" class="form-label">Rent Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="rentDate" name="RentDate" required>
+                            <div class="invalid-feedback">Please provide a valid rent date.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="dueDate" class="form-label">Due Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dueDate" name="DueDate" required>
+                            <div class="invalid-feedback">Please provide a valid due date.</div>
+                        </div>
+                        <div class="col-md-4 mb-3" id="returnDateGroup" style="display: none;">
+                            <label for="returnDate" class="form-label">Return Date</label>
+                            <input type="date" class="form-control" id="returnDate" name="ReturnDate">
+                        </div>
+                    </div>
+
+                    <div class="row" id="statusGroup" style="display: none;">
+                        <div class="col-md-4 mb-3">
+                            <label for="rentStatus" class="form-label">Status</label>
+                            <select class="form-select" id="rentStatus" name="Status">
+                                <option value="0">Active</option>
+                                <option value="1">Returned</option>
+                                <option value="2">Overdue</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndSubmitRent()">
+                        Save Rental
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this rental?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    Delete Rental
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    let table;
+    let booksCache = null;
+    let customersCache = null;
+    let destinationsCache = null;
+    let rentToDelete = null;
+    
+    table = $('#rentsTable').DataTable({
+        processing: true,
+        serverSide: false,
+        ajax: {
+            url: '/Rent/GetRentsData',
+            type: 'GET'
+        },
+        columns: [
+            { data: 'bookTitle' },
+            { data: 'customerName' },
+            { data: 'destinationName' },
+            { 
+                data: 'rentDate',
+                render: function(data) {
+                    return new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                }
+            },
+            { 
+                data: 'dueDate',
+                render: function(data) {
+                    return new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                }
+            },
+            { 
+                data: 'returnDate',
+                render: function(data) {
+                    return data ? new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }) : '-';
+                }
+            },
+            { 
+                data: 'status',
+                render: function(data) {
+                    const statusMap = {
+                        0: '<span class="badge bg-primary">Active</span>',
+                        1: '<span class="badge bg-success">Returned</span>',
+                        2: '<span class="badge bg-danger">Overdue</span>'
+                    };
+                    return statusMap[data] || '<span class="badge bg-secondary">Unknown</span>';
+                }
+            },
+            { 
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function(data) {
+                    const returnBtn = data.status === 0 ? 
+                        `<button type="button" class="btn btn-sm btn-outline-success return-btn" data-rent-id="${data.id}">Return</button>` : '';
+                    
+                    return `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn" data-rent-id="${data.id}">
+                                Edit
+                            </button>
+                            ${returnBtn}
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-rent-id="${data.id}">
+                                Delete
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        ],
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[3, 'desc']]
+    });
+
+    async function loadBooks() {
+        if (booksCache) return booksCache;
+        try {
+            const response = await apiGet('/Book/GetBooksData', { showError: false });
+            booksCache = response.data || [];
+            return booksCache;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async function loadCustomers() {
+        if (customersCache) return customersCache;
+        try {
+            const response = await apiGet('/Customer/GetCustomersData', { showError: false });
+            customersCache = response.data || [];
+            return customersCache;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async function loadDestinations() {
+        if (destinationsCache) return destinationsCache;
+        try {
+            const response = await apiGet('/Destination/GetDestinationsData', { showError: false });
+            destinationsCache = response.data || [];
+            return destinationsCache;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async function populateDropdowns(selectedBookId = '', selectedCustomerId = '', selectedDestinationId = '') {
+        const bookSelect = $('#rentBook');
+        bookSelect.html('<option value="">Loading...</option>');
+        const books = await loadBooks();
+        let bookOptions = '<option value="">Select Book</option>';
+        books.forEach(book => {
+            const selected = book.id === selectedBookId ? 'selected' : '';
+            bookOptions += `<option value="${book.id}" ${selected}>${book.title} by ${book.author}</option>`;
+        });
+        bookSelect.html(bookOptions);
+        
+        const customerSelect = $('#rentCustomer');
+        customerSelect.html('<option value="">Loading...</option>');
+        const customers = await loadCustomers();
+        let customerOptions = '<option value="">Select Customer</option>';
+        customers.forEach(customer => {
+            const selected = customer.id === selectedCustomerId ? 'selected' : '';
+            customerOptions += `<option value="${customer.id}" ${selected}>${customer.firstName} ${customer.lastName}</option>`;
+        });
+        customerSelect.html(customerOptions);
+        
+        const destinationSelect = $('#rentDestination');
+        destinationSelect.html('<option value="">Loading...</option>');
+        const destinations = await loadDestinations();
+        let destinationOptions = '<option value="">Select Destination</option>';
+        destinations.forEach(destination => {
+            const selected = destination.id === selectedDestinationId ? 'selected' : '';
+            destinationOptions += `<option value="${destination.id}" ${selected}>${destination.name}</option>`;
+        });
+        destinationSelect.html(destinationOptions);
+    }
+
+    $('#addRentBtn').on('click', async function() {
+        $('#rentModalLabel').text('Add New Rental');
+        resetForm('#rentForm');
+        $('#rentId').val('');
+        $('#returnDateGroup, #statusGroup').hide();
+        $('#rentDate').val(new Date().toISOString().split('T')[0]);
+        await populateDropdowns();
+        $('#rentModal').modal('show');
+    });
+
+    $(document).on('click', '.edit-btn', async function() {
+        const rentId = $(this).data('rent-id');
+        
+        await apiGet(`/Rent/Details/${rentId}`, {
+            onSuccess: async (rent) => {
+                $('#rentModalLabel').text('Edit Rental');
+                resetForm('#rentForm');
+                $('#rentId').val(rent.id);
+                $('#rentDate').val(rent.rentDate.split('T')[0]);
+                $('#dueDate').val(rent.dueDate.split('T')[0]);
+                if (rent.returnDate) {
+                    $('#returnDate').val(rent.returnDate.split('T')[0]);
+                    $('#returnDateGroup').show();
+                }
+                $('#rentStatus').val(rent.status);
+                $('#statusGroup').show();
+                
+                await populateDropdowns(rent.bookId, rent.customerId, rent.destinationId);
+                $('#rentModal').modal('show');
+            }
+        });
+    });
+
+    $(document).on('click', '.return-btn', function() {
+        const rentId = $(this).data('rent-id');
+        
+        apiPost(`/Rent/Return/${rentId}`, null, {
+            successMessage: 'Book returned successfully!',
+            onSuccess: () => {
+                table.ajax.reload(null, false);
+            }
+        });
+    });
+    
+    $(document).on('click', '.delete-btn', function() {
+        rentToDelete = $(this).data('rent-id');
+        $('#deleteModal').modal('show');
+    });
+    
+    $('#confirmDelete').on('click', function() {
+        if (rentToDelete) {
+            apiDelete(`/Rent/Delete/${rentToDelete}`, {
+                successMessage: 'Rental deleted successfully!',
+                onSuccess: () => {
+                    $('#deleteModal').modal('hide');
+                    table.ajax.reload(null, false);
+                    rentToDelete = null;
+                }
+            });
+        }
+    });
+
+    function validateForm(formSelector) {
+        const form = document.querySelector(formSelector);
+        
+        const rentDate = new Date(document.getElementById('rentDate').value);
+        const dueDate = new Date(document.getElementById('dueDate').value);
+        const dueDateInput = document.getElementById('dueDate');
+        
+        if (dueDate <= rentDate) {
+            dueDateInput.setCustomValidity('Due date must be after rent date');
+        } else {
+            dueDateInput.setCustomValidity('');
+        }
+        
+        if (form.checkValidity()) {
+            return true;
+        }
+        
+        form.classList.add('was-validated');
+        return false;
+    }
+
+    window.validateAndSubmitRent = function() {
+        if (validateForm('#rentForm')) {
+            const formData = new FormData(document.getElementById('rentForm'));
+            const isEdit = document.getElementById('rentId').value !== '';
+            const url = isEdit ? '/Rent/Edit' : '/Rent/Create';
+            
+            const submitBtn = document.querySelector('#rentModal .btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Saving...';
+            submitBtn.disabled = true;
+
+            apiPost(url, formData, {
+                successMessage: `Rental ${isEdit ? 'updated' : 'created'} successfully!`,
+                onSuccess: () => {
+                    $('#rentModal').modal('hide');
+                    table.ajax.reload(null, false);
+                }
+            }).finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+    }
+
+    function resetForm(formSelector) {
+        const form = document.querySelector(formSelector);
+        form.classList.remove('was-validated');
+        form.reset();
+    }
+    
+    $('#rentModal').on('hidden.bs.modal', function() {
+        resetForm('#rentForm');
+        $('#rentId').val('');
+        $('#returnDateGroup, #statusGroup').hide();
+    });
+    
+    $('#deleteModal').on('hidden.bs.modal', function() {
+        rentToDelete = null;
+    });
+});
+</script>
+}
