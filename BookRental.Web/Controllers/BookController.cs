@@ -1,5 +1,4 @@
-﻿
-using Application.Book.Commands.DeleteBook;
+﻿using Application.Book.Commands.DeleteBook;
 using Application.Book.Queries.GetBookById;
 using Application.Book.Queries.GetBooks;
 using BookRental.Web.Models;
