@@ -43,4 +43,115 @@
     <value>{0} с идентификатором '{1}' не найден.</value>
     <comment>Error message for entity not found</comment>
   </data>
+  <data name="Books" xml:space="preserve">
+    <value>Книги</value>
+  </data>
+  <data name="BooksManagement" xml:space="preserve">
+    <value>Управление книгами</value>
+  </data>
+  <data name="AddNewBook" xml:space="preserve">
+    <value>Добавить новую книгу</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Автор</value>
+  </data>
+  <data name="PublicationDate" xml:space="preserve">
+    <value>Дата публикации</value>
+  </data>
+  <data name="AvailableQty" xml:space="preserve">
+    <value>Доступно</value>
+  </data>
+  <data name="RentalPrice" xml:space="preserve">
+    <value>Цена аренды</value>
+  </data>
+  <data name="Genre" xml:space="preserve">
+    <value>Жанр</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Действия</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="ConfirmDeleteBook" xml:space="preserve">
+    <value>Вы уверены, что хотите удалить эту книгу? Это действие нельзя отменить.</value>
+  </data>
+  <data name="BookDeletedSuccessfully" xml:space="preserve">
+    <value>Книга успешно удалена!</value>
+  </data>
+  <data name="EditBook" xml:space="preserve">
+    <value>Редактировать книгу</value>
+  </data>
+  <data name="Book" xml:space="preserve">
+    <value>Книга</value>
+  </data>
+  <data name="PleaseProvideValidTitle" xml:space="preserve">
+    <value>Пожалуйста, введите корректное название.</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Загрузка</value>
+  </data>
+  <data name="PleaseSelectGenre" xml:space="preserve">
+    <value>Пожалуйста, выберите жанр.</value>
+  </data>
+  <data name="PleaseProvideValidAuthor" xml:space="preserve">
+    <value>Пожалуйста, введите корректное имя автора.</value>
+  </data>
+  <data name="PleaseProvideValidPublicationDate" xml:space="preserve">
+    <value>Пожалуйста, введите корректную дату публикации.</value>
+  </data>
+  <data name="AvailableQuantity" xml:space="preserve">
+    <value>Доступное количество</value>
+  </data>
+  <data name="PleaseProvideValidQuantity" xml:space="preserve">
+    <value>Пожалуйста, введите корректное количество (0 или больше).</value>
+  </data>
+  <data name="PleaseProvideValidPrice" xml:space="preserve">
+    <value>Пожалуйста, введите корректную цену (0 или больше).</value>
+  </data>
+  <data name="SelectGenre" xml:space="preserve">
+    <value>Выберите жанр</value>
+  </data>
+  <data name="ErrorLoadingGenres" xml:space="preserve">
+    <value>Ошибка загрузки жанров</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Сохранение...</value>
+  </data>
+  <data name="UpdatedSuccessfully" xml:space="preserve">
+    <value>успешно обновлено!</value>
+  </data>
+  <data name="CreatedSuccessfully" xml:space="preserve">
+    <value>успешно создано!</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Добавить новый</value>
+  </data>
+  <data name="RequestFailed" xml:space="preserve">
+    <value>Запрос не удался</value>
+  </data>
+  <data name="FailedToLoadModal" xml:space="preserve">
+    <value>Не удалось загрузить содержимое модального окна</value>
+  </data>
+  <data name="NoFormFound" xml:space="preserve">
+    <value>Форма не найдена в содержимом модального окна</value>
+  </data>
+  <data name="ErrorLoadingForm" xml:space="preserve">
+    <value>Ошибка загрузки формы</value>
+  </data>	
 </root>
