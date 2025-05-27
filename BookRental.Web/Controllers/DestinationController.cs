@@ -1,7 +1,4 @@
-﻿#nullable enable
-using Application.Destination.Commands.CreateDestination;
-using Application.Destination.Commands.UpdateDestination;
-using Application.Destination.Commands.DeleteDestination;
+﻿using Application.Destination.Commands.DeleteDestination;
 using Application.Destination.Queries.GetDestinationById;
 using Microsoft.AspNetCore.Mvc;
 using Application.Destination.Queries.GetDestinations;
