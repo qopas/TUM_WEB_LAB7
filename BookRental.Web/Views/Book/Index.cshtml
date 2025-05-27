@@ -1,0 +1,307 @@
+﻿@model IEnumerable<BookViewModel>
+@{
+    ViewData["Title"] = "Books";
+}
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-gray-900">Books Management</h1>
+            <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Add New Book
+            </button>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <table id="booksTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Publication Date</th>
+                <th>Available Qty</th>
+                <th>Rental Price</th>
+                <th>Genre</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookModalLabel">Add New Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="bookForm" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="bookId" name="Id">
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="bookTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="bookTitle" name="Title" required maxlength="200">
+                            <div class="invalid-feedback">Please provide a valid title.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="bookGenre" class="form-label">Genre <span class="text-danger">*</span></label>
+                            <select class="form-select" id="bookGenre" name="GenreId" required>
+                                <option value="">Select Genre</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a genre.</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bookAuthor" class="form-label">Author <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="bookAuthor" name="Author" required maxlength="100">
+                            <div class="invalid-feedback">Please provide a valid author name.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="bookDate" class="form-label">Publication Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="bookDate" name="PublicationDate" required>
+                            <div class="invalid-feedback">Please provide a valid publication date.</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bookQuantity" class="form-label">Available Quantity <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="bookQuantity" name="AvailableQuantity" min="0" required>
+                            <div class="invalid-feedback">Please provide a valid quantity (0 or greater).</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="bookPrice" class="form-label">Rental Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="bookPrice" name="RentalPrice" step="0.01" min="0" required>
+                                <div class="invalid-feedback">Please provide a valid price (0 or greater).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndSubmitBook()">
+                        Save Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this book?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    Delete Book
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        let table;
+        let genresCache = null;
+        let bookToDelete = null;
+
+        table = $('#booksTable').DataTable({
+            processing: true,
+            serverSide: false,
+            ajax: {
+                url: '/Book/GetBooksData',
+                type: 'GET'
+            },
+            columns: [
+                { data: 'title' },
+                { data: 'author' },
+                {
+                    data: 'publicationDate',
+                    render: function(data) {
+                        return new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                    }
+                },
+                {
+                    data: 'availableQuantity',
+                    render: function(data) {
+                        return `<span class="badge ${data > 0 ? 'bg-success' : 'bg-danger'}">${data}</span>`;
+                    }
+                },
+                {
+                    data: 'rentalPrice',
+                    render: function(data) {
+                        return '$' + parseFloat(data).toFixed(2);
+                    }
+                },
+                { data: 'genreId' },
+                {
+                    data: 'id',
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn" data-book-id="${data}">
+                                Edit
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-book-id="${data}">
+                                Delete
+                            </button>
+                        </div>
+                    `;
+                    }
+                }
+            ],
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            order: [[0, 'asc']]
+        });
+
+        async function loadGenres() {
+            if (genresCache) {
+                return genresCache;
+            }
+
+            try {
+                genresCache = await apiGet('/Genre/GetGenresNames', { showError: false });
+                return genresCache;
+            } catch (error) {
+                return [];
+            }
+        }
+
+        async function populateGenres(selectedId = '') {
+            const genreSelect = $('#bookGenre');
+            genreSelect.html('<option value="">Loading...</option>');
+
+            const genres = await loadGenres();
+            let options = '<option value="">Select Genre</option>';
+
+            genres.forEach(genre => {
+                const selected = genre.id == selectedId ? 'selected' : '';
+                options += `<option value="${genre.id}" ${selected}>${genre.name}</option>`;
+            });
+
+            genreSelect.html(options);
+        }
+
+        $('#addBookBtn').on('click', async function() {
+            $('#bookModalLabel').text('Add New Book');
+            resetForm('#bookForm');
+            $('#bookId').val('');
+            await populateGenres();
+            $('#bookModal').modal('show');
+        });
+
+        $(document).on('click', '.edit-btn', async function() {
+            const bookId = $(this).data('book-id');
+
+            await apiGet(`/Book/Details/${bookId}`, {
+                onSuccess: async (book) => {
+                    $('#bookModalLabel').text('Edit Book');
+                    resetForm('#bookForm');
+                    $('#bookId').val(book.id);
+                    $('#bookTitle').val(book.title);
+                    $('#bookAuthor').val(book.author);
+                    $('#bookDate').val(book.publicationDate.split('T')[0]);
+                    $('#bookQuantity').val(book.availableQuantity);
+                    $('#bookPrice').val(book.rentalPrice);
+
+                    await populateGenres(book.genreId);
+                    $('#bookModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-btn', function() {
+            bookToDelete = $(this).data('book-id');
+            $('#deleteModal').modal('show');
+        });
+
+        $('#confirmDelete').on('click', function() {
+            if (bookToDelete) {
+                apiDelete(`/Book/Delete/${bookToDelete}`, {
+                    successMessage: 'Book deleted successfully!',
+                    onSuccess: () => {
+                        $('#deleteModal').modal('hide');
+                        table.ajax.reload(null, false);
+                        bookToDelete = null;
+                    }
+                });
+            }
+        });
+
+        function validateForm(formSelector) {
+            const form = document.querySelector(formSelector);
+
+            if (form.checkValidity()) {
+                return true;
+            }
+
+            form.classList.add('was-validated');
+            return false;
+        }
+
+        window.validateAndSubmitBook = function() {
+            if (validateForm('#bookForm')) {
+                const formData = new FormData(document.getElementById('bookForm'));
+                const isEdit = document.getElementById('bookId').value !== '';
+                const url = isEdit ? '/Book/Edit' : '/Book/Create';
+
+                const submitBtn = document.querySelector('#bookModal .btn-primary');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Saving...';
+                submitBtn.disabled = true;
+
+                apiPost(url, formData, {
+                    successMessage: `Book ${isEdit ? 'updated' : 'created'} successfully!`,
+                    onSuccess: () => {
+                        $('#bookModal').modal('hide');
+                        table.ajax.reload(null, false);
+                    },
+                    onError: () => {
+                        // Error already shown by apiPost
+                    }
+                }).finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+            }
+        }
+
+        function resetForm(formSelector) {
+            const form = document.querySelector(formSelector);
+            form.classList.remove('was-validated');
+            form.reset();
+        }
+
+        $('#bookModal').on('hidden.bs.modal', function() {
+            resetForm('#bookForm');
+            $('#bookId').val('');
+        });
+
+        $('#deleteModal').on('hidden.bs.modal', function() {
+            bookToDelete = null;
+        });
+    });
+</script>
+}

@@ -9,31 +9,25 @@ namespace BookRental.Web.Controllers;
 [Authorize]
 public abstract class BaseWebController : Controller
 {
-    protected async Task<IActionResult> ExecuteAsync(Func<Task> action, string redirectAction = "Index")
+    protected async Task<IActionResult> ExecuteAsync<T>(Func<Task<T>> action)
     {
-        if (!ModelState.IsValid)
-            return View();
-
         try
         {
-            await action();
-            return RedirectToAction(redirectAction);
+            var result = await action();
+            return Ok(result);
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View();
+            return BadRequest(new { error = ex.Message });
         }
     }
-    
-    protected async Task<IActionResult> ExecuteWithResultAsync(Func<Task<IActionResult>> action)
-    {
-        if (!ModelState.IsValid)
-            return View();
 
+    protected async Task<IActionResult> ExecuteViewAsync<T>(Func<Task<T>> action)
+    {
         try
         {
-            return await action();
+            var result = await action();
+            return View(result);
         }
         catch (Exception ex)
         {

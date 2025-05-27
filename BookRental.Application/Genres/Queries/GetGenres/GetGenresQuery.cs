@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Genres.Queries.GetGenres;
 
-public class GetGenresQuery : IRequest<List<GenreDto>>
+public class GetGenresQuery : IRequest<IEnumerable<GenreDto>>
 {
 }

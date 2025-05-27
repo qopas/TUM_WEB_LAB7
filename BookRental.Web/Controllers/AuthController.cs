@@ -26,7 +26,10 @@ public class AuthController(IMediator mediator) : BaseWebController
     {
         ViewData["ReturnUrl"] = returnUrl;
 
-        return await ExecuteWithResultAsync(async () =>
+        if (!ModelState.IsValid)
+            return View(model);
+
+        try
         {
             var command = new LoginCommand { Email = model.Email, Password = model.Password };
             var result = await mediator.Send(command);
@@ -36,7 +39,12 @@ public class AuthController(IMediator mediator) : BaseWebController
                 return Redirect(returnUrl);
 
             return RedirectToAction("Index", "Home");
-        });
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
     }
 
     [HttpGet]
@@ -52,22 +60,20 @@ public class AuthController(IMediator mediator) : BaseWebController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        return await ExecuteAsync(async () =>
-        {
-            var command = new RegisterCommand
-            {
-                Email = model.Email,
-                Password = model.Password,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Address = model.Address,
-                City = model.City,
-                PhoneNumber = model.PhoneNumber
-            };
+        if (!ModelState.IsValid)
+            return View(model);
 
-            var result = await mediator.Send(command);
+        try
+        {
+            var result = await mediator.Send(model.ConvertToRegisterCommand());
             await SignInUserAsync(result.UserId, result.Token, model.Email);
-        }, "Index");
+            return RedirectToAction("Index", "Home");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
     }
 
     [HttpPost]
