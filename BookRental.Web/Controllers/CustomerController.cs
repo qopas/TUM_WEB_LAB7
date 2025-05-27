@@ -32,6 +32,21 @@ public class CustomerController(IMediator mediator) : BaseWebController
     }
 
     [HttpGet]
+    public async Task<IActionResult> GetModalBody(string? id = null)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return PartialView("_CustomerModalBody", new CustomerViewModel());
+        }
+        else
+        {
+            var customer = await mediator.Send(new GetCustomerByIdQuery { Id = id });
+            var viewModel = CustomerViewModel.FromDto(customer);
+            return PartialView("_CustomerModalBody", viewModel);
+        }
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Details(string id)
     {
         return await ExecuteAsync(async () =>

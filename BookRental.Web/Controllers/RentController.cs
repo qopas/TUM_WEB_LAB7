@@ -34,6 +34,24 @@ public class RentController(IMediator mediator) : BaseWebController
     }
 
     [HttpGet]
+    public async Task<IActionResult> GetModalBody(string? id = null)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return PartialView("_RentModalBody", new RentViewModel 
+            { 
+                RentDate = DateTime.Now
+            });
+        }
+        else
+        {
+            var rent = await mediator.Send(new GetRentByIdQuery { Id = id });
+            var viewModel = RentViewModel.FromDto(rent);
+            return PartialView("_RentModalBody", viewModel);
+        }
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Details(string id)
     {
         return await ExecuteAsync(async () =>

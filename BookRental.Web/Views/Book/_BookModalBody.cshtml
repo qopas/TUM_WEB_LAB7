@@ -1,0 +1,81 @@
+﻿@model BookViewModel
+@{
+    var isEdit = !string.IsNullOrEmpty(Model.Id);
+    var formAction = isEdit ? "/Book/Edit" : "/Book/Create";
+    var modalTitle = isEdit ? "Edit Book" : "Add New Book";
+}
+
+<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Book">
+    @if (isEdit)
+    {
+        <input type="hidden" name="Id" value="@Model.Id" />
+    }
+
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label for="bookTitle" class="form-label">Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="bookTitle" name="Title" value="@Model.Title" required maxlength="200">
+            <div class="invalid-feedback">Please provide a valid title.</div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="bookGenre" class="form-label">Genre <span class="text-danger">*</span></label>
+            <select class="form-select" id="bookGenre" name="GenreId" required data-selected-value="@Model.GenreId">
+                <option value="">Loading...</option>
+            </select>
+            <div class="invalid-feedback">Please select a genre.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="bookAuthor" class="form-label">Author <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="bookAuthor" name="Author" value="@Model.Author" required maxlength="100">
+            <div class="invalid-feedback">Please provide a valid author name.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="bookDate" class="form-label">Publication Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="bookDate" name="PublicationDate" value="@Model.PublicationDate.ToString("yyyy-MM-dd")" required>
+            <div class="invalid-feedback">Please provide a valid publication date.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="bookQuantity" class="form-label">Available Quantity <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="bookQuantity" name="AvailableQuantity" value="@Model.AvailableQuantity" min="0" required>
+            <div class="invalid-feedback">Please provide a valid quantity (0 or greater).</div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="bookPrice" class="form-label">Rental Price <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="bookPrice" name="RentalPrice" value="@Model.RentalPrice" step="0.01" min="0" required>
+                <div class="invalid-feedback">Please provide a valid price (0 or greater).</div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+$(document).ready(function() {
+    const genreSelect = document.getElementById('bookGenre');
+    if (genreSelect) {
+        const selectedValue = genreSelect.dataset.selectedValue;
+        
+        apiRequest('/Genre/GetGenresNames', { showError: false })
+            .then(genres => {
+                let options = '<option value="">Select Genre</option>';
+                
+                genres.forEach(genre => {
+                    const selected = genre.id === selectedValue ? 'selected' : '';
+                    options += `<option value="${genre.id}" ${selected}>${genre.name}</option>`;
+                });
+                
+                genreSelect.innerHTML = options;
+            })
+            .catch(error => {
+                genreSelect.innerHTML = '<option value="">Error loading genres</option>';
+            });
+    }
+});
+</script>

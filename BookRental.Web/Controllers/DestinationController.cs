@@ -1,6 +1,4 @@
-﻿using Application.Destination.Commands.CreateDestination;
-using Application.Destination.Commands.UpdateDestination;
-using Application.Destination.Commands.DeleteDestination;
+﻿using Application.Destination.Commands.DeleteDestination;
 using Application.Destination.Queries.GetDestinationById;
 using Microsoft.AspNetCore.Mvc;
 using Application.Destination.Queries.GetDestinations;
@@ -28,16 +26,24 @@ public class DestinationController(IMediator mediator) : BaseWebController
         {
             var destinations = await mediator.Send(new GetDestinationsQuery());
             return new { 
-                data = destinations.Select(destination => new {
-                    id = destination.Id,
-                    name = destination.Name,
-                    address = destination.Address,
-                    city = destination.City,
-                    contactPerson = destination.ContactPerson,
-                    phoneNumber = destination.PhoneNumber
-                })
+                data = destinations.Select(DestinationViewModel.FromDto)
             };
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetModalBody(string? id = null)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return PartialView("_DestinationModalBody", new DestinationViewModel());
+        }
+        else
+        {
+            var destination = await mediator.Send(new GetDestinationByIdQuery { Id = id });
+            var viewModel = DestinationViewModel.FromDto(destination);
+            return PartialView("_DestinationModalBody", viewModel);
+        }
     }
 
     [HttpGet]
@@ -72,5 +78,15 @@ public class DestinationController(IMediator mediator) : BaseWebController
         return await ExecuteAsync(async () =>
             await mediator.Send(new DeleteDestinationCommand { Id = id })
         );
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetDestinationsNames()
+    {
+        return await ExecuteAsync(async () =>
+        {
+            var destinations = await mediator.Send(new GetDestinationsQuery());
+            return destinations.Select(d => new { id = d.Id, name = d.Name });
+        });
     }
 }

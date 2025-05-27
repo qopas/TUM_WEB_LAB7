@@ -7,7 +7,7 @@
     <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex justify-between items-center">
             <h1 class="text-xl font-semibold text-gray-900">Genres Management</h1>
-            <button id="addGenreBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+            <button id="addGenreBtn" onclick="addGenre()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                 Add New Genre
             </button>
         </div>
@@ -25,185 +25,66 @@
     </div>
 </div>
 
-<div class="modal fade" id="genreModal" tabindex="-1" aria-labelledby="genreModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="genreModalLabel">Add New Genre</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="genreForm" class="needs-validation" novalidate>
-                <div class="modal-body">
-                    <input type="hidden" id="genreId" name="Id">
-                    
-                    <div class="mb-3">
-                        <label for="genreName" class="form-label">Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="genreName" name="Name" required maxlength="50" 
-                               pattern="^[a-zA-Z\s]+$" title="Genre name should only contain letters and spaces">
-                        <div class="invalid-feedback">Please provide a valid genre name (letters and spaces only, max 50 characters).</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="validateAndSubmitGenre()">
-                        Save Genre
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this genre?</p>
-                <p class="text-muted small">This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">
-                    Delete Genre
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
 <script>
-$(document).ready(function() {
     let table;
-    let genreToDelete = null;
-    
-    table = $('#genresTable').DataTable({
-        processing: true,
-        serverSide: false,
-        ajax: {
-            url: '/Genre/GetGenresData',
-            type: 'GET'
-        },
-        columns: [
-            { data: 'name' },
-            { 
-                data: 'id',
-                orderable: false,
-                searchable: false,
-                render: function(data) {
-                    return `
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn" data-genre-id="${data}">
-                                Edit
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-genre-id="${data}">
-                                Delete
-                            </button>
-                        </div>
-                    `;
+
+    $(document).ready(function() {
+        table = $('#genresTable').DataTable({
+            processing: true,
+            serverSide: false,
+            ajax: {
+                url: '/Genre/GetGenresData',
+                type: 'GET'
+            },
+            columns: [
+                { data: 'name' },
+                { 
+                    data: 'id',
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editGenre('${data}')">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteGenre('${data}')">
+                                    Delete
+                                </button>
+                            </div>
+                        `;
+                    }
                 }
-            }
-        ],
-        pageLength: 25,
-        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-        order: [[0, 'asc']]
-    });
-
-    $('#addGenreBtn').on('click', function() {
-        $('#genreModalLabel').text('Add New Genre');
-        resetForm('#genreForm');
-        $('#genreId').val('');
-        $('#genreModal').modal('show');
-    });
-
-    $(document).on('click', '.edit-btn', async function() {
-        const genreId = $(this).data('genre-id');
-        
-        await apiGet(`/Genre/Details/${genreId}`, {
-            onSuccess: (genre) => {
-                $('#genreModalLabel').text('Edit Genre');
-                resetForm('#genreForm');
-                $('#genreId').val(genre.id);
-                $('#genreName').val(genre.name);
-                $('#genreModal').modal('show');
-            }
+            ],
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            order: [[0, 'asc']]
         });
     });
-    
-    $(document).on('click', '.delete-btn', function() {
-        genreToDelete = $(this).data('genre-id');
-        $('#deleteModal').modal('show');
-    });
-    
-    $('#confirmDelete').on('click', function() {
-        if (genreToDelete) {
-            apiDelete(`/Genre/Delete/${genreToDelete}`, {
+
+    function addGenre() {
+        openModal('/Genre/GetModalBody', {
+            onSuccess: () => table.ajax.reload(null, false)
+        });
+    }
+
+    function editGenre(genreId) {
+        openModal(`/Genre/GetModalBody/${genreId}`, {
+            onSuccess: () => table.ajax.reload(null, false)
+        });
+    }
+
+    function deleteGenre(genreId) {
+        if (confirm('Are you sure you want to delete this genre? This action cannot be undone.')) {
+            apiRequest(`/Genre/Delete/${genreId}`, {
+                method: 'POST',
                 successMessage: 'Genre deleted successfully!',
                 onSuccess: () => {
-                    $('#deleteModal').modal('hide');
                     table.ajax.reload(null, false);
-                    genreToDelete = null;
                 }
             });
         }
-    });
-
-    function validateForm(formSelector) {
-        const form = document.querySelector(formSelector);
-        
-        if (form.checkValidity()) {
-            return true;
-        }
-        
-        form.classList.add('was-validated');
-        return false;
     }
-
-    window.validateAndSubmitGenre = function() {
-        if (validateForm('#genreForm')) {
-            const formData = new FormData(document.getElementById('genreForm'));
-            const isEdit = document.getElementById('genreId').value !== '';
-            const url = isEdit ? '/Genre/Edit' : '/Genre/Create';
-            
-            const submitBtn = document.querySelector('#genreModal .btn-primary');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = 'Saving...';
-            submitBtn.disabled = true;
-
-            apiPost(url, formData, {
-                successMessage: `Genre ${isEdit ? 'updated' : 'created'} successfully!`,
-                onSuccess: () => {
-                    $('#genreModal').modal('hide');
-                    table.ajax.reload(null, false);
-                },
-                onError: () => {
-                    // Error already shown by apiPost
-                }
-            }).finally(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            });
-        }
-    }
-
-    function resetForm(formSelector) {
-        const form = document.querySelector(formSelector);
-        form.classList.remove('was-validated');
-        form.reset();
-    }
-    
-    $('#genreModal').on('hidden.bs.modal', function() {
-        resetForm('#genreForm');
-        $('#genreId').val('');
-    });
-    
-    $('#deleteModal').on('hidden.bs.modal', function() {
-        genreToDelete = null;
-    });
-});
 </script>
 }
