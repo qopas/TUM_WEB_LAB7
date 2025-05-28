@@ -10,5 +10,4 @@ public class Destination : BaseEntity
     public string ContactPerson { get; set; }
     public string PhoneNumber { get; set; }
     public virtual ICollection<Rent> Rents { get; set; }
-    
 }

@@ -64,7 +64,7 @@ namespace Application.Authentication.Commands.Register
                 Email = request.Email,
                 UserName = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTimeOffset.Now
             };
         }
     }

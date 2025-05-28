@@ -12,8 +12,5 @@ public interface IUnitOfWork : IDisposable
     IDestinationRepository Destinations { get; }
         
     Task<int> SaveChangesAsync();
-    Task BeginTransactionAsync();
-    Task CommitTransactionAsync();
-    Task RollbackTransactionAsync();
     Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action);
 }

@@ -8,13 +8,14 @@ public class RentDto
     public string BookId { get; set; }
     public string CustomerId { get; set; }
     public string DestinationId { get; set; }
-    public DateTime RentDate { get; set; }
-    public DateTime DueDate { get; set; }
-    public DateTime? ReturnDate { get; set; }
+    public DateTimeOffset RentDate { get; set; }
+    public DateTimeOffset DueDate { get; set; }
+    public DateTimeOffset? ReturnDate { get; set; }
     public RentStatus Status { get; set; } 
     public string BookTitle { get; set; }
     public string CustomerName { get; set; }
     public string DestinationName { get; set; }
+    
     public static RentDto FromEntity(BookRental.Domain.Entities.Rent rent)
     {
         return new RentDto
@@ -32,5 +33,4 @@ public class RentDto
             DestinationName = rent.Destination?.Name
         };
     }
-    
 }

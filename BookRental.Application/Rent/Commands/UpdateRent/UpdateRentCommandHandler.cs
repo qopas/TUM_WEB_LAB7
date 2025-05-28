@@ -30,7 +30,7 @@ public class UpdateRentCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer l
         existingRent.DestinationId = request.DestinationId;
         existingRent.RentDate = request.RentDate;
         existingRent.DueDate = request.DueDate;
-        existingRent.ReturnDate = request.ReturnDate;
+        if (request.ReturnDate != null) existingRent.ReturnDate = request.ReturnDate.Value;
         existingRent.Status = request.Status;
         return (existingRent, true);
     }

@@ -46,7 +46,7 @@ namespace Application.Authentication.Commands.RefreshToken
             var expiryDateUnix = long.Parse(claimsPrincipal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
             var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
 
-            if (expiryDateTimeUtc > DateTime.UtcNow)
+            if (expiryDateTimeUtc > DateTimeOffset.UtcNow)
                 return ValidationResult.Failure("This token hasn't expired yet");
             
             var storedRefreshToken = await unitOfWork.RefreshTokens
@@ -56,7 +56,7 @@ namespace Application.Authentication.Commands.RefreshToken
             if (storedRefreshToken == null)
                 return ValidationResult.Failure("This refresh token does not exist");
             
-            if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
+            if (DateTimeOffset.UtcNow > storedRefreshToken.ExpiryDate)
                 return ValidationResult.Failure("This refresh token has expired");
 
             if (storedRefreshToken.Invalidated)

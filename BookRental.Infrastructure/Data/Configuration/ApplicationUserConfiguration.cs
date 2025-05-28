@@ -15,5 +15,11 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         
         builder.Property(u => u.CreatedAt)
             .IsRequired();
+            
+        builder.Property(u => u.LastLoginAt)
+            .IsRequired(false);
+            
+        builder.Property(u => u.CustomerId)
+            .IsRequired(false);
     }
 }
