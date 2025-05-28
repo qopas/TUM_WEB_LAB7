@@ -2,7 +2,7 @@
 @inject IStringLocalizer Localizer
 @model IEnumerable<BookViewModel>
 @{
-    ViewData["Title"] = Localizer["Books"];
+ViewData["Title"] = Localizer["Books"];
 }
 
 <div class="bg-white rounded-lg shadow">
@@ -32,16 +32,11 @@
     </div>
 </div>
 
-@section Scripts {
 <script>
-    let table;
-
-    $(document).ready(function() {
-        table = $('#booksTable').DataTable({
-            processing: true,
-            serverSide: false,
+    document.addEventListener('DOMContentLoaded', function() {
+        const booksTable = initializeDataTable('#booksTable', {
             ajax: {
-                url: '/Book/GetBooksData',
+                url: '@Url.Action("GetBooksData", "Book")',
                 type: 'GET'
             },
             columns: [
@@ -83,35 +78,35 @@
                         `;
                     }
                 }
-            ],
-            pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[0, 'asc']]
+            ]
         });
+
+        window.booksTable = booksTable;
     });
 
     function addBook() {
-        openModal('/Book/GetModalBody', {
-            onSuccess: () => table.ajax.reload(null, false)
+        openModal('@Url.Action("GetModalBody", "Book")', {
+            onSuccess: () => window.booksTable.ajax.reload(null, false)
         });
     }
 
     function editBook(bookId) {
-        openModal(`/Book/GetModalBody/${bookId}`, {
-            onSuccess: () => table.ajax.reload(null, false)
+        const editUrl = '@Url.Action("GetModalBody", "Book")' + '/' + bookId;
+        openModal(editUrl, {
+            onSuccess: () => window.booksTable.ajax.reload(null, false)
         });
     }
 
     function deleteBook(bookId) {
         if (confirm('@Html.Raw(Localizer["ConfirmDeleteBook"])')) {
-            apiRequest(`/Book/Delete/${bookId}`, {
+            const deleteUrl = '@Url.Action("Delete", "Book")' + '/' + bookId;
+            apiRequest(deleteUrl, {
                 method: 'POST',
                 successMessage: '@Html.Raw(Localizer["BookDeletedSuccessfully"])',
                 onSuccess: () => {
-                    table.ajax.reload(null, false);
+                    window.booksTable.ajax.reload(null, false);
                 }
             });
         }
     }
 </script>
-}

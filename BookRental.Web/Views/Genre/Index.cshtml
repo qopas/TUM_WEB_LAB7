@@ -25,16 +25,11 @@
     </div>
 </div>
 
-@section Scripts {
 <script>
-    let table;
-
-    $(document).ready(function() {
-        table = $('#genresTable').DataTable({
-            processing: true,
-            serverSide: false,
+    document.addEventListener('DOMContentLoaded', function() {
+        const genresTable = initializeDataTable('#genresTable', {
             ajax: {
-                url: '/Genre/GetGenresData',
+                url: '@Url.Action("GetGenresData", "Genre")',
                 type: 'GET'
             },
             columns: [
@@ -56,35 +51,35 @@
                         `;
                     }
                 }
-            ],
-            pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[0, 'asc']]
+            ]
         });
+
+        window.genresTable = genresTable;
     });
 
     function addGenre() {
-        openModal('/Genre/GetModalBody', {
-            onSuccess: () => table.ajax.reload(null, false)
+        openModal('@Url.Action("GetModalBody", "Genre")', {
+            onSuccess: () => window.genresTable.ajax.reload(null, false)
         });
     }
 
     function editGenre(genreId) {
-        openModal(`/Genre/GetModalBody/${genreId}`, {
-            onSuccess: () => table.ajax.reload(null, false)
+        const editUrl = '@Url.Action("GetModalBody", "Genre")' + '/' + genreId;
+        openModal(editUrl, {
+            onSuccess: () => window.genresTable.ajax.reload(null, false)
         });
     }
 
     function deleteGenre(genreId) {
         if (confirm('Are you sure you want to delete this genre? This action cannot be undone.')) {
-            apiRequest(`/Genre/Delete/${genreId}`, {
+            const deleteUrl = '@Url.Action("Delete", "Genre")' + '/' + genreId;
+            apiRequest(deleteUrl, {
                 method: 'POST',
                 successMessage: 'Genre deleted successfully!',
                 onSuccess: () => {
-                    table.ajax.reload(null, false);
+                    window.genresTable.ajax.reload(null, false);
                 }
             });
         }
     }
 </script>
-}

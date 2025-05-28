@@ -54,7 +54,7 @@ window.removeToast = function(toastId) {
     }
 };
 
-window.apiRequest = async function(url, options = {}) {
+window.apiRequest = function(url, options = {}) {
     const defaults = {
         method: 'GET',
         data: null,
@@ -66,48 +66,60 @@ window.apiRequest = async function(url, options = {}) {
 
     const config = { ...defaults, ...options };
 
-    try {
-        const fetchOptions = {
-            method: config.method,
-        };
+    const ajaxSettings = {
+        url: url,
+        method: config.method,
+        success: function(result) {
+            if (config.successMessage) {
+                showAlert(config.successMessage, 'success');
+            }
 
-        if (config.data && (config.method === 'POST' || config.method === 'PUT' || config.method === 'PATCH')) {
-            fetchOptions.body = config.data;
+            if (config.onSuccess) {
+                config.onSuccess(result);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(`API ${config.method} Error:`, error);
+
+            let errorMessage = window.localizedStrings?.requestFailed || 'Request failed';
+
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMessage = xhr.responseJSON.error;
+            } else if (xhr.responseText) {
+                try {
+                    const errorData = JSON.parse(xhr.responseText);
+                    if (errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (e) {
+                    showAlert(e, 'danger');
+                }
+            }
+
+            if (config.showError !== false) {
+                showAlert(errorMessage, 'danger');
+            }
+
+            if (config.onError) {
+                config.onError(error);
+            }
         }
+    };
 
-        const response = await fetch(url, fetchOptions);
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({
-                error: window.localizedStrings?.requestFailed || 'Request failed'
-            }));
-            throw new Error(error.error || window.localizedStrings?.requestFailed || 'Request failed');
+    if (config.data && (config.method === 'POST' || config.method === 'PUT' || config.method === 'PATCH')) {
+        if (config.data instanceof FormData) {
+            ajaxSettings.data = config.data;
+            ajaxSettings.processData = false;
+            ajaxSettings.contentType = false;
+        } else {
+            ajaxSettings.data = config.data;
         }
-
-        const result = await response.json();
-
-        if (config.successMessage) {
-            showAlert(config.successMessage, 'success');
-        }
-
-        if (config.onSuccess) {
-            config.onSuccess(result);
-        }
-
-        return result;
-    } catch (error) {
-        console.error(`API ${config.method} Error:`, error);
-        if (config.showError !== false) {
-            showAlert(error.message, 'danger');
-        }
-        if (config.onError) {
-            config.onError(error);
-        }
-        throw error;
     }
+
+    return $.ajax(ajaxSettings);
 };
 
-window.openModal = async function(partialUrl, options = {}) {
+window.openModal = function(partialUrl, options = {}) {
     const defaults = {
         modalSize: 'modal-xl',
         onSuccess: null,
@@ -116,63 +128,66 @@ window.openModal = async function(partialUrl, options = {}) {
 
     const config = { ...defaults, ...options };
 
-    try {
-        const response = await fetch(partialUrl);
-        if (!response.ok) {
-            throw new Error(window.localizedStrings?.failedToLoadModal || 'Failed to load modal content');
-        }
+    $.ajax({
+        url: partialUrl,
+        method: 'GET',
+        success: function(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const form = tempDiv.querySelector('form');
 
-        const html = await response.text();
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        const form = tempDiv.querySelector('form');
+            if (!form) {
+                showAlert(window.localizedStrings?.noFormFound || 'No form found in modal content', 'danger');
+                return;
+            }
 
-        if (!form) {
-            throw new Error(window.localizedStrings?.noFormFound || 'No form found in modal content');
-        }
+            const formAction = form.dataset.action;
+            const operation = form.dataset.operation;
+            const entity = form.dataset.entity;
+            const modalTitle = operation === 'edit' ?
+                `${window.localizedStrings?.edit || 'Edit'} ${entity}` :
+                `${window.localizedStrings?.addNew || 'Add New'} ${entity}`;
 
-        const formAction = form.dataset.action;
-        const operation = form.dataset.operation;
-        const entity = form.dataset.entity;
-        const modalTitle = operation === 'edit' ?
-            `${window.localizedStrings?.edit || 'Edit'} ${entity}` :
-            `${window.localizedStrings?.addNew || 'Add New'} ${entity}`;
-
-        const modalHtml = `
-            <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
-                <div class="modal-dialog ${config.modalSize}">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="dynamicModalLabel">${modalTitle}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${window.localizedStrings?.close || 'Close'}"></button>
-                        </div>
-                        <div class="modal-body">
-                            ${html}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${window.localizedStrings?.cancel || 'Cancel'}</button>
-                            <button type="button" class="btn btn-primary" id="modalSubmitBtn">
-                                ${window.localizedStrings?.save || 'Save'} ${entity}
-                            </button>
+            const modalHtml = `
+                <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
+                    <div class="modal-dialog ${config.modalSize}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="dynamicModalLabel">${modalTitle}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${window.localizedStrings?.close || 'Close'}"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${html}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${window.localizedStrings?.cancel || 'Cancel'}</button>
+                                <button type="button" class="btn btn-primary" id="modalSubmitBtn">
+                                    ${window.localizedStrings?.save || 'Save'} ${entity}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
 
-        $('#dynamicModal').remove();
-        $('body').append(modalHtml);
+            $('#dynamicModal').remove();
+            $('body').append(modalHtml);
 
-        $('#modalSubmitBtn').on('click', function() {
-            submitModalForm(formAction, operation, entity, config.onSuccess);
-        });
+            $('#modalSubmitBtn').on('click', function() {
+                submitModalForm(formAction, operation, entity, config.onSuccess);
+            });
 
-        $('#dynamicModal').modal('show');
+            $('#dynamicModal').modal('show');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error opening modal:', error);
+            showAlert(window.localizedStrings?.errorLoadingForm || 'Error loading form', 'danger');
 
-    } catch (error) {
-        console.error('Error opening modal:', error);
-        showAlert(window.localizedStrings?.errorLoadingForm || 'Error loading form', 'danger');
-    }
+            if (config.onError) {
+                config.onError(error);
+            }
+        }
+    });
 };
 
 function submitModalForm(formAction, operation, entity, onSuccess) {
@@ -203,7 +218,7 @@ function submitModalForm(formAction, operation, entity, onSuccess) {
                 onSuccess();
             }
         }
-    }).finally(() => {
+    }).always(() => {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
@@ -217,8 +232,20 @@ function validateForm(form) {
     form.classList.add('was-validated');
     return false;
 }
+
 function changeCulture(culture) {
     const cookieValue = `c=${culture}|uic=${culture}`;
     document.cookie = `.AspNetCore.Culture=${cookieValue}; path=/; max-age=31536000`;
     window.location.reload();
+}
+
+function initializeDataTable(tableId, config) {
+    const defaultConfig = {
+        processing: true,
+        serverSide: false,
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'asc']]
+    };
+    return $(tableId).DataTable(Object.assign({}, defaultConfig, config));
 }
