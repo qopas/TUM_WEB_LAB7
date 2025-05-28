@@ -20,38 +20,34 @@ public class BookController(IMediator mediator) : BaseApiController(mediator)
 {
     [HttpGet]
     [SwaggerOperation(Summary = "Get all books")]
-    [ProducesResponseType(typeof(BaseEnumerableResponse<BookOutResponse,BookDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseEnumerableResponse<BookResponse,BookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBooks()
     {
-        var request = new GetBooksQuery();
-        return await ExecuteAsync<BaseEnumerableResponse<BookOutResponse, BookDto>, IEnumerable<BookDto>>(request);
+        return await ExecuteAsync<BaseEnumerableResponse<BookResponse, BookDto>, IEnumerable<BookDto>>(new GetBooksQuery());
     }
 
     [HttpGet("{id}")]
     [SwaggerOperation(Summary = "Get book by ID")]
-    [ProducesResponseType(typeof(BaseResponse<BookOutResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseResponse<BookResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBook(string id)
     {
-        var request = new GetBookByIdQuery { Id = id };
-        return await ExecuteAsync<BookOutResponse, BookDto>(request);
+        return await ExecuteAsync<BookResponse, BookDto>(new GetBookByIdQuery { Id = id });
     }
 
     [HttpPost]
     [SwaggerOperation(Summary = "Create new book")]
     [ProducesResponseType(typeof(BaseResponse<BookDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateBook([FromBody] CreateBookInRequest inRequest)
+    public async Task<IActionResult> CreateBook([FromBody] CreateBookRequest request)
     {
-        var request = inRequest.Convert();
-        return await ExecuteAsync<BookOutResponse, BookDto>(request);
+        return await ExecuteAsync<BookResponse, BookDto>(request.Convert());
     }
 
     [HttpPut]
     [SwaggerOperation(Summary = "Update book")]
     [ProducesResponseType(typeof(BaseResponse<BookUpdateResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateBook([FromBody] UpdateBookInRequest inRequest)
+    public async Task<IActionResult> UpdateBook([FromBody] UpdateBookRequest request)
     {
-        var request = inRequest.Convert();
-        return await ExecuteAsync<BookUpdateResponse, bool>(request);
+        return await ExecuteAsync<BookUpdateResponse, bool>(request.Convert());
     }
 
     [HttpDelete("{id}")]
@@ -59,8 +55,6 @@ public class BookController(IMediator mediator) : BaseApiController(mediator)
     [ProducesResponseType(typeof(BaseResponse<BookDeleteResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteBook(string id)
     {
-        var request = new DeleteBookInRequest { Id = id };
-        var command = request.Convert();
-        return await ExecuteAsync<BookDeleteResponse, bool>(command);
+        return await ExecuteAsync<BookDeleteResponse, bool>(new DeleteBookRequest { Id = id }.Convert());
     }
 }

@@ -3,7 +3,7 @@ using Application.Book.Commands.UpdateBook;
 
 namespace BookRental.DTOs.In.Book;
 
-public class UpdateBookInRequest : IRequestIn<UpdateBookCommand>
+public class UpdateBookRequest : IRequestIn<UpdateBookCommand>
 {
     public string Id { get; set; } 
     public string Title { get; set; }

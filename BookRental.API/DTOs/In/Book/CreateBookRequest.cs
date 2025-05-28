@@ -3,7 +3,7 @@ using Application.Book.Commands.CreateBook;
 
 namespace BookRental.DTOs.In.Book;
 
-public class CreateBookInRequest : IRequestIn<CreateBookCommand>
+public class CreateBookRequest : IRequestIn<CreateBookCommand>
 {
     public string Title { get; set; }
     public string Author { get; set; } 

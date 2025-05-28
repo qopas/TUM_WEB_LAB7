@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BookRental.DTOs.In.Book;
 
-public class DeleteBookInRequest : IRequestIn<DeleteBookCommand>
+public class DeleteBookRequest : IRequestIn<DeleteBookCommand>
 {
     public string Id { get; set; }
 

@@ -3,7 +3,7 @@ using BookRental.DTOs.Out;
 
 namespace BookRental.DTOs.Out.Book;
 
-public class BookOutResponse : IResponseOut<BookDto>
+public class BookResponse : IResponseOut<BookDto>
 {
     public string Id { get; set; } 
     public string Title { get; set; }
@@ -15,7 +15,7 @@ public class BookOutResponse : IResponseOut<BookDto>
 
     public object Convert(BookDto dto)
     {
-        return new BookOutResponse
+        return new BookResponse
         {
             Id = dto.Id,
             Title = dto.Title,
