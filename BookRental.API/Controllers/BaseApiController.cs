@@ -10,19 +10,6 @@ namespace BookRental.Controllers;
 [Route("api/[controller]")]
 public abstract class BaseApiController(IMediator mediator) : ControllerBase
 {
-    protected async Task<IActionResult> ExecuteAsync(IBaseRequest request)
-    {
-        try
-        {
-            var result = await mediator.Send(request);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, error = ex.Message });
-        }
-    }
-
     protected async Task<IActionResult> ExecuteAsync<TOutResponse, TResult>(IBaseRequest request)
         where TOutResponse : IResponseOut<TResult>, new()
     {
