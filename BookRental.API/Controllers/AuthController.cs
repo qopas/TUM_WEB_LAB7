@@ -1,8 +1,7 @@
-﻿using Application.Authentication.Commands.Login;
-using Application.Authentication.Commands.Logout;
-using Application.Authentication.Commands.RefreshToken;
-using Application.Authentication.Commands.Register;
-using Application.DTOs.Authentication;
+﻿using Application.DTOs.Authentication;
+using BookRental.DTOs.In.Auth;
+using BookRental.DTOs.Out;
+using BookRental.DTOs.Out.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,44 +14,44 @@ public class AuthController(IMediator mediator) : BaseApiController(mediator)
 {
     [AllowAnonymous]
     [HttpPost(nameof(Register))]
-    [SwaggerOperation(Summary = "Register new user", Description = "Create a new user account in the system")]
-    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+    [SwaggerOperation(Summary = "Register new user")]
+    [ProducesResponseType(typeof(BaseResponse<AuthResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<AuthResponse, AuthResponseDto>(request.Convert());
     }
 
     [AllowAnonymous]
     [HttpPost(nameof(Login))]
-    [SwaggerOperation(Summary = "User login", Description = "Authenticate user and return access token")]
-    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Login([FromBody] LoginCommand command)
+    [SwaggerOperation(Summary = "User login")]
+    [ProducesResponseType(typeof(BaseResponse<AuthResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<AuthResponse, AuthResponseDto>(request.Convert());
     }
 
     [HttpPost(nameof(RefreshToken))]
-    [SwaggerOperation(Summary = "Refresh access token", Description = "Generate new access token using refresh token")]
-    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+    [SwaggerOperation(Summary = "Refresh access token")]
+    [ProducesResponseType(typeof(BaseResponse<AuthResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<AuthResponse, AuthResponseDto>(request.Convert());
     }
 
     [HttpPost(nameof(Logout))]
-    [SwaggerOperation(Summary = "User logout", Description = "Logout user and invalidate current session")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+    [SwaggerOperation(Summary = "User logout")]
+    [ProducesResponseType(typeof(BaseResponse<LogoutResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<LogoutResponse, bool>(request.Convert());
     }
 
     [HttpPost(nameof(LogoutAll))]
     [Authorize]
-    [SwaggerOperation(Summary = "Logout from all devices", Description = "Logout user from all devices and invalidate all sessions")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> LogoutAll(LogoutCommand command)
+    [SwaggerOperation(Summary = "Logout from all devices")]
+    [ProducesResponseType(typeof(BaseResponse<LogoutResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> LogoutAll([FromBody] LogoutRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<LogoutResponse, bool>(request.Convert());
     }
 }

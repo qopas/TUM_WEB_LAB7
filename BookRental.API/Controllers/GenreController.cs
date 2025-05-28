@@ -1,9 +1,7 @@
 ﻿using Application.DTOs.Genre;
-using Application.Genres.Commands.CreateGenre;
-using Application.Genres.Commands.DeleteGenre;
-using Application.Genres.Commands.UpdateGenre;
-using Application.Genres.Queries.GetGenreById;
-using Application.Genres.Queries.GetGenres;
+using BookRental.DTOs.In.Genre;
+using BookRental.DTOs.Out;
+using BookRental.DTOs.Out.Genre;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,42 +12,43 @@ namespace BookRental.Controllers;
 public class GenreController(IMediator mediator) : BaseApiController(mediator)
 {
     [HttpGet]
-    [SwaggerOperation(Summary = "Get all genres", Description = "Retrieve a list of all book genres available in the system")]
-    [ProducesResponseType(typeof(List<GenreDto>), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get all genres")]
+    [ProducesResponseType(typeof(BaseEnumerableResponse<GenreResponse, GenreDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetGenres()
     {
-        return await ExecuteAsync(new GetGenresQuery());
+        return await ExecuteAsync<BaseEnumerableResponse<GenreResponse, GenreDto>, IEnumerable<GenreDto>>(
+            new GetGenresRequest().Convert());
     }
 
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Get genre by ID", Description = "Retrieve details of a specific genre using its unique identifier")]
-    [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get genre by ID")]
+    [ProducesResponseType(typeof(BaseResponse<GenreResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetGenre(string id)
     {
-        return await ExecuteAsync(new GetGenreByIdQuery { Id = id });
+        return await ExecuteAsync<GenreResponse, GenreDto>(new GetGenreByIdRequest { Id = id }.Convert());
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Create new genre", Description = "Add a new book genre to the system")]
-    [ProducesResponseType(typeof(GenreDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateGenre([FromBody] CreateGenreCommand createGenre)
+    [SwaggerOperation(Summary = "Create new genre")]
+    [ProducesResponseType(typeof(BaseResponse<GenreDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateGenre([FromBody] CreateGenreRequest request)
     {
-        return await ExecuteAsync(createGenre);
+        return await ExecuteAsync<GenreResponse, GenreDto>(request.Convert());
     }
 
     [HttpPut]
-    [SwaggerOperation(Summary = "Update genre", Description = "Update details of an existing genre")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreCommand updateGenre)
+    [SwaggerOperation(Summary = "Update genre")]
+    [ProducesResponseType(typeof(BaseResponse<GenreUpdateResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreRequest request)
     {
-        return await ExecuteAsync(updateGenre);
+        return await ExecuteAsync<GenreUpdateResponse, bool>(request.Convert());
     }
 
     [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Delete genre", Description = "Remove a genre from the system using its ID")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Delete genre")]
+    [ProducesResponseType(typeof(BaseResponse<GenreDeleteResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteGenre(string id)
     {
-        return await ExecuteAsync(new DeleteGenreCommand { Id = id });
+        return await ExecuteAsync<GenreDeleteResponse, bool>(new DeleteGenreRequest { Id = id }.Convert());
     }
 }

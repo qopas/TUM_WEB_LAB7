@@ -1,15 +1,10 @@
-﻿using System.Reflection;
-using Application.DTOs.Book;
+﻿using Application.Book.Queries.GetBookById;
 using Application.Book.Queries.GetBooks;
-using Application.Book.Queries.GetBookById;
-using Application.Book.Commands.CreateBook;
-using Application.Book.Commands.UpdateBook;
-using Application.Book.Commands.DeleteBook;
+using Application.DTOs.Book;
 using BookRental.DTOs.In.Book;
 using BookRental.DTOs.Out;
 using BookRental.DTOs.Out.Book;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -20,10 +15,11 @@ public class BookController(IMediator mediator) : BaseApiController(mediator)
 {
     [HttpGet]
     [SwaggerOperation(Summary = "Get all books")]
-    [ProducesResponseType(typeof(BaseEnumerableResponse<BookResponse,BookDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseEnumerableResponse<BookResponse, BookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBooks()
     {
-        return await ExecuteAsync<BaseEnumerableResponse<BookResponse, BookDto>, IEnumerable<BookDto>>(new GetBooksQuery());
+        return await ExecuteAsync<BaseEnumerableResponse<BookResponse, BookDto>, IEnumerable<BookDto>>(
+            new GetBooksQuery());
     }
 
     [HttpGet("{id}")]

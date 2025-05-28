@@ -1,9 +1,8 @@
-﻿using Application.DTOs.Rent;
-using Application.Rent.Commands.CreateRent;
-using Application.Rent.Commands.DeleteRent;
-using Application.Rent.Commands.UpdateRent;
-using Application.Rent.Queries.GetRentById;
-using Application.Rent.Queries.GetRents;
+﻿
+using Application.DTOs.Rent;
+using BookRental.DTOs.In.Rent;
+using BookRental.DTOs.Out;
+using BookRental.DTOs.Out.Rent;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,42 +13,42 @@ namespace BookRental.Controllers;
 public class RentController(IMediator mediator) : BaseApiController(mediator)
 {
     [HttpGet]
-    [SwaggerOperation(Summary = "Get all rentals", Description = "Retrieve a list of all book rental transactions")]
-    [ProducesResponseType(typeof(IEnumerable<RentDto>), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get all rentals")]
+    [ProducesResponseType(typeof(BaseEnumerableResponse<RentResponse, RentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRents()
     {
-        return await ExecuteAsync(new GetRentsQuery());
+        return await ExecuteAsync<BaseEnumerableResponse<RentResponse, RentDto>, IEnumerable<RentDto>>(new GetRentsRequest().Convert());
     }
 
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Get rental by ID", Description = "Retrieve details of a specific rental transaction using its unique identifier")]
-    [ProducesResponseType(typeof(RentDto), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get rental by ID")]
+    [ProducesResponseType(typeof(BaseResponse<RentResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRent(string id)
     {
-        return await ExecuteAsync(new GetRentByIdQuery { Id = id });
+        return await ExecuteAsync<RentResponse, RentDto>(new GetRentByIdRequest { Id = id }.Convert());
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Create new rental", Description = "Create a new book rental transaction")]
-    [ProducesResponseType(typeof(RentDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateRent([FromBody] CreateRentCommand command)
+    [SwaggerOperation(Summary = "Create new rental")]
+    [ProducesResponseType(typeof(BaseResponse<RentDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateRent([FromBody] CreateRentRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<RentResponse, RentDto>(request.Convert());
     }
 
     [HttpPut]
-    [SwaggerOperation(Summary = "Update rental", Description = "Update details of an existing rental transaction")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateRent([FromBody] UpdateRentCommand command)
+    [SwaggerOperation(Summary = "Update rental")]
+    [ProducesResponseType(typeof(BaseResponse<RentUpdateResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateRent([FromBody] UpdateRentRequest request)
     {
-        return await ExecuteAsync(command);
+        return await ExecuteAsync<RentUpdateResponse, bool>(request.Convert());
     }
 
     [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Delete rental", Description = "Remove a rental transaction from the system using its ID")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Delete rental")]
+    [ProducesResponseType(typeof(BaseResponse<RentDeleteResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteRent(string id)
     {
-        return await ExecuteAsync(new DeleteRentCommand { Id = id });
+        return await ExecuteAsync<RentDeleteResponse, bool>(new DeleteRentRequest { Id = id }.Convert());
     }
 }
