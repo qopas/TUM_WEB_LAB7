@@ -15,26 +15,25 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace BookRental.Controllers;
 
-[AllowAnonymous]
 [SwaggerTag("Manage books in the rental system")]
 public class BookController(IMediator mediator) : BaseApiController(mediator)
 {
     [HttpGet]
     [SwaggerOperation(Summary = "Get all books")]
-    [ProducesResponseType(typeof(BaseEnumerableResponse<BookDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseEnumerableResponse<BookOutResponse,BookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBooks()
     {
         var request = new GetBooksQuery();
-        return await ExecuteAsync<BaseEnumerableResponse<BookDto>, IEnumerable<BookDto>>(request);
+        return await ExecuteAsync<BaseEnumerableResponse<BookOutResponse, BookDto>, IEnumerable<BookDto>>(request);
     }
 
     [HttpGet("{id}")]
     [SwaggerOperation(Summary = "Get book by ID")]
-    [ProducesResponseType(typeof(BaseResponse<BookDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseResponse<BookOutResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBook(string id)
     {
         var request = new GetBookByIdQuery { Id = id };
-        return await ExecuteAsync<BaseResponse<BookDto>, BookDto>(request);
+        return await ExecuteAsync<BookOutResponse, BookDto>(request);
     }
 
     [HttpPost]
@@ -43,25 +42,25 @@ public class BookController(IMediator mediator) : BaseApiController(mediator)
     public async Task<IActionResult> CreateBook([FromBody] CreateBookInRequest inRequest)
     {
         var request = inRequest.Convert();
-        return await ExecuteAsync<BaseResponse<BookDto>, BookDto>(request);
+        return await ExecuteAsync<BookOutResponse, BookDto>(request);
     }
 
     [HttpPut]
     [SwaggerOperation(Summary = "Update book")]
-    [ProducesResponseType(typeof(BaseResponse<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseResponse<BookUpdateResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateBook([FromBody] UpdateBookInRequest inRequest)
     {
         var request = inRequest.Convert();
-        return await ExecuteAsync<BaseResponse<bool>, bool>(request);
+        return await ExecuteAsync<BookUpdateResponse, bool>(request);
     }
 
     [HttpDelete("{id}")]
     [SwaggerOperation(Summary = "Delete book")]
-    [ProducesResponseType(typeof(BaseResponse<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BaseResponse<BookDeleteResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteBook(string id)
     {
         var request = new DeleteBookInRequest { Id = id };
         var command = request.Convert();
-        return await ExecuteAsync<BaseResponse<bool>, bool>(command);
+        return await ExecuteAsync<BookDeleteResponse, bool>(command);
     }
 }

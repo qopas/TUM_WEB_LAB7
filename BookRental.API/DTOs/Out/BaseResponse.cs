@@ -1,18 +1,8 @@
 ﻿namespace BookRental.DTOs.Out;
 
-public class BaseResponse<T> : IResponseOut<T>
+public class BaseResponse<T>
 {
-    public bool Success { get; init; }
-    public string Message { get; init; }
-    public T? Data { get; init; }
-
-    public object Convert(T result)
-    {
-        return new BaseResponse<T>
-        {
-            Success = true,
-            Message = "Operation completed successfully",
-            Data = result
-        };
-    }
+    public bool Success { get; set; }
+    public string Message { get; set; }
+    public T? Data { get; set; }
 }

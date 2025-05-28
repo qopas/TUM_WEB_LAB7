@@ -1,19 +1,18 @@
 ﻿namespace BookRental.DTOs.Out;
 
-public class BaseEnumerableResponse<T> : IResponseOut<IEnumerable<T>>
+public class BaseEnumerableResponse<TItem, TDto> : IResponseOut<IEnumerable<TDto>>
+    where TItem : IResponseOut<TDto>, new()
 {
-    public bool Success { get; init; }
-    public string Message { get; init; } 
-    public IEnumerable<T>? Data { get; init; }
+    private IEnumerable<TItem?> Items { get; set; } = new List<TItem>();
 
-    public object Convert(IEnumerable<T> result)
+    public object Convert(IEnumerable<TDto> dtos)
     {
-        var dataList = result.ToList();
-        return new BaseEnumerableResponse<T>
+        Items = dtos.Select(dto =>
         {
-            Success = true,
-            Message = $"Retrieved {dataList.Count} items successfully",
-            Data = dataList
-        };
+            var item = new TItem();
+            return (TItem)item.Convert(dto)!;
+        });
+        
+        return Items;
     }
 }

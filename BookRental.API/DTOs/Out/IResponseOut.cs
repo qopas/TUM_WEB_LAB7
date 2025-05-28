@@ -4,5 +4,5 @@ namespace BookRental.DTOs.Out;
 
 public interface IResponseOut<in T>
 {
-    object Convert(T result);
+    object? Convert(T result);
 }
