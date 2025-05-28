@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<CustomerViewModel>
 @{
-    ViewData["Title"] = "Customers";
-    Layout = "_Layout";
+ViewData["Title"] = "Customers";
+Layout = "_Layout";
 }
 
 <div class="bg-white rounded-lg shadow">
@@ -29,16 +29,11 @@
     </div>
 </div>
 
-@section Scripts {
 <script>
-    let table;
-
-    $(document).ready(function() {
-        table = $('#customersTable').DataTable({
-            processing: true,
-            serverSide: false,
+    document.addEventListener('DOMContentLoaded', function() {
+        const customersTable = initializeDataTable('#customersTable', {
             ajax: {
-                url: '/Customer/GetCustomersData',
+                url: '@Url.Action("GetCustomersData", "Customer")',
                 type: 'GET'
             },
             columns: [
@@ -46,7 +41,7 @@
                 { data: 'lastName' },
                 { data: 'address' },
                 { data: 'city' },
-                { 
+                {
                     data: 'id',
                     orderable: false,
                     searchable: false,
@@ -63,37 +58,37 @@
                         `;
                     }
                 }
-            ],
-            pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[0, 'asc']]
+            ]
         });
+
+        window.customersTable = customersTable;
     });
 
     function addCustomer() {
-        openModal('/Customer/GetModalBody', {
-            onSuccess: () => table.ajax.reload(null, false),
+        openModal('@Url.Action("GetModalBody", "Customer")', {
+            onSuccess: () => window.customersTable.ajax.reload(null, false),
             modalSize: 'lg'
         });
     }
 
     function editCustomer(customerId) {
-        openModal(`/Customer/GetModalBody/${customerId}`, {
-            onSuccess: () => table.ajax.reload(null, false),
+        const editUrl = '@Url.Action("GetModalBody", "Customer")' + '/' + customerId;
+        openModal(editUrl, {
+            onSuccess: () => window.customersTable.ajax.reload(null, false),
             modalSize: 'lg'
         });
     }
 
     function deleteCustomer(customerId) {
         if (confirm('Are you sure you want to delete this customer? This action cannot be undone.')) {
-            apiRequest(`/Customer/Delete/${customerId}`, {
+            const deleteUrl = '@Url.Action("Delete", "Customer")' + '/' + customerId;
+            apiRequest(deleteUrl, {
                 method: 'POST',
                 successMessage: 'Customer deleted successfully!',
                 onSuccess: () => {
-                    table.ajax.reload(null, false);
+                    window.customersTable.ajax.reload(null, false);
                 }
             });
         }
     }
 </script>
-}

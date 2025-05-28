@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<DestinationViewModel>
 @{
-    ViewData["Title"] = "Destinations";
-    Layout = "_Layout";
+ViewData["Title"] = "Destinations";
+Layout = "_Layout";
 }
 
 <div class="bg-white rounded-lg shadow">
@@ -30,21 +30,16 @@
     </div>
 </div>
 
-@section Scripts {
 <script>
-    let table;
-
-    $(document).ready(function() {
-        table = $('#destinationsTable').DataTable({
-            processing: true,
-            serverSide: false,
+    document.addEventListener('DOMContentLoaded', function() {
+        const destinationsTable = initializeDataTable('#destinationsTable', {
             ajax: {
-                url: '/Destination/GetDestinationsData',
+                url: '@Url.Action("GetDestinationsData", "Destination")',
                 type: 'GET'
             },
             columns: [
                 { data: 'name' },
-                { 
+                {
                     data: 'address',
                     render: function(data) {
                         return data.length > 50 ? data.substring(0, 50) + '...' : data;
@@ -53,7 +48,7 @@
                 { data: 'city' },
                 { data: 'contactPerson' },
                 { data: 'phoneNumber' },
-                { 
+                {
                     data: 'id',
                     orderable: false,
                     searchable: false,
@@ -70,37 +65,37 @@
                         `;
                     }
                 }
-            ],
-            pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[0, 'asc']]
+            ]
         });
+
+        window.destinationsTable = destinationsTable;
     });
 
     function addDestination() {
-        openModal('/Destination/GetModalBody', {
-            onSuccess: () => table.ajax.reload(null, false),
+        openModal('@Url.Action("GetModalBody", "Destination")', {
+            onSuccess: () => window.destinationsTable.ajax.reload(null, false),
             modalSize: 'lg'
         });
     }
 
     function editDestination(destinationId) {
-        openModal(`/Destination/GetModalBody/${destinationId}`, {
-            onSuccess: () => table.ajax.reload(null, false),
+        const editUrl = '@Url.Action("GetModalBody", "Destination")' + '/' + destinationId;
+        openModal(editUrl, {
+            onSuccess: () => window.destinationsTable.ajax.reload(null, false),
             modalSize: 'lg'
         });
     }
 
     function deleteDestination(destinationId) {
         if (confirm('Are you sure you want to delete this destination? This action cannot be undone.')) {
-            apiRequest(`/Destination/Delete/${destinationId}`, {
+            const deleteUrl = '@Url.Action("Delete", "Destination")' + '/' + destinationId;
+            apiRequest(deleteUrl, {
                 method: 'POST',
                 successMessage: 'Destination deleted successfully!',
                 onSuccess: () => {
-                    table.ajax.reload(null, false);
+                    window.destinationsTable.ajax.reload(null, false);
                 }
             });
         }
     }
 </script>
-}

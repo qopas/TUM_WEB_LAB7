@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<RentViewModel>
 @{
-ViewData["Title"] = "Rentals";
-Layout = "_Layout";
+    ViewData["Title"] = "Rentals";
+    Layout = "_Layout";
 }
 
 <div class="bg-white rounded-lg shadow">
@@ -32,16 +32,11 @@ Layout = "_Layout";
     </div>
 </div>
 
-@section Scripts {
 <script>
-    let table;
-
-    $(document).ready(function() {
-        table = $('#rentsTable').DataTable({
-            processing: true,
-            serverSide: false,
+    document.addEventListener('DOMContentLoaded', function() {
+        const rentsTable = initializeDataTable('#rentsTable', {
             ajax: {
-                url: '/Rent/GetRentsData',
+                url: '@Url.Action("GetRentsData", "Rent")',
                 type: 'GET'
             },
             columns: [
@@ -99,31 +94,33 @@ Layout = "_Layout";
                     }
                 }
             ],
-            pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[3, 'desc']] 
+            order: [[3, 'desc']]
         });
+
+        window.rentsTable = rentsTable;
     });
 
     function addRent() {
-        openModal('/Rent/GetModalBody', {
-            onSuccess: () => table.ajax.reload(null, false)
+        openModal('@Url.Action("GetModalBody", "Rent")', {
+            onSuccess: () => window.rentsTable.ajax.reload(null, false)
         });
     }
 
     function editRent(rentId) {
-        openModal(`/Rent/GetModalBody/${rentId}`, {
-            onSuccess: () => table.ajax.reload(null, false)
+        const editUrl = '@Url.Action("GetModalBody", "Rent")' + '/' + rentId;
+        openModal(editUrl, {
+            onSuccess: () => window.rentsTable.ajax.reload(null, false)
         });
     }
 
     function returnRent(rentId) {
         if (confirm('Are you sure you want to mark this rental as returned?')) {
-            apiRequest(`/Rent/Return/${rentId}`, {
+            const returnUrl = '@Url.Action("Return", "Rent")' + '/' + rentId;
+            apiRequest(returnUrl, {
                 method: 'POST',
                 successMessage: 'Book returned successfully!',
                 onSuccess: () => {
-                    table.ajax.reload(null, false);
+                    window.rentsTable.ajax.reload(null, false);
                 }
             });
         }
@@ -131,14 +128,14 @@ Layout = "_Layout";
 
     function deleteRent(rentId) {
         if (confirm('Are you sure you want to delete this rental? This action cannot be undone.')) {
-            apiRequest(`/Rent/Delete/${rentId}`, {
+            const deleteUrl = '@Url.Action("Delete", "Rent")' + '/' + rentId;
+            apiRequest(deleteUrl, {
                 method: 'POST',
                 successMessage: 'Rental deleted successfully!',
                 onSuccess: () => {
-                    table.ajax.reload(null, false);
+                    window.rentsTable.ajax.reload(null, false);
                 }
             });
         }
     }
 </script>
-}
