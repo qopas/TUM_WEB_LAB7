@@ -10,7 +10,7 @@
   [Route("api/[controller]")]
   public abstract class BaseApiController(IMediator mediator) : ControllerBase
   {
-      protected async Task<IActionResult> ExecuteAsync<T>(IRequest<T> request)
+      protected async Task<IActionResult> ExecuteAsync(IBaseRequest request)
       {
           try
           {
