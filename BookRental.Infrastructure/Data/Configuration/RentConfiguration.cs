@@ -8,7 +8,6 @@ public class RentConfiguration : IEntityTypeConfiguration<Rent>
 {
     public void Configure(EntityTypeBuilder<Rent> builder)
     {
-
         builder.HasKey(r => r.Id);
         
         builder.Property(r => r.RentDate)
@@ -16,6 +15,9 @@ public class RentConfiguration : IEntityTypeConfiguration<Rent>
                 
         builder.Property(r => r.DueDate)
             .IsRequired();
+            
+        builder.Property(r => r.ReturnDate)
+            .IsRequired(false);
                 
         builder.Property(r => r.Status)
             .IsRequired()
@@ -38,6 +40,5 @@ public class RentConfiguration : IEntityTypeConfiguration<Rent>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.ToTable("Rents");
-        
     }
 }

@@ -25,7 +25,7 @@ namespace Application.Authentication.Commands.Login
                 if (!passwordValid)
                     throw new ApplicationException("Invalid login credentials" );
 
-                user.LastLoginAt = DateTime.UtcNow;
+                user.LastLoginAt = DateTimeOffset.UtcNow;
                 await userManager.UpdateAsync(user);
                 return await tokenGenerationService.GenerateAuthenticationResult(user);
         }

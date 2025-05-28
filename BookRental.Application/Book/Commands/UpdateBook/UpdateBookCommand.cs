@@ -8,7 +8,7 @@ public class UpdateBookCommand : IRequest<bool>
     public required string Id { get; init; }
     public required string Title { get; init; }
     public required string Author { get; init; }
-    public required DateTime PublicationDate { get; init; }
+    public required DateTimeOffset PublicationDate { get; init; }
     public required string GenreId { get; init; }
     public required int AvailableQuantity { get; init; }
     public required decimal RentalPrice { get; init; }
@@ -30,7 +30,7 @@ public class UpdateBookCommandValidator : AbstractValidator<UpdateBookCommand>
 
         RuleFor(x => x.PublicationDate)
             .NotEmpty().WithMessage("Publication date is required")
-            .LessThanOrEqualTo(DateTime.Now).WithMessage("Publication date cannot be in the future");
+            .LessThanOrEqualTo(DateTimeOffset.Now).WithMessage("Publication date cannot be in the future");
 
         RuleFor(x => x.GenreId)
             .NotEmpty().WithMessage("Genre ID is required");

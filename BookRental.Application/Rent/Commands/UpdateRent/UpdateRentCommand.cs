@@ -10,9 +10,9 @@ public class UpdateRentCommand : IRequest<bool>
     public required string BookId { get; init; }
     public required string CustomerId { get; init; }
     public required string DestinationId { get; init; }
-    public required DateTime RentDate { get; init; }
-    public required DateTime DueDate { get; init; }
-    public required DateTime? ReturnDate { get; init; }
+    public required DateTimeOffset RentDate { get; init; }
+    public required DateTimeOffset DueDate { get; init; }
+    public required DateTimeOffset? ReturnDate { get; init; }
     public required RentStatus Status { get; init; }
 }
 public class UpdateRentCommandValidator : AbstractValidator<UpdateRentCommand>
@@ -32,7 +32,7 @@ public class UpdateRentCommandValidator : AbstractValidator<UpdateRentCommand>
 
         RuleFor(r => r.RentDate)
             .NotEmpty().WithMessage("Rent date is required")
-            .LessThanOrEqualTo(DateTime.Now).WithMessage("Rent date cannot be in the future");
+            .LessThanOrEqualTo(DateTimeOffset.Now).WithMessage("Rent date cannot be in the future");
 
         RuleFor(r => r.DueDate)
             .NotEmpty().WithMessage("Due date is required")

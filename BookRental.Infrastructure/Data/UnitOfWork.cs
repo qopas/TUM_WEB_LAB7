@@ -35,26 +35,26 @@ public class UnitOfWork(
     {
         return await dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
         {
-            using var transaction = await dbContext.Database.BeginTransactionAsync();
+            using var transaction = BeginTransactionAsync();
             try
             {
                 var result = await action();
-                await transaction.CommitAsync();
+                await CommitTransactionAsync();
                 return result;
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await RollbackTransactionAsync();
                 throw;
             }
         });
     }
-    public async Task BeginTransactionAsync()
+    private async Task BeginTransactionAsync()
     {
         _transaction = await dbContext.Database.BeginTransactionAsync();
     }
 
-    public async Task CommitTransactionAsync()
+    private async Task CommitTransactionAsync()
     {
         try
         {
@@ -67,7 +67,7 @@ public class UnitOfWork(
         }
     }
 
-    public async Task RollbackTransactionAsync()
+    private async Task RollbackTransactionAsync()
     {
         try
         {

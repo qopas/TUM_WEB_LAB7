@@ -40,7 +40,7 @@ public class RentController(IMediator mediator) : BaseWebController
         {
             return PartialView("_RentModalBody", new RentViewModel 
             { 
-                RentDate = DateTime.Now
+                RentDate = DateTimeOffset.Now
             });
         }
         else
@@ -93,7 +93,7 @@ public class RentController(IMediator mediator) : BaseWebController
             var rent = await mediator.Send(new GetRentByIdQuery { Id = id });
             var rentViewModel = RentViewModel.FromDto(rent);
             
-            rentViewModel.ReturnDate = DateTime.Now;
+            rentViewModel.ReturnDate = DateTimeOffset.Now;
             rentViewModel.Status = BookRental.Domain.Enums.RentStatus.Returned;
             
             return await mediator.Send(rentViewModel.ToUpdateCommand());

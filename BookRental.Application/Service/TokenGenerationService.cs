@@ -39,7 +39,7 @@ public class TokenGenerationService(
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenLifetime),
+            Expires = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.TokenLifetime).DateTime,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key), 
                 SecurityAlgorithms.HmacSha256Signature),
@@ -54,8 +54,8 @@ public class TokenGenerationService(
         {
             JwtId = token.Id,
             UserId = user.Id,
-            CreationDate = DateTime.UtcNow,
-            ExpiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetime),
+            CreationDate = DateTimeOffset.UtcNow,
+            ExpiryDate = DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetime),
             Token = Guid.NewGuid().ToString()
         };
         
