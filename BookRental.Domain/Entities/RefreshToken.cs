@@ -31,23 +31,4 @@ public class RefreshToken : FullAuditableEntity
 
         return Result<RefreshToken>.Success(refreshToken);
     }
-
-    public void Update(RefreshTokenModel model, string updatedBy)
-    {
-        Token = model.Token;
-        JwtId = model.JwtId;
-        CreationDate = model.CreationDate;
-        ExpiryDate = model.ExpiryDate;
-        Used = model.Used;
-        Invalidated = model.Invalidated;
-        UpdatedBy = updatedBy;
-        UpdatedAt = DateTimeOffset.UtcNow;
-    }
-
-    public void SoftDelete(string deletedBy)
-    {
-        IsDeleted = true;
-        DeletedBy = deletedBy;
-        DeletedAt = DateTimeOffset.UtcNow;
-    }
 }

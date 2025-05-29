@@ -30,23 +30,4 @@ public class Book : FullAuditableEntity
 
         return Result<Book>.Success(book);
     }
-
-    public void Update(BookModel model, string updatedBy)
-    {
-        Title = model.Title;
-        Author = model.Author;
-        PublicationDate = model.PublicationDate;
-        AvailableQuantity = model.AvailableQuantity;
-        RentalPrice = model.RentalPrice;
-        GenreId = model.GenreId;
-        UpdatedBy = updatedBy;
-        UpdatedAt = DateTimeOffset.UtcNow;
-    }
-
-    public void SoftDelete(string deletedBy)
-    {
-        IsDeleted = true;
-        DeletedBy = deletedBy;
-        DeletedAt = DateTimeOffset.UtcNow;
-    }
 }
