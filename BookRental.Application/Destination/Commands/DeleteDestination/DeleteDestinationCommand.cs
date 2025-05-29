@@ -1,9 +1,10 @@
-﻿using FluentValidation;
+﻿using BookRental.Domain.Common;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Destination.Commands.DeleteDestination;
 
-public class DeleteDestinationCommand : IRequest<bool>
+public class DeleteDestinationCommand : IRequest<Result<bool>>
 {
     public required string Id { get; init; }
 }
