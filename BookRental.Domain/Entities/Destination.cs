@@ -26,4 +26,22 @@ public class Destination : FullAuditableEntity
 
         return Result<Destination>.Success(destination);
     }
+
+    public void Update(DestinationModel model, string updatedBy)
+    {
+        Name = model.Name;
+        Address = model.Address;
+        City = model.City;
+        ContactPerson = model.ContactPerson;
+        PhoneNumber = model.PhoneNumber;
+        UpdatedBy = updatedBy;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string deletedBy)
+    {
+        IsDeleted = true;
+        DeletedBy = deletedBy;
+        DeletedAt = DateTimeOffset.UtcNow;
+    }
 }

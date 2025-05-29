@@ -29,4 +29,21 @@ public class Customer : FullAuditableEntity
 
         return Result<Customer>.Success(customer);
     }
+
+    public void Update(CustomerModel model, string updatedBy)
+    {
+        FirstName = model.FirstName;
+        LastName = model.LastName;
+        Address = model.Address;
+        City = model.City;
+        UpdatedBy = updatedBy;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string deletedBy)
+    {
+        IsDeleted = true;
+        DeletedBy = deletedBy;
+        DeletedAt = DateTimeOffset.UtcNow;
+    }
 }

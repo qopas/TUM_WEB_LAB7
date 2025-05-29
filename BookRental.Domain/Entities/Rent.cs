@@ -34,4 +34,14 @@ public class Rent : AuditableEntity
 
         return Result<Rent>.Success(rent);
     }
+
+    public void Update(RentModel model, string updatedBy)
+    {
+        RentDate = model.RentDate;
+        DueDate = model.DueDate;
+        ReturnDate = model.ReturnDate;
+        Status = model.Status;
+        UpdatedBy = updatedBy;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
 }
