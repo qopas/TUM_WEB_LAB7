@@ -4,6 +4,7 @@ using Application.DTOs.Authentication;
 using Application.Service;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
+using BookRental.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,24 +17,27 @@ namespace Application.Authentication.Commands.RefreshToken
         IUnitOfWork unitOfWork,
         ITokenGenerationService tokenGenerationService,
         TokenValidationParameters tokenValidationParameters)
-        : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
+        : IRequestHandler<RefreshTokenCommand, Result<AuthResponseDto>>
     {
-        public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AuthResponseDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var validationResult = await ValidateTokensAsync(request, cancellationToken);
             if (!validationResult.IsValid)
-                throw new ApplicationException(validationResult.Error);
+                return Result<AuthResponseDto>.Failure([validationResult.Error]);
 
             return await unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-                validationResult.RefreshToken.Used = true;
+                await unitOfWork.RefreshTokens.UpdateAsync(validationResult.RefreshToken.Id, setters => setters
+                    .SetProperty(rt => rt.Used, true));
+                
                 await unitOfWork.SaveChangesAsync();
 
                 var user = await userManager.FindByIdAsync(validationResult.UserId);
                 if (user == null)
-                    throw new ApplicationException("User not found");
+                    return Result<AuthResponseDto>.Failure(["User not found"]);
 
-                return await tokenGenerationService.GenerateAuthenticationResult(user);
+                var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(user);
+                return tokenResult;
             });
         }
 

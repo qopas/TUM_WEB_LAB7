@@ -2,6 +2,8 @@
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace BookRental.Infrastructure.Repositories;
 
@@ -30,11 +32,17 @@ public class Repository<T>(BookRentalDbContext dbContext) : IRepository<T>
         await _dbContext.Set<T>().AddAsync(entity);
         return entity;
     }
-        
     public Task UpdateAsync(T entity)
     {
         _dbContext.Entry(entity).State = EntityState.Modified;
         return Task.CompletedTask;
+    }
+
+    public async Task<int> UpdateAsync(string id, Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> setPropertyCalls)
+    {
+        return await _dbContext.Set<T>()
+            .Where(e => EF.Property<string>(e, "Id") == id)
+            .ExecuteUpdateAsync(setPropertyCalls);
     }
         
     public Task DeleteAsync(T entity)

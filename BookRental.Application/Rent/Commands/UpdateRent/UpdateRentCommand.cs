@@ -1,10 +1,11 @@
-﻿using BookRental.Domain.Enums;
+﻿using BookRental.Domain.Common;
+using BookRental.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Rent.Commands.UpdateRent;
 
-public class UpdateRentCommand : IRequest<bool>
+public class UpdateRentCommand : IRequest<Result<bool>>
 {
     public required string Id { get; init; }
     public required string BookId { get; init; }

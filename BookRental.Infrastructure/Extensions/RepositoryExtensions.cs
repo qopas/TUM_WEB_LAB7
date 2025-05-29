@@ -22,6 +22,20 @@ public static class RepositoryExtensions
 
         return entity;
     }
+    public static async Task<T> GetByIdOrThrowAsync<T>(
+        this IRepository<T> repository,
+        string id) where T : class
+    {
+        var entity = await repository.GetByIdAsync(id);
+
+        if (entity == null)
+        {
+            var entityName = typeof(T).Name;
+            throw new KeyNotFoundException("Entity_NotFound");
+        }
+
+        return entity;
+    }
 
     public static async Task DeleteOrThrowAsync<T>(
         this IRepository<T> repository,

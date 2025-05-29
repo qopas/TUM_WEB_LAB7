@@ -1,10 +1,11 @@
 ﻿using Application.Genres.Queries.GetGenreById;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Rent.Commands.DeleteRent;
 
-public class DeleteRentCommand : IRequest<bool>
+public class DeleteRentCommand : IRequest<Result<bool>>
 {
     public required string Id { get; init; }
 }

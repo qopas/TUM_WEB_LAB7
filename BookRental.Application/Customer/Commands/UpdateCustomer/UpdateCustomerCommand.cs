@@ -1,10 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Customer.Commands.UpdateCustomer;
 
-public class UpdateCustomerCommand : IRequest<bool>
+public class UpdateCustomerCommand : IRequest<Result<bool>>
 {
     public required string Id { get; init; }
     public required string FirstName { get; init; }

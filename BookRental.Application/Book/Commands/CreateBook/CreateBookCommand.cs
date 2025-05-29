@@ -1,10 +1,11 @@
 ﻿using Application.DTOs.Book;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Book.Commands.CreateBook;
 
-public class CreateBookCommand : IRequest<BookDto>
+public class CreateBookCommand : IRequest<Result<BookDto>>
 {
     public required string Title { get; init; }
     public required string Author { get; init; }

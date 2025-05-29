@@ -1,10 +1,11 @@
 ﻿using Application.DTOs.Authentication;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Authentication.Commands.Register;
 
-public class RegisterCommand : IRequest<AuthResponseDto>
+public class RegisterCommand : IRequest<Result<AuthResponseDto>>
 {
     public required string Email { get; init; }
     public required string Password { get; init; }

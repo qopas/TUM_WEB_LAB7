@@ -1,15 +1,31 @@
 ﻿using BookRental.Domain.Entities.Base;
+using BookRental.Domain.Entities.Models;
+using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
 public class Customer : BaseEntity
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public string Address { get; private set; }
+    public string City { get; private set; }
     
-    public string ApplicationUserId { get; set; }
-    public virtual ApplicationUser ApplicationUser { get; set; }
-    public virtual ICollection<Rent> Rents { get; set; }
+    public string ApplicationUserId { get; private set; }
+    public virtual ApplicationUser ApplicationUser { get; private set; }
+    public virtual ICollection<Rent> Rents { get; private set; } = new HashSet<Rent>();
+
+    public static Result<Customer> Create(CustomerModel model)
+    {
+        var customer = new Customer
+        {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Address = model.Address,
+            City = model.City,
+            ApplicationUserId = model.ApplicationUserId
+        };
+
+        return Result<Customer>.Success(customer);
+    }
 }

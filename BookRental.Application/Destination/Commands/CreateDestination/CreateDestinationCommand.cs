@@ -1,11 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using Application.DTOs.Destination;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Destination.Commands.CreateDestination;
 
-public class CreateDestinationCommand : IRequest<DestinationDto>
+public class CreateDestinationCommand : IRequest<Result<DestinationDto>>
 {
     public required string Name { get; init; }
     public required string Address { get; init; }

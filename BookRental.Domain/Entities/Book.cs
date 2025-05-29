@@ -1,16 +1,33 @@
 ﻿using BookRental.Domain.Entities.Base;
+using BookRental.Domain.Entities.Models;
+using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
 public class Book : BaseEntity
 {
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public DateTimeOffset PublicationDate { get; set; }
-    public int AvailableQuantity { get; set; }
-    public decimal RentalPrice { get; set; }
+    public string Title { get; private set; }
+    public string Author { get; private set; }
+    public DateTimeOffset PublicationDate { get; private set; }
+    public int AvailableQuantity { get; private set; }
+    public decimal RentalPrice { get; private set; }
     
-    public string GenreId { get; set; }
+    public string GenreId { get; private set; }
     public virtual Genre Genre { get; private set; }
-    public virtual ICollection<Rent> Rents { get; private set; }
+    public virtual ICollection<Rent> Rents { get; private set; } = new HashSet<Rent>();
+
+    public static Result<Book> Create(BookModel model)
+    {
+        var book = new Book
+        {
+            Title = model.Title,
+            Author = model.Author,
+            PublicationDate = model.PublicationDate,
+            AvailableQuantity = model.AvailableQuantity,
+            RentalPrice = model.RentalPrice,
+            GenreId = model.GenreId
+        };
+
+        return Result<Book>.Success(book);
+    }
 }

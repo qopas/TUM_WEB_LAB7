@@ -1,11 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using Application.DTOs.Customer;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Customer.Commands.CreateCustomer;
 
-public class CreateCustomerCommand : IRequest<CustomerDto>
+public class CreateCustomerCommand : IRequest<Result<CustomerDto>>
 {
     public required string FirstName { get; set; }
     public required string LastName { get; init; }

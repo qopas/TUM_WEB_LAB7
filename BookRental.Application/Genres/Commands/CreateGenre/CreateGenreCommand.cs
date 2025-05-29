@@ -1,10 +1,11 @@
 ﻿using Application.DTOs.Genre;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Genres.Commands.CreateGenre;
 
-public class CreateGenreCommand : IRequest<GenreDto>
+public class CreateGenreCommand : IRequest<Result<GenreDto>>
 {
     public required string Name { get; init; }
 }

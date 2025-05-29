@@ -1,10 +1,11 @@
 ﻿using Application.DTOs.Rent;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Rent.Commands.CreateRent;
 
-public class CreateRentCommand : IRequest<RentDto>
+public class CreateRentCommand : IRequest<Result<RentDto>>
 {
     public required string BookId { get; init; }
     public required string CustomerId { get; init; }

@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.Authentication;
 using Application.Service;
 using BookRental.Domain.Entities;
+using BookRental.Domain.Entities.Models;
 using BookRental.Domain.Interfaces;
+using BookRental.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,42 +13,45 @@ namespace Application.Authentication.Commands.Register
         UserManager<ApplicationUser> userManager,
         IUnitOfWork unitOfWork,
         ITokenGenerationService tokenGenerationService)
-        : IRequestHandler<RegisterCommand, AuthResponseDto>
+        : IRequestHandler<RegisterCommand, Result<AuthResponseDto>>
     {
-        public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             var existingUser = await userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
-                throw new ApplicationException("User with this email already exists");
+                return Result<AuthResponseDto>.Failure(["User with this email already exists"]);
 
             return await unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var user = CreateUser(request);
                 var createResult = await userManager.CreateAsync(user, request.Password);
                 if (!createResult.Succeeded)
-                    throw new ApplicationException(string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                    return Result<AuthResponseDto>.Failure(createResult.Errors.Select(e => e.Description).ToList());
 
                 var roleResult = await userManager.AddToRoleAsync(user, "Customer");
                 if (!roleResult.Succeeded)
-                    throw new ApplicationException(string.Join(", ", roleResult.Errors.Select(e => e.Description)));
-                
-                var customer = CreateCustomer(request, user);
+                    return Result<AuthResponseDto>.Failure(roleResult.Errors.Select(e => e.Description).ToList());
 
-                await unitOfWork.Customers.AddAsync(customer);
+                var customerResult = CreateCustomer(request, user);
+                if (!customerResult.IsSuccess)
+                    return Result<AuthResponseDto>.Failure(customerResult.Errors);
+
+                var createdCustomer = await unitOfWork.Customers.AddAsync(customerResult.Value);
                 await unitOfWork.SaveChangesAsync();
-                
-                user.CustomerId = customer.Id;
+
+                user.CustomerId = createdCustomer.Id;
                 var updateResult = await userManager.UpdateAsync(user);
                 if (!updateResult.Succeeded)
-                    throw new ApplicationException(string.Join(", ", updateResult.Errors.Select(e => e.Description)));
-                
-                return await tokenGenerationService.GenerateAuthenticationResult(user);
+                    return Result<AuthResponseDto>.Failure(updateResult.Errors.Select(e => e.Description).ToList());
+
+                var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(user);
+                return tokenResult;
             });
         }
 
-        private static BookRental.Domain.Entities.Customer CreateCustomer(RegisterCommand request, ApplicationUser user)
+        private static Result<BookRental.Domain.Entities.Customer> CreateCustomer(RegisterCommand request, ApplicationUser user)
         {
-            var customer = new BookRental.Domain.Entities.Customer
+            var customerModel = new CustomerModel
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
@@ -54,7 +59,7 @@ namespace Application.Authentication.Commands.Register
                 City = request.City,
                 ApplicationUserId = user.Id
             };
-            return customer;
+            return BookRental.Domain.Entities.Customer.Create(customerModel);
         }
 
         private static ApplicationUser CreateUser(RegisterCommand request)

@@ -1,35 +1,21 @@
 ﻿using BookRental.Domain.Interfaces;
-using BookRental.Infrastructure.Extensions;
+using BookRental.Domain.Common;
 using MediatR;
-using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Commands.UpdateBook;
 
-public class UpdateBookCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer) : IRequestHandler<UpdateBookCommand, bool>
+public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookCommand, Result<bool>>
 {
-    public async Task<bool> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
     {
-        var (book, handle) = await Convert(request);
-        if (!handle) return false;
-
-        await unitOfWork.Books.UpdateAsync(book);
-        await unitOfWork.SaveChangesAsync();
-        return true;
-    }
-
-    private async Task<(BookRental.Domain.Entities.Book? book, bool handle)> Convert(UpdateBookCommand request)
-    {
-        var book = await unitOfWork.Books.GetByIdOrThrowAsync(request.Id, localizer);
-        if (book == null)
-        {
-            return (book, false);
-        }
-        book.Title = request.Title;
-        book.Author = request.Author;
-        book.PublicationDate = request.PublicationDate;
-        book.GenreId = request.GenreId;
-        book.AvailableQuantity = request.AvailableQuantity;
-        book.RentalPrice = request.RentalPrice;
-        return (book, true);
+        var rowsAffected = await unitOfWork.Books.UpdateAsync(request.Id, setters => setters
+            .SetProperty(b => b.Title, request.Title)
+            .SetProperty(b => b.Author, request.Author)
+            .SetProperty(b => b.PublicationDate, request.PublicationDate)
+            .SetProperty(b => b.GenreId, request.GenreId)
+            .SetProperty(b => b.AvailableQuantity, request.AvailableQuantity)
+            .SetProperty(b => b.RentalPrice, request.RentalPrice));
+        
+        return rowsAffected.ToUpdateResult<BookRental.Domain.Entities.Book>(request.Id);
     }
 }

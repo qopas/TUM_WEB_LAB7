@@ -1,35 +1,19 @@
 ﻿using BookRental.Domain.Interfaces;
-using BookRental.Infrastructure.Extensions;
+using BookRental.Domain.Common;
 using MediatR;
-using Microsoft.Extensions.Localization;
 
 namespace Application.Customer.Commands.UpdateCustomer;
 
-public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer)
-    : IRequestHandler<UpdateCustomerCommand, bool>
+public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateCustomerCommand, Result<bool>>
 {
-    public async Task<bool> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
-        var (existingCustomer, handle) = await Convert(request);
-        if (!handle) return false;
-
-        await unitOfWork.Customers.UpdateAsync(existingCustomer);
-        await unitOfWork.SaveChangesAsync();
-        return true;
-    }
-
-    private async Task<(BookRental.Domain.Entities.Customer existingCustomer, bool handle)> Convert(UpdateCustomerCommand request)
-    {
-        var existingCustomer = await unitOfWork.Customers.GetByIdOrThrowAsync(request.Id, localizer);
-        if (existingCustomer == null)
-        {
-            return (existingCustomer, false);
-        }
-
-        existingCustomer.FirstName = request.FirstName;
-        existingCustomer.LastName = request.LastName;
-        existingCustomer.Address = request.Address;
-        existingCustomer.City = request.City;
-        return (existingCustomer, true);
+        var rowsAffected = await unitOfWork.Customers.UpdateAsync(request.Id, setters => setters
+            .SetProperty(c => c.FirstName, request.FirstName)
+            .SetProperty(c => c.LastName, request.LastName)
+            .SetProperty(c => c.Address, request.Address)
+            .SetProperty(c => c.City, request.City));
+        
+        return rowsAffected.ToUpdateResult<BookRental.Domain.Entities.Customer>(request.Id);
     }
 }
