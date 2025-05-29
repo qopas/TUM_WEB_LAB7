@@ -4,7 +4,7 @@ using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
-public class RefreshToken : BaseEntity
+public class RefreshToken : FullAuditableEntity 
 {
     public string Token { get; private set; }
     public string JwtId { get; private set; }
@@ -30,5 +30,24 @@ public class RefreshToken : BaseEntity
         };
 
         return Result<RefreshToken>.Success(refreshToken);
+    }
+
+    public void Update(RefreshTokenModel model, string updatedBy)
+    {
+        Token = model.Token;
+        JwtId = model.JwtId;
+        CreationDate = model.CreationDate;
+        ExpiryDate = model.ExpiryDate;
+        Used = model.Used;
+        Invalidated = model.Invalidated;
+        UpdatedBy = updatedBy;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string deletedBy)
+    {
+        IsDeleted = true;
+        DeletedBy = deletedBy;
+        DeletedAt = DateTimeOffset.UtcNow;
     }
 }

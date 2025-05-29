@@ -5,7 +5,7 @@ using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
-public class Rent : BaseEntity
+public class Rent : AuditableEntity  
 {
     public DateTimeOffset RentDate { get; private set; }
     public DateTimeOffset DueDate { get; private set; }
@@ -33,5 +33,15 @@ public class Rent : BaseEntity
         };
 
         return Result<Rent>.Success(rent);
+    }
+
+    public void Update(RentModel model, string updatedBy)
+    {
+        RentDate = model.RentDate;
+        DueDate = model.DueDate;
+        ReturnDate = model.ReturnDate;
+        Status = model.Status;
+        UpdatedBy = updatedBy;
+        UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
