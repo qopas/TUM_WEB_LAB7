@@ -4,7 +4,9 @@ using System.Text;
 using Application.DTOs.Authentication;
 using Application.Jwt;
 using BookRental.Domain.Entities;
+using BookRental.Domain.Entities.Models;
 using BookRental.Domain.Interfaces;
+using BookRental.Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +21,7 @@ public class TokenGenerationService(
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task<AuthResponseDto> GenerateAuthenticationResult(ApplicationUser user)
+    public async Task<Result<AuthResponseDto>> GenerateAuthenticationResult(ApplicationUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
@@ -49,24 +51,29 @@ public class TokenGenerationService(
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var tokenString = tokenHandler.WriteToken(token);
-        
-        var refreshToken = new RefreshToken
+
+        var refreshTokenResult = RefreshToken.Create(new RefreshTokenModel
         {
             JwtId = token.Id,
             UserId = user.Id,
             CreationDate = DateTimeOffset.UtcNow,
             ExpiryDate = DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetime),
             Token = Guid.NewGuid().ToString()
-        };
+        });
+
+        if (!refreshTokenResult.IsSuccess)
+            return Result<AuthResponseDto>.Failure(refreshTokenResult.Errors);
         
-        await unitOfWork.RefreshTokens.AddAsync(refreshToken);
+        var createdRefreshToken = await unitOfWork.RefreshTokens.AddAsync(refreshTokenResult.Value);
         await unitOfWork.SaveChangesAsync();
 
-        return AuthResponseDto.CreateSuccess(
+        var authResponse = AuthResponseDto.CreateSuccess(
             tokenString,
-            refreshToken.Token,
+            createdRefreshToken.Token,
             user.Id,
             user.CustomerId
         );
+
+        return Result<AuthResponseDto>.Success(authResponse);
     }
 }

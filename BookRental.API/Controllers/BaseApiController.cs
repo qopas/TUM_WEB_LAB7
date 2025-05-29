@@ -1,4 +1,5 @@
-﻿using BookRental.DTOs.Out;
+﻿using BookRental.Domain.Common;
+using BookRental.DTOs.Out;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,11 @@ public abstract class BaseApiController(IMediator mediator) : ControllerBase
 
             response.Data = result switch
             {
+                Result<TResult> { IsSuccess: false } resultObj => throw new Exception(string.Join(", ", resultObj.Errors)),
+                Result<TResult> resultObj => new TOutResponse().Convert(resultObj.Value),
                 TResult dto => new TOutResponse().Convert(dto),
                 _ => result
             };
-
             response.Success = true;
         }
         catch (Exception ex)

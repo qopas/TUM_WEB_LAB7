@@ -1,23 +1,17 @@
 ﻿using Application.DTOs.Book;
+using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
+using BookRental.Domain.Common;
+using BookRental.Domain.Entities.Models;
 using MediatR;
 
 namespace Application.Book.Commands.CreateBook;
 
-public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateBookCommand, BookDto>
+public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateBookCommand, Result<BookDto>>
 {
-    public async Task<BookDto> Handle(CreateBookCommand request, CancellationToken cancellationToken)
+    public async Task<Result<BookDto>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
     {
-        var book = Convert(request);
-        
-        var createdBook = await unitOfWork.Books.AddAsync(book);
-        await unitOfWork.SaveChangesAsync();
-        return BookDto.FromEntity(createdBook);
-    }
-
-    private static BookRental.Domain.Entities.Book Convert(CreateBookCommand request)
-    {
-        var book = new BookRental.Domain.Entities.Book
+        var bookModel = new BookModel
         {
             Title = request.Title,
             Author = request.Author,
@@ -26,6 +20,13 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             AvailableQuantity = request.AvailableQuantity,
             RentalPrice = request.RentalPrice
         };
-        return book;
+        
+        var bookResult = BookRental.Domain.Entities.Book.Create(bookModel);
+        if (!bookResult.IsSuccess)
+            return Result<BookDto>.Failure(bookResult.Errors);
+
+        var createdBook = await unitOfWork.Books.AddAsync(bookResult.Value);
+        await unitOfWork.SaveChangesAsync();
+        return Result<BookDto>.Success(BookDto.FromEntity(createdBook));
     }
 }

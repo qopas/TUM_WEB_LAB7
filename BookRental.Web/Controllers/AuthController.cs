@@ -33,7 +33,7 @@ public class AuthController(IMediator mediator) : BaseWebController
         {
             var command = new LoginCommand { Email = model.Email, Password = model.Password };
             var result = await mediator.Send(command);
-            await SignInUserAsync(result.UserId, result.Token, model.Email);
+            await SignInUserAsync(result.Value.UserId, result.Value.Token, model.Email);
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
@@ -66,7 +66,7 @@ public class AuthController(IMediator mediator) : BaseWebController
         try
         {
             var result = await mediator.Send(model.ConvertToRegisterCommand());
-            await SignInUserAsync(result.UserId, result.Token, model.Email);
+            await SignInUserAsync(result.Value.UserId, result.Value.Token, model.Email);
             return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)

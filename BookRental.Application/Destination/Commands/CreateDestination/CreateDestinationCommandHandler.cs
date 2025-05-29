@@ -1,25 +1,17 @@
 ﻿using Application.DTOs.Destination;
+using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
+using BookRental.Domain.Common;
+using BookRental.Domain.Entities.Models;
 using MediatR;
 
 namespace Application.Destination.Commands.CreateDestination;
 
-public class CreateDestinationCommandHandler(IUnitOfWork unitOfWork)
-    : IRequestHandler<CreateDestinationCommand, DestinationDto>
+public class CreateDestinationCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateDestinationCommand, Result<DestinationDto>>
 {
-    public async Task<DestinationDto> Handle(CreateDestinationCommand request, CancellationToken cancellationToken)
+    public async Task<Result<DestinationDto>> Handle(CreateDestinationCommand request, CancellationToken cancellationToken)
     {
-        var destination = Convert(request);
-
-        var createdDestination = await unitOfWork.Destinations.AddAsync(destination);
-        await unitOfWork.SaveChangesAsync();
-
-        return DestinationDto.FromEntity(createdDestination);
-    }
-
-    private static BookRental.Domain.Entities.Destination Convert(CreateDestinationCommand request)
-    {
-        return new BookRental.Domain.Entities.Destination
+        var destinationModel = new DestinationModel
         {
             Name = request.Name,
             Address = request.Address,
@@ -27,5 +19,13 @@ public class CreateDestinationCommandHandler(IUnitOfWork unitOfWork)
             ContactPerson = request.ContactPerson,
             PhoneNumber = request.PhoneNumber
         };
+
+        var destinationResult = BookRental.Domain.Entities.Destination.Create(destinationModel);
+        if (!destinationResult.IsSuccess)
+            return Result<DestinationDto>.Failure(destinationResult.Errors);
+
+        var createdDestination = await unitOfWork.Destinations.AddAsync(destinationResult.Value);
+        await unitOfWork.SaveChangesAsync();
+        return Result<DestinationDto>.Success(DestinationDto.FromEntity(createdDestination));
     }
 }

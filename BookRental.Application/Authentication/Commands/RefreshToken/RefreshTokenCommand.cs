@@ -1,10 +1,11 @@
 ﻿using Application.DTOs.Authentication;
+using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Authentication.Commands.RefreshToken;
 
-public class RefreshTokenCommand : IRequest<AuthResponseDto>
+public class RefreshTokenCommand : IRequest<Result<AuthResponseDto>>
 {
     public required string Token { get; init; }
     public required string RefreshToken { get; init; }

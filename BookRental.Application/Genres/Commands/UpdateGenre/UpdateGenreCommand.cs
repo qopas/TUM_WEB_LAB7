@@ -1,10 +1,11 @@
-﻿using BookRental.Domain.Interfaces;
+﻿using BookRental.Domain.Common;
+using BookRental.Domain.Interfaces;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Genres.Commands.UpdateGenre;
 
-public class UpdateGenreCommand : IRequest<bool>
+public class UpdateGenreCommand : IRequest<Result<bool>>
 {
     public required string Id { get; init; }
     public required string Name { get; init; }

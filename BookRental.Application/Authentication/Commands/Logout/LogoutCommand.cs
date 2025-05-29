@@ -1,9 +1,10 @@
-﻿using FluentValidation;
+﻿using BookRental.Domain.Common;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Authentication.Commands.Logout;
 
-public class LogoutCommand : IRequest<bool>
+public class LogoutCommand : IRequest<Result<bool>>
 {
     public required string UserId { get; init; }
     public required string? RefreshToken { get; init; }

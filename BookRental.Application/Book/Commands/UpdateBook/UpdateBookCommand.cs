@@ -1,9 +1,10 @@
-﻿using FluentValidation;
+﻿using BookRental.Domain.Common;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Book.Commands.UpdateBook;
 
-public class UpdateBookCommand : IRequest<bool>
+public class UpdateBookCommand : IRequest<Result<bool>>
 {
     public required string Id { get; init; }
     public required string Title { get; init; }

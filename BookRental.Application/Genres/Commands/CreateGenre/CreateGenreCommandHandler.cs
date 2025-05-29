@@ -1,26 +1,27 @@
 ﻿using Application.DTOs.Genre;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
+using BookRental.Domain.Common;
+using BookRental.Domain.Entities.Models;
 using MediatR;
 
 namespace Application.Genres.Commands.CreateGenre;
 
-public class CreateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateGenreCommand, GenreDto>
+public class CreateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateGenreCommand, Result<GenreDto>>
 {
-    public async Task<GenreDto> Handle(CreateGenreCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GenreDto>> Handle(CreateGenreCommand request, CancellationToken cancellationToken)
     {
-        var genre = Convert(request);
-        var createdGendre = await unitOfWork.Genres.AddAsync(genre);
-        await unitOfWork.SaveChangesAsync();
-        return GenreDto.FromEntity(createdGendre);
-    }
-
-    private static Genre Convert(CreateGenreCommand request)
-    {
-        var genre = new Genre()
+        var genreModel = new GenreModel
         {
             Name = request.Name
         };
-        return genre;
+        
+        var genreResult = Genre.Create(genreModel);
+        if (!genreResult.IsSuccess)
+            return Result<GenreDto>.Failure(genreResult.Errors);
+
+        var createdGenre = await unitOfWork.Genres.AddAsync(genreResult.Value);
+        await unitOfWork.SaveChangesAsync();
+        return Result<GenreDto>.Success(GenreDto.FromEntity(createdGenre));
     }
 }
