@@ -26,27 +26,6 @@ public class DestinationConfiguration : IEntityTypeConfiguration<Destination>
         builder.Property(d => d.PhoneNumber)
             .HasMaxLength(20);
 
-        builder.Property(d => d.CreatedBy)
-            .IsRequired()
-            .HasMaxLength(450);
-
-        builder.Property(d => d.CreatedAt)
-            .IsRequired();
-
-        builder.Property(d => d.UpdatedBy)
-            .HasMaxLength(450);
-
-        builder.Property(d => d.UpdatedAt);
-
-        builder.Property(d => d.DeletedBy)
-            .HasMaxLength(450);
-
-        builder.Property(d => d.DeletedAt);
-
-        builder.Property(d => d.IsDeleted)
-            .IsRequired()
-            .HasDefaultValue(false);
-
         builder.HasQueryFilter(d => !d.IsDeleted);
         
         builder.ToTable("Destinations");

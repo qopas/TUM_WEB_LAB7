@@ -28,27 +28,6 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.RentalPrice)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
-
-        builder.Property(b => b.CreatedBy)
-            .IsRequired()
-            .HasMaxLength(450);
-
-        builder.Property(b => b.CreatedAt)
-            .IsRequired();
-
-        builder.Property(b => b.UpdatedBy)
-            .HasMaxLength(450);
-
-        builder.Property(b => b.UpdatedAt);
-
-        builder.Property(b => b.DeletedBy)
-            .HasMaxLength(450);
-
-        builder.Property(b => b.DeletedAt);
-
-        builder.Property(b => b.IsDeleted)
-            .IsRequired()
-            .HasDefaultValue(false);
         
         builder.HasOne(b => b.Genre)
             .WithMany(g => g.Books)

@@ -26,28 +26,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             
         builder.Property(c => c.ApplicationUserId)
             .IsRequired(false);
-
-        builder.Property(c => c.CreatedBy)
-            .IsRequired()
-            .HasMaxLength(450);
-
-        builder.Property(c => c.CreatedAt)
-            .IsRequired();
-
-        builder.Property(c => c.UpdatedBy)
-            .HasMaxLength(450);
-
-        builder.Property(c => c.UpdatedAt);
-
-        builder.Property(c => c.DeletedBy)
-            .HasMaxLength(450);
-
-        builder.Property(c => c.DeletedAt);
-
-        builder.Property(c => c.IsDeleted)
-            .IsRequired()
-            .HasDefaultValue(false);
-
+        
         builder.HasOne(c => c.ApplicationUser)
             .WithOne(u => u.Customer)
             .HasForeignKey<Customer>(c => c.ApplicationUserId)

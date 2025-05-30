@@ -35,27 +35,6 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(rt => rt.UserId)
             .IsRequired();
 
-        builder.Property(rt => rt.CreatedBy)
-            .IsRequired()
-            .HasMaxLength(450);
-
-        builder.Property(rt => rt.CreatedAt)
-            .IsRequired();
-
-        builder.Property(rt => rt.UpdatedBy)
-            .HasMaxLength(450);
-
-        builder.Property(rt => rt.UpdatedAt);
-
-        builder.Property(rt => rt.DeletedBy)
-            .HasMaxLength(450);
-
-        builder.Property(rt => rt.DeletedAt);
-
-        builder.Property(rt => rt.IsDeleted)
-            .IsRequired()
-            .HasDefaultValue(false);
-        
         builder.HasOne(rt => rt.User)
             .WithMany()
             .HasForeignKey(rt => rt.UserId)

@@ -23,18 +23,6 @@ public class RentConfiguration : IEntityTypeConfiguration<Rent>
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(20);
-
-        builder.Property(r => r.CreatedBy)
-            .IsRequired()
-            .HasMaxLength(450);
-
-        builder.Property(r => r.CreatedAt)
-            .IsRequired();
-
-        builder.Property(r => r.UpdatedBy)
-            .HasMaxLength(450);
-
-        builder.Property(r => r.UpdatedAt);
         
         builder.HasOne(r => r.Book)
             .WithMany(b => b.Rents)
