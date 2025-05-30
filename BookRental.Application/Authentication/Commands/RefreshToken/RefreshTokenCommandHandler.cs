@@ -1,112 +1,29 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Application.DTOs.Authentication;
-using Application.Service;
-using BookRental.Domain.Entities;
-using BookRental.Domain.Interfaces;
+﻿using Application.DTOs.Authentication;
 using BookRental.Domain.Common;
+using BookRental.Domain.Interfaces.Services;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
-namespace Application.Authentication.Commands.RefreshToken
+namespace Application.Authentication.Commands.RefreshToken;
+
+public class RefreshTokenCommandHandler(IUserService userService, ITokenGenerationService tokenGenerationService)
+    : IRequestHandler<RefreshTokenCommand, Result<AuthResponseDto>>
 {
-    public class RefreshTokenCommandHandler(
-        UserManager<ApplicationUser> userManager,
-        IUnitOfWork unitOfWork,
-        ITokenGenerationService tokenGenerationService,
-        TokenValidationParameters tokenValidationParameters)
-        : IRequestHandler<RefreshTokenCommand, Result<AuthResponseDto>>
+    public async Task<Result<AuthResponseDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        public async Task<Result<AuthResponseDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
-        {
-            var validationResult = await ValidateTokensAsync(request, cancellationToken);
-            if (!validationResult.IsValid)
-                return Result<AuthResponseDto>.Failure([validationResult.Error]);
+        var userResult = await userService.RefreshTokenAsync(request.Token, request.RefreshToken);
+        if (!userResult.IsSuccess)
+            return Result<AuthResponseDto>.Failure(userResult.Errors);
 
-            return await unitOfWork.ExecuteInTransactionAsync(async () =>
-            {
-                await unitOfWork.RefreshTokens.UpdateAsync(validationResult.RefreshToken.Id, setters => setters
-                    .SetProperty(rt => rt.Used, true));
-                
-                await unitOfWork.SaveChangesAsync();
+        var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(userResult.Value);
+        if (!tokenResult.IsSuccess)
+            return Result<AuthResponseDto>.Failure(tokenResult.Errors);
 
-                var user = await userManager.FindByIdAsync(validationResult.UserId);
-                if (user == null)
-                    return Result<AuthResponseDto>.Failure(["User not found"]);
+        var authResponse = AuthResponseDto.CreateSuccess(
+            tokenResult.Value.Token,
+            tokenResult.Value.RefreshToken,
+            tokenResult.Value.UserId,
+            tokenResult.Value.CustomerId);
 
-                var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(user);
-                return tokenResult;
-            });
-        }
-
-        private async Task<ValidationResult> ValidateTokensAsync(RefreshTokenCommand request, CancellationToken cancellationToken)
-        {
-            var claimsPrincipal = GetPrincipalFromToken(request.Token);
-            if (claimsPrincipal == null)
-                return ValidationResult.Failure("Invalid token");
-            
-            var expiryDateUnix = long.Parse(claimsPrincipal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
-
-            if (expiryDateTimeUtc > DateTimeOffset.UtcNow)
-                return ValidationResult.Failure("This token hasn't expired yet");
-            
-            var storedRefreshToken = await unitOfWork.RefreshTokens
-                .Find(rt => rt.Token == request.RefreshToken)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (storedRefreshToken == null)
-                return ValidationResult.Failure("This refresh token does not exist");
-            
-            if (DateTimeOffset.UtcNow > storedRefreshToken.ExpiryDate)
-                return ValidationResult.Failure("This refresh token has expired");
-
-            if (storedRefreshToken.Invalidated)
-                return ValidationResult.Failure("This refresh token has been invalidated");
-
-            if (storedRefreshToken.Used)
-                return ValidationResult.Failure("This refresh token has been used");
-
-            var jti = claimsPrincipal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-            if (storedRefreshToken.JwtId != jti)
-                return ValidationResult.Failure("This refresh token does not match this JWT");
-
-            var userId = claimsPrincipal.Claims.Single(x => x.Type == "id").Value;
-            
-            return ValidationResult.Success(userId, storedRefreshToken);
-        }
-
-        private ClaimsPrincipal? GetPrincipalFromToken(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
-                return !IsJwtWithValidSecurityAlgorithm(validatedToken) ? null : principal;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
-        {
-            return (validatedToken is JwtSecurityToken jwtSecurityToken) &&
-                   jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                       StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private record ValidationResult(bool IsValid, string Error, string UserId, BookRental.Domain.Entities.RefreshToken RefreshToken)
-        {
-            public static ValidationResult Success(string userId, BookRental.Domain.Entities.RefreshToken refreshToken) 
-                => new(true, string.Empty, userId, refreshToken);
-            
-            public static ValidationResult Failure(string error) 
-                => new(false, error, string.Empty, null!);
-        }
+        return Result<AuthResponseDto>.Success(authResponse);
     }
 }
