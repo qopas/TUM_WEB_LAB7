@@ -1,35 +1,29 @@
 ﻿using Application.DTOs.Authentication;
-using Application.Service;
-using BookRental.Domain.Entities;
 using BookRental.Domain.Common;
+using BookRental.Domain.Interfaces.Services;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
-namespace Application.Authentication.Commands.Login
+namespace Application.Authentication.Commands.Login;
+
+public class LoginCommandHandler(IUserService userService, ITokenGenerationService tokenGenerationService)
+    : IRequestHandler<LoginCommand, Result<AuthResponseDto>>
 {
-    public class LoginCommandHandler(
-        UserManager<ApplicationUser> userManager,
-        ITokenGenerationService tokenGenerationService)
-        : IRequestHandler<LoginCommand, Result<AuthResponseDto>>
+    public async Task<Result<AuthResponseDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        public async Task<Result<AuthResponseDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
-        {
-            var user = await userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-                return Result<AuthResponseDto>.Failure(["Invalid login credentials"]);
+        var userResult = await userService.LoginAsync(request.Email, request.Password);
+        if (!userResult.IsSuccess)
+            return Result<AuthResponseDto>.Failure(userResult.Errors);
 
-            if (!user.LockoutEnabled)
-                return Result<AuthResponseDto>.Failure(["User account is deactivated"]);
+        var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(userResult.Value);
+        if (!tokenResult.IsSuccess)
+            return Result<AuthResponseDto>.Failure(tokenResult.Errors);
 
-            var passwordValid = await userManager.CheckPasswordAsync(user, request.Password);
-            if (!passwordValid)
-                return Result<AuthResponseDto>.Failure(["Invalid login credentials"]);
+        var authResponse = AuthResponseDto.CreateSuccess(
+            tokenResult.Value.Token,
+            tokenResult.Value.RefreshToken,
+            tokenResult.Value.UserId,
+            tokenResult.Value.CustomerId);
 
-            user.LastLoginAt = DateTimeOffset.UtcNow;
-            await userManager.UpdateAsync(user);
-
-            var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(user);
-            return tokenResult;
-        }
+        return Result<AuthResponseDto>.Success(authResponse);
     }
 }

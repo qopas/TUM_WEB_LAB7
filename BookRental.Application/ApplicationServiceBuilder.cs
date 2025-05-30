@@ -2,9 +2,11 @@
 using System.Text;
 using Application.Jwt;
 using Application.Service;
+using BookRental.Domain;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
+using BookRental.Domain.Interfaces.Services;
 using BookRental.Infrastructure.Data;
 using BookRental.Infrastructure.Repositories;
 using FluentValidation;
@@ -47,7 +49,9 @@ public static class ApplicationServiceBuilder
         services.AddScoped<IRentRepository, RentRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
+        services.AddScoped<IUserService, UserService>();
+        services.AddHttpContextAccessor();
+        
         var jwtSettingsSection = configuration.GetSection(nameof(JwtSettings));
         var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
         services.Configure<JwtSettings>(jwtSettingsSection);
@@ -65,9 +69,8 @@ public static class ApplicationServiceBuilder
             ClockSkew = TimeSpan.Zero
         };
         services.AddSingleton(tokenValidationParameters);
-
         services.AddScoped<ITokenGenerationService, TokenGenerationService>();
-
+        
         services.AddLocalization();
         services.AddSingleton(sp =>
             sp.GetRequiredService<IStringLocalizerFactory>()
@@ -126,7 +129,7 @@ public static class ApplicationServiceBuilder
     {
         using var scope = serviceProvider.CreateScope();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        string[] roleNames = { "Admin", "Customer" };
+        string[] roleNames = { Constants.RoleAdmin, Constants.RoleCustomer };
 
         foreach (var roleName in roleNames)
         {

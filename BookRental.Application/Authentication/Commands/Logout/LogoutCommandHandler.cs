@@ -1,7 +1,6 @@
 ﻿using BookRental.Domain.Interfaces;
 using BookRental.Domain.Common;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Authentication.Commands.Logout;
 
@@ -14,8 +13,6 @@ public class LogoutCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<Logo
             await unitOfWork.RefreshTokens.UpdateAsync(request.RefreshToken, setters => setters
                 .SetProperty(rt => rt.Invalidated, true));
         }
-
-        await unitOfWork.SaveChangesAsync();
         return Result<bool>.Success(true);
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Application.DTOs.Authentication;
 using Application.Jwt;
+using BookRental.Domain.Common;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Entities.Models;
 using BookRental.Domain.Interfaces;
-using BookRental.Domain.Common;
+using BookRental.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-
-namespace Application.Service;
 
 public class TokenGenerationService(
     UserManager<ApplicationUser> userManager,
@@ -21,7 +19,7 @@ public class TokenGenerationService(
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task<Result<AuthResponseDto>> GenerateAuthenticationResult(ApplicationUser user)
+    public async Task<Result<AuthModel>> GenerateAuthenticationResult(ApplicationUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
@@ -52,28 +50,30 @@ public class TokenGenerationService(
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var tokenString = tokenHandler.WriteToken(token);
 
-        var refreshTokenResult = RefreshToken.Create(new RefreshTokenModel
+        var refreshTokenModel = new RefreshTokenModel
         {
             JwtId = token.Id,
             UserId = user.Id,
             CreationDate = DateTimeOffset.UtcNow,
             ExpiryDate = DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetime),
             Token = Guid.NewGuid().ToString()
-        });
+        };
 
+        var refreshTokenResult = RefreshToken.Create(refreshTokenModel);
         if (!refreshTokenResult.IsSuccess)
-            return Result<AuthResponseDto>.Failure(refreshTokenResult.Errors);
+            return Result<AuthModel>.Failure(refreshTokenResult.Errors);
         
         var createdRefreshToken = await unitOfWork.RefreshTokens.AddAsync(refreshTokenResult.Value);
         await unitOfWork.SaveChangesAsync();
 
-        var authResponse = AuthResponseDto.CreateSuccess(
-            tokenString,
-            createdRefreshToken.Token,
-            user.Id,
-            user.CustomerId
-        );
+        var authModel = new AuthModel
+        {
+            Token = tokenString,
+            RefreshToken = createdRefreshToken.Token,
+            UserId = user.Id,
+            CustomerId = user.CustomerId
+        };
 
-        return Result<AuthResponseDto>.Success(authResponse);
+        return Result<AuthModel>.Success(authModel);
     }
 }
