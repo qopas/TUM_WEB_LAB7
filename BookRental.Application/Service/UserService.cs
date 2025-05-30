@@ -71,7 +71,7 @@ public class UserService(
             if (!customerResult.IsSuccess)
                 return Result<ApplicationUser>.Failure(customerResult.Errors);
 
-            var createdCustomer = await unitOfWork.Customers.AddAsync(customerResult.Value);
+            var createdCustomer = await unitOfWork.Customers.CreateAsync(customerResult.Value);
             await unitOfWork.SaveChangesAsync();
 
             user.CustomerId = createdCustomer.Id;

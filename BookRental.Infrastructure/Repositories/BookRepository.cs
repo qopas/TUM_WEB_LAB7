@@ -1,17 +1,14 @@
 ﻿using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookRental.Infrastructure.Repositories;
 
-public class BookRepository : Repository<Book>, IBookRepository
+public class BookRepository(BookRentalDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+    : FullAuditableRepository<Book>(dbContext, httpContextAccessor), IBookRepository
 {
-    public BookRepository(BookRentalDbContext dbContext) 
-        : base(dbContext)
-    {
-    }
-
     public async Task<IReadOnlyList<Book>> GetBooksByGenreAsync(string genreId)
     {
         return await _dbContext.Books
@@ -25,7 +22,7 @@ public class BookRepository : Repository<Book>, IBookRepository
             .Where(b => b.AvailableQuantity > 0)
             .ToListAsync();
     }
-    
+
     public async Task<Book> GetBookWithDetailsAsync(string id)
     {
         return await _dbContext.Books

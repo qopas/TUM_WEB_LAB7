@@ -11,7 +11,7 @@ public class DeleteDestinationCommandHandler(IUnitOfWork unitOfWork, IStringLoca
 {
     public async Task<Result<bool>> Handle(DeleteDestinationCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.Destinations.DeleteOrThrowAsync(request.Id, localizer);
+        await unitOfWork.Destinations.SoftDeleteAsync(request.Id);
         await unitOfWork.SaveChangesAsync();
         return Result<bool>.Success(true);
     }

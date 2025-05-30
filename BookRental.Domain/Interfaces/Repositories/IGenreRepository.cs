@@ -2,7 +2,7 @@
 
 namespace BookRental.Domain.Interfaces.Repositories;
 
-public interface IGenreRepository : IRepository<Genre>
+public interface IGenreRepository : ITrackableRepository<Genre>
 {
  
 }

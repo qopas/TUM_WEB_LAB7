@@ -2,7 +2,7 @@
 
 namespace BookRental.Domain.Interfaces.Repositories;
 
-public interface IBookRepository : IRepository<Book>
+public interface IBookRepository : IFullAuditableRepository<Book>
 {
     Task<IReadOnlyList<Book>> GetBooksByGenreAsync(string genreId);
     Task<IReadOnlyList<Book>> GetAvailableBooksAsync();

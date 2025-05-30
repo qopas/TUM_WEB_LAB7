@@ -43,12 +43,4 @@ public class RentController(IMediator mediator) : BaseApiController(mediator)
     {
         return await ExecuteAsync<RentUpdateResponse, bool>(request.Convert());
     }
-
-    [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Delete rental")]
-    [ProducesResponseType(typeof(BaseResponse<RentDeleteResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteRent(string id)
-    {
-        return await ExecuteAsync<RentDeleteResponse, bool>(new DeleteRentRequest { Id = id }.Convert());
-    }
 }

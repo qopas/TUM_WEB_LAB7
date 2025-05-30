@@ -2,7 +2,7 @@
 
 namespace BookRental.Domain.Interfaces.Repositories;
 
-public interface IDestinationRepository : IRepository<Destination>
+public interface IDestinationRepository : IFullAuditableRepository<Destination>
 {
  
 }

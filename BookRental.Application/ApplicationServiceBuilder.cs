@@ -66,7 +66,8 @@ public static class ApplicationServiceBuilder
             ValidateAudience = true,
             ValidAudience = jwtSettings.Audience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            RequireExpirationTime = true,
+            RequireSignedTokens = true
         };
         services.AddSingleton(tokenValidationParameters);
         services.AddScoped<ITokenGenerationService, TokenGenerationService>();
@@ -92,24 +93,25 @@ public static class ApplicationServiceBuilder
     }
 
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
+{
+    services.AddCommonServices(configuration);
+    var tokenValidationParameters = services.BuildServiceProvider()
+        .GetRequiredService<TokenValidationParameters>();
+    
+    services.AddAuthentication(options =>
     {
-        services.AddCommonServices(configuration);
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.TokenValidationParameters = tokenValidationParameters;
+    });
 
-        var tokenValidationParameters = services.BuildServiceProvider()
-            .GetRequiredService<TokenValidationParameters>();
-
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = tokenValidationParameters;
-        });
-
-        return services;
-    }
+    return services;
+}
 
     public static IServiceCollection AddWebAppServices(this IServiceCollection services, IConfiguration configuration)
     {

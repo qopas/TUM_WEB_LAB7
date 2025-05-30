@@ -76,15 +76,7 @@ public class RentController(IMediator mediator) : BaseWebController
             await mediator.Send(model.ToUpdateCommand())
         );
     }
-
-    [HttpPost]
-    public async Task<IActionResult> Delete(string id)
-    {
-        return await ExecuteAsync(async () =>
-            await mediator.Send(new DeleteRentCommand { Id = id })
-        );
-    }
-
+    
     [HttpPost]
     public async Task<IActionResult> Return(string id)
     {

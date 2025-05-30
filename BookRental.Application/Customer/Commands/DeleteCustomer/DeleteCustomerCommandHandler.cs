@@ -11,7 +11,7 @@ public class DeleteCustomerCommandHandler(IUnitOfWork unitOfWork, IStringLocaliz
 {
     public async Task<Result<bool>> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.Customers.DeleteOrThrowAsync(request.Id, localizer);
+        await unitOfWork.Customers.SoftDeleteAsync(request.Id);
         await unitOfWork.SaveChangesAsync();
         return Result<bool>.Success(true);
     }
