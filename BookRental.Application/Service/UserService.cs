@@ -54,7 +54,7 @@ public class UserService(
             if (!createResult.Succeeded)
                 return Result<ApplicationUser>.Failure(createResult.Errors.Select(e => e.Description).ToList());
 
-            var roleResult = await userManager.AddToRoleAsync(user, Constants.ROLE_CUSTOMER);
+            var roleResult = await userManager.AddToRoleAsync(user, Constants.RoleCustomer);
             if (!roleResult.Succeeded)
                 return Result<ApplicationUser>.Failure(roleResult.Errors.Select(e => e.Description).ToList());
 

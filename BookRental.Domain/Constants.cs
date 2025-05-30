@@ -2,7 +2,7 @@
 
 public static class Constants
 {
-    public const string ROLE_ADMIN = "Admin";
-    public const string ROLE_CUSTOMER = "Customer";
+    public const string RoleAdmin = "Admin";
+    public const string RoleCustomer = "Customer";
     
 }

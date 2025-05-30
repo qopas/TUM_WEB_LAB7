@@ -129,7 +129,7 @@ public static class ApplicationServiceBuilder
     {
         using var scope = serviceProvider.CreateScope();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        string[] roleNames = { Constants.ROLE_ADMIN, Constants.ROLE_CUSTOMER };
+        string[] roleNames = { Constants.RoleAdmin, Constants.RoleCustomer };
 
         foreach (var roleName in roleNames)
         {
