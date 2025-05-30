@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using BookRental.Domain;
 using BookRental.Domain.Common;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Entities.Models;
@@ -19,8 +20,6 @@ public class UserService(
     IHttpContextAccessor httpContextAccessor)
     : IUserService
 {
-    public string? CurrentUserId => httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-
     public async Task<Result<ApplicationUser>> LoginAsync(string email, string password)
     {
         var user = await userManager.FindByEmailAsync(email);
@@ -55,7 +54,7 @@ public class UserService(
             if (!createResult.Succeeded)
                 return Result<ApplicationUser>.Failure(createResult.Errors.Select(e => e.Description).ToList());
 
-            var roleResult = await userManager.AddToRoleAsync(user, "Customer");
+            var roleResult = await userManager.AddToRoleAsync(user, Constants.ROLE_CUSTOMER);
             if (!roleResult.Succeeded)
                 return Result<ApplicationUser>.Failure(roleResult.Errors.Select(e => e.Description).ToList());
 

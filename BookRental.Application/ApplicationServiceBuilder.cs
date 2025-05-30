@@ -2,6 +2,7 @@
 using System.Text;
 using Application.Jwt;
 using Application.Service;
+using BookRental.Domain;
 using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Interfaces.Repositories;
@@ -128,7 +129,7 @@ public static class ApplicationServiceBuilder
     {
         using var scope = serviceProvider.CreateScope();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        string[] roleNames = { "Admin", "Customer" };
+        string[] roleNames = { Constants.ROLE_ADMIN, Constants.ROLE_CUSTOMER };
 
         foreach (var roleName in roleNames)
         {
