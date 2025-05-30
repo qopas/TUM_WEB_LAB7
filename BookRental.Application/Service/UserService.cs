@@ -92,7 +92,7 @@ public class UserService(
 
         return await unitOfWork.ExecuteInTransactionAsync(async () =>
         {
-            await unitOfWork.RefreshTokens.UpdateAsync(tokenValidationResult.Value.Id,
+            await unitOfWork.RefreshTokens.UpdateAsync(tokenValidationResult.Value,
                 setters => setters.SetProperty(rt => rt.Used, true));
 
             await unitOfWork.SaveChangesAsync();
@@ -119,24 +119,24 @@ public class UserService(
         return Result<bool>.Success(true);
     }
 
-    private async Task<Result<RefreshToken>> ValidateTokensAsync(string token, string refreshToken)
+    private async Task<Result<string>> ValidateTokensAsync(string token, string refreshToken)
     {
         var claimsPrincipal = GetPrincipalFromToken(token);
         if (claimsPrincipal == null)
-            return Result<RefreshToken>.Failure(["Invalid token"]);
+            return Result<string>.Failure(["Invalid token"]);
 
         var expiryDateUnix = long.Parse(claimsPrincipal.Claims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
         var expiryDate = DateTimeOffset.FromUnixTimeSeconds(expiryDateUnix);
 
         if (expiryDate > DateTimeOffset.UtcNow)
-            return Result<RefreshToken>.Failure(["This token hasn't expired yet"]);
+            return Result<string>.Failure(["This token hasn't expired yet"]);
 
         var storedRefreshToken = await unitOfWork.RefreshTokens
             .Find(rt => rt.Token == refreshToken)
             .FirstOrDefaultAsync();
 
         if (storedRefreshToken == null)
-            return Result<RefreshToken>.Failure(["This refresh token does not exist"]);
+            return Result<string>.Failure(["This refresh token does not exist"]);
 
         var validationErrors = new List<string>();
 
@@ -152,8 +152,8 @@ public class UserService(
             validationErrors.Add("This refresh token does not match this JWT");
 
         return validationErrors.Any()
-            ? Result<RefreshToken>.Failure(validationErrors)
-            : Result<RefreshToken>.Success(storedRefreshToken);
+            ? Result<string>.Failure(validationErrors)
+            : Result<string>.Success(storedRefreshToken.Id);
     }
 
     private ClaimsPrincipal? GetPrincipalFromToken(string token)
