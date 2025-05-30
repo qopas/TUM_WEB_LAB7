@@ -4,7 +4,8 @@ using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
-public class Customer : BaseEntity
+
+public class Customer : FullAuditableEntity  
 {
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
@@ -13,7 +14,7 @@ public class Customer : BaseEntity
     
     public string ApplicationUserId { get; private set; }
     public virtual ApplicationUser ApplicationUser { get; private set; }
-    public virtual ICollection<Rent> Rents { get; private set; } = new HashSet<Rent>();
+    public virtual ICollection<Rent> Rents { get; private set; } 
 
     public static Result<Customer> Create(CustomerModel model)
     {

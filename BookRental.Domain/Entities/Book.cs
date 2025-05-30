@@ -4,7 +4,7 @@ using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
-public class Book : BaseEntity
+public class Book : FullAuditableEntity  
 {
     public string Title { get; private set; }
     public string Author { get; private set; }
@@ -14,7 +14,7 @@ public class Book : BaseEntity
     
     public string GenreId { get; private set; }
     public virtual Genre Genre { get; private set; }
-    public virtual ICollection<Rent> Rents { get; private set; } = new HashSet<Rent>();
+    public virtual ICollection<Rent> Rents { get; private set; }
 
     public static Result<Book> Create(BookModel model)
     {

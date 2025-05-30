@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.Entities;
+using BookRental.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,6 +15,5 @@ public class GenreConfiguration : IEntityTypeConfiguration<Genre>
             .HasMaxLength(50);
         
         builder.ToTable("Genres");
-
     }
 }

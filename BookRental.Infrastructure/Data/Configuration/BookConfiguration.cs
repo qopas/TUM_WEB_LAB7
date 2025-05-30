@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.Entities;
+using BookRental.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,6 +33,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .WithMany(g => g.Books)
             .HasForeignKey(b => b.GenreId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasQueryFilter(b => !b.IsDeleted);
         
         builder.ToTable("Books");
     }

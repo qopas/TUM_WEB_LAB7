@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.Entities;
+using BookRental.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,6 +26,13 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             
         builder.Property(c => c.ApplicationUserId)
             .IsRequired(false);
+        
+        builder.HasOne(c => c.ApplicationUser)
+            .WithOne(u => u.Customer)
+            .HasForeignKey<Customer>(c => c.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasQueryFilter(c => !c.IsDeleted);
             
         builder.ToTable("Customers");
     }

@@ -5,7 +5,7 @@ using BookRental.Domain.Common;
 
 namespace BookRental.Domain.Entities;
 
-public class Rent : BaseEntity
+public class Rent : AuditableEntity  
 {
     public DateTimeOffset RentDate { get; private set; }
     public DateTimeOffset DueDate { get; private set; }

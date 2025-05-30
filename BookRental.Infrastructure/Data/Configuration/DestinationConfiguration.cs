@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.Entities;
+using BookRental.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,8 +25,9 @@ public class DestinationConfiguration : IEntityTypeConfiguration<Destination>
                 
         builder.Property(d => d.PhoneNumber)
             .HasMaxLength(20);
+
+        builder.HasQueryFilter(d => !d.IsDeleted);
         
         builder.ToTable("Destinations");
-
     }
 }

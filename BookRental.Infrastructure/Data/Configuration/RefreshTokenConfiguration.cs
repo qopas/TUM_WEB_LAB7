@@ -1,4 +1,4 @@
-﻿using BookRental.Domain.Entities;
+using BookRental.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,7 +34,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
                 
         builder.Property(rt => rt.UserId)
             .IsRequired();
-        
+
         builder.HasOne(rt => rt.User)
             .WithMany()
             .HasForeignKey(rt => rt.UserId)
@@ -42,6 +42,8 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         
         builder.HasIndex(rt => rt.Token)
             .IsUnique();
+
+        builder.HasQueryFilter(rt => !rt.IsDeleted);
                 
         builder.ToTable("RefreshTokens");
     }
