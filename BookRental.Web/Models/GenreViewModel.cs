@@ -1,6 +1,6 @@
 ﻿using Application.DTOs.Genre;
 using Application.Genres.Commands.CreateGenre;
-using Application.Genres.Commands.UpdateGenre;
+
 
 namespace BookRental.Web.Models;
 
@@ -26,12 +26,4 @@ public class GenreViewModel
         };
     }
     
-    public UpdateGenreCommand ToUpdateCommand()
-    {
-        return new UpdateGenreCommand
-        {
-            Id = Id,
-            Name = Name
-        };
-    }
 }

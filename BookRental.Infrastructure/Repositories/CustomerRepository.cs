@@ -1,12 +1,9 @@
 ﻿using BookRental.Domain.Entities;
 using BookRental.Domain.Interfaces.Repositories;
 using BookRental.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace BookRental.Infrastructure.Repositories;
 
-public class CustomerRepository : Repository<Customer>, ICustomerRepository
-{
-    public CustomerRepository(BookRentalDbContext dbContext) : base(dbContext)
-    {
-    }
-}
+public class CustomerRepository(BookRentalDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+    : FullAuditableRepository<Customer>(dbContext, httpContextAccessor), ICustomerRepository;

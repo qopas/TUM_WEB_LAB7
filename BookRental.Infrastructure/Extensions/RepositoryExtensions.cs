@@ -43,6 +43,6 @@ public static class RepositoryExtensions
         IStringLocalizer localizer) where T : class
     {
         var entity = await repository.GetByIdOrThrowAsync(id, localizer);
-        await repository.DeleteAsync(entity);
+        await repository.HardRemoveAsync(entity);
     }
 }

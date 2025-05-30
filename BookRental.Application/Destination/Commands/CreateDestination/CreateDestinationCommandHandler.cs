@@ -24,7 +24,7 @@ public class CreateDestinationCommandHandler(IUnitOfWork unitOfWork) : IRequestH
         if (!destinationResult.IsSuccess)
             return Result<DestinationDto>.Failure(destinationResult.Errors);
 
-        var createdDestination = await unitOfWork.Destinations.AddAsync(destinationResult.Value);
+        var createdDestination = await unitOfWork.Destinations.CreateAsync(destinationResult.Value);
         await unitOfWork.SaveChangesAsync();
         return Result<DestinationDto>.Success(DestinationDto.FromEntity(createdDestination));
     }

@@ -23,7 +23,7 @@ public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork) : IRequestHand
         if (!customerResult.IsSuccess)
             return Result<CustomerDto>.Failure(customerResult.Errors);
 
-        var createdCustomer = await unitOfWork.Customers.AddAsync(customerResult.Value);
+        var createdCustomer = await unitOfWork.Customers.CreateAsync(customerResult.Value);
         await unitOfWork.SaveChangesAsync();
         return Result<CustomerDto>.Success(CustomerDto.FromEntity(createdCustomer));
     }

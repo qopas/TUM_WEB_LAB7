@@ -35,20 +35,5 @@ public class GenreController(IMediator mediator) : BaseApiController(mediator)
     {
         return await ExecuteAsync<GenreResponse, GenreDto>(request.Convert());
     }
-
-    [HttpPut]
-    [SwaggerOperation(Summary = "Update genre")]
-    [ProducesResponseType(typeof(BaseResponse<GenreUpdateResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenreRequest request)
-    {
-        return await ExecuteAsync<GenreUpdateResponse, bool>(request.Convert());
-    }
-
-    [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Delete genre")]
-    [ProducesResponseType(typeof(BaseResponse<GenreDeleteResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteGenre(string id)
-    {
-        return await ExecuteAsync<GenreDeleteResponse, bool>(new DeleteGenreRequest { Id = id }.Convert());
-    }
+    
 }

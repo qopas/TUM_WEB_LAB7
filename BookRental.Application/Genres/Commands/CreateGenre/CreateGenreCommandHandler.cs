@@ -20,7 +20,7 @@ public class CreateGenreCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler
         if (!genreResult.IsSuccess)
             return Result<GenreDto>.Failure(genreResult.Errors);
 
-        var createdGenre = await unitOfWork.Genres.AddAsync(genreResult.Value);
+        var createdGenre = await unitOfWork.Genres.CreateAsync(genreResult.Value);
         await unitOfWork.SaveChangesAsync();
         return Result<GenreDto>.Success(GenreDto.FromEntity(createdGenre));
     }

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
+namespace Application.Service;
+
 public class TokenGenerationService(
     UserManager<ApplicationUser> userManager,
     IUnitOfWork unitOfWork,
@@ -24,13 +26,14 @@ public class TokenGenerationService(
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
         
+        var now = DateTimeOffset.UtcNow;
+        
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("id", user.Id),
-            new Claim("customerId", user.CustomerId ?? "")
+            new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
         };
         
         var userRoles = await userManager.GetRolesAsync(user);
@@ -39,7 +42,9 @@ public class TokenGenerationService(
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.TokenLifetime).DateTime,
+            NotBefore = now.UtcDateTime,
+            IssuedAt = now.UtcDateTime,
+            Expires = now.AddMinutes(_jwtSettings.TokenLifetime).UtcDateTime,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key), 
                 SecurityAlgorithms.HmacSha256Signature),
@@ -54,8 +59,8 @@ public class TokenGenerationService(
         {
             JwtId = token.Id,
             UserId = user.Id,
-            CreationDate = DateTimeOffset.UtcNow,
-            ExpiryDate = DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetime),
+            CreationDate = now,
+            ExpiryDate = now.AddDays(_jwtSettings.RefreshTokenLifetime),
             Token = Guid.NewGuid().ToString()
         };
 
@@ -63,7 +68,7 @@ public class TokenGenerationService(
         if (!refreshTokenResult.IsSuccess)
             return Result<AuthModel>.Failure(refreshTokenResult.Errors);
         
-        var createdRefreshToken = await unitOfWork.RefreshTokens.AddAsync(refreshTokenResult.Value);
+        var createdRefreshToken = await unitOfWork.RefreshTokens.CreateAsync(refreshTokenResult.Value);
         await unitOfWork.SaveChangesAsync();
 
         var authModel = new AuthModel

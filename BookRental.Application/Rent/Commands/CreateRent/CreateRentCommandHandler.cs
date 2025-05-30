@@ -26,7 +26,7 @@ public class CreateRentCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         if (!rentResult.IsSuccess)
             return Result<RentDto>.Failure(rentResult.Errors);
 
-        var createdRent = await unitOfWork.Rents.AddAsync(rentResult.Value);
+        var createdRent = await unitOfWork.Rents.CreateAsync(rentResult.Value);
         await unitOfWork.SaveChangesAsync();
         return Result<RentDto>.Success(RentDto.FromEntity(createdRent));
     }

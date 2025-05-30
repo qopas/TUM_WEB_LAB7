@@ -25,7 +25,7 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         if (!bookResult.IsSuccess)
             return Result<BookDto>.Failure(bookResult.Errors);
 
-        var createdBook = await unitOfWork.Books.AddAsync(bookResult.Value);
+        var createdBook = await unitOfWork.Books.CreateAsync(bookResult.Value);
         await unitOfWork.SaveChangesAsync();
         return Result<BookDto>.Success(BookDto.FromEntity(createdBook));
     }

@@ -2,7 +2,7 @@
 
 namespace BookRental.Domain.Interfaces.Repositories;
 
-public interface IRentRepository : IRepository<Rent>
+public interface IRentRepository : IAuditableRepository<Rent>
 {
     
 }

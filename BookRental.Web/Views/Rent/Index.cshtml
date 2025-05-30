@@ -86,9 +86,6 @@
                                     Edit
                                 </button>
                                 ${returnBtn}
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteRent('${data.id}')">
-                                    Delete
-                                </button>
                             </div>
                         `;
                     }
@@ -119,19 +116,6 @@
             apiRequest(returnUrl, {
                 method: 'POST',
                 successMessage: 'Book returned successfully!',
-                onSuccess: () => {
-                    window.rentsTable.ajax.reload(null, false);
-                }
-            });
-        }
-    }
-
-    function deleteRent(rentId) {
-        if (confirm('Are you sure you want to delete this rental? This action cannot be undone.')) {
-            const deleteUrl = '@Url.Action("Delete", "Rent")' + '/' + rentId;
-            apiRequest(deleteUrl, {
-                method: 'POST',
-                successMessage: 'Rental deleted successfully!',
                 onSuccess: () => {
                     window.rentsTable.ajax.reload(null, false);
                 }

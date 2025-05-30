@@ -2,6 +2,6 @@
 
 namespace BookRental.Domain.Interfaces.Repositories;
 
-public interface ICustomerRepository : IRepository<Customer>
+public interface ICustomerRepository : IFullAuditableRepository<Customer>
 {
 }

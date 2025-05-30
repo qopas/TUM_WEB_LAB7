@@ -10,7 +10,7 @@ public class DeleteBookCommandHandler(IUnitOfWork unitOfWork,IStringLocalizer lo
 {
     public async Task<Result<bool>> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.Books.DeleteOrThrowAsync(request.Id, localizer);
+        await unitOfWork.Books.SoftDeleteAsync(request.Id);
         await unitOfWork.SaveChangesAsync();
         return Result<bool>.Success(true);
     }
