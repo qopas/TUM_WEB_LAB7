@@ -22,7 +22,7 @@ public class BookDto
             Title = book.Title,
             Author = book.Author,
             PublicationDate = book.PublicationDate,
-            Genres = book.BookGenres?.Select(bg => GenreDto.FromEntity(bg.Genre)) ?? [],
+            Genres = book.BookGenres.Select(bg => GenreDto.FromEntity(bg.Genre)),
             AvailableQuantity = book.AvailableQuantity,
             RentalPrice = book.RentalPrice,
             CreatedAt = book.CreatedAt,
