@@ -52,11 +52,11 @@ public class UserService(
 
             var createResult = await userManager.CreateAsync(user, model.Password);
             if (!createResult.Succeeded)
-                return Result<ApplicationUser>.Failure(createResult.Errors.Select(e => e.Description).ToList());
+                return Result<ApplicationUser>.Failure(createResult.Errors.Select(e => e.Description));
 
             var roleResult = await userManager.AddToRoleAsync(user, Constants.RoleCustomer);
             if (!roleResult.Succeeded)
-                return Result<ApplicationUser>.Failure(roleResult.Errors.Select(e => e.Description).ToList());
+                return Result<ApplicationUser>.Failure(roleResult.Errors.Select(e => e.Description));
 
             var customerModel = new CustomerModel
             {
@@ -77,7 +77,7 @@ public class UserService(
             user.CustomerId = createdCustomer.Id;
             var updateResult = await userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
-                return Result<ApplicationUser>.Failure(updateResult.Errors.Select(e => e.Description).ToList());
+                return Result<ApplicationUser>.Failure(updateResult.Errors.Select(e => e.Description));
 
             return Result<ApplicationUser>.Success(user);
         });

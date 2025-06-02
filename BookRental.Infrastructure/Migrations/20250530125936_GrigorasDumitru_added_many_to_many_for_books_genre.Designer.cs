@@ -4,6 +4,7 @@ using BookRental.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRental.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRentalDbContext))]
-    partial class BookRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250530125936_GrigorasDumitru_added_many_to_many_for_books_genre")]
+    partial class GrigorasDumitru_added_many_to_many_for_books_genre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,15 +30,15 @@ namespace BookRental.Infrastructure.Migrations
 
             modelBuilder.Entity("BookGenres", b =>
                 {
-                    b.Property<string>("BookId")
+                    b.Property<string>("BooksId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("GenreId")
+                    b.Property<string>("GenresId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("BookId", "GenreId");
+                    b.HasKey("BooksId", "GenresId");
 
-                    b.HasIndex("GenreId");
+                    b.HasIndex("GenresId");
 
                     b.ToTable("BookGenres");
                 });
@@ -564,13 +567,13 @@ namespace BookRental.Infrastructure.Migrations
                 {
                     b.HasOne("BookRental.Domain.Entities.Book", null)
                         .WithMany()
-                        .HasForeignKey("BookId")
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookRental.Domain.Entities.Genre", null)
                         .WithMany()
-                        .HasForeignKey("GenreId")
+                        .HasForeignKey("GenresId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

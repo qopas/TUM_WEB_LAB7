@@ -2,14 +2,14 @@
 @inject IStringLocalizer Localizer
 @model BookViewModel
 @{
-    var isEdit = !string.IsNullOrEmpty(Model.Id);
-    var formAction = isEdit ? "/Book/Edit" : "/Book/Create";
+var isEdit = !string.IsNullOrEmpty(Model.Id);
+var formAction = isEdit ? Url.Action("Edit", "Book") : Url.Action("Create", "Book");
 }
 
 <form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="@Localizer["Book"]">
     @if (isEdit)
     {
-        <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="Id" value="@Model.Id" />
     }
 
     <div class="row">
@@ -19,11 +19,10 @@
             <div class="invalid-feedback">@Localizer["PleaseProvideValidTitle"]</div>
         </div>
         <div class="col-md-4 mb-3">
-            <label for="bookGenre" class="form-label">@Localizer["Genre"] <span class="text-danger">*</span></label>
-            <select class="form-select" id="bookGenre" name="GenreId" required data-selected-value="@Model.GenreId">
-                <option value="">@Localizer["Loading"]...</option>
-            </select>
-            <div class="invalid-feedback">@Localizer["PleaseSelectGenre"]</div>
+            <label for="bookGenres" class="form-label">@Localizer["Genres"] <span class="text-danger">*</span></label>
+            <select class="form-select" id="bookGenres" multiple required></select>
+            <div class="invalid-feedback">@Localizer["PleaseSelectGenres"]</div>
+            <div id="genreInputs" style="display: none;"></div>
         </div>
     </div>
 
@@ -58,25 +57,60 @@
 </form>
 
 <script>
-$(document).ready(function() {
-    const genreSelect = document.getElementById('bookGenre');
-    if (genreSelect) {
-        const selectedValue = genreSelect.dataset.selectedValue;
-        
-        apiRequest('/Genre/GetGenresNames', { showError: false })
+    $(document).ready(() => {
+        const existingIds = @Html.Raw(Json.Serialize(Model.GenreIds ?? []));
+        initializeGenreSelect(existingIds);
+    });
+
+    function initializeGenreSelect(existingIds) {
+        apiRequest('@Url.Action("GetGenresNames", "Genre")', { showError: false })
             .then(genres => {
-                let options = '<option value="">@Html.Raw(Localizer["SelectGenre"])</option>';
-                
-                genres.forEach(genre => {
-                    const selected = genre.id === selectedValue ? 'selected' : '';
-                    options += `<option value="${genre.id}" ${selected}>${genre.name}</option>`;
-                });
-                
-                genreSelect.innerHTML = options;
-            })
-            .catch(error => {
-                genreSelect.innerHTML = '<option value="">@Html.Raw(Localizer["ErrorLoadingGenres"])</option>';
+                populateSelect(genres);
+                setupSelect2();
+                setSelectedGenres(existingIds);
+                updateHiddenInputs();
             });
     }
-});
+
+    function populateSelect(genres) {
+        const select = $('#bookGenres');
+        genres.forEach(genre => select.append(new Option(genre.name, genre.id)));
+    }
+
+    function setupSelect2() {
+        $('#bookGenres').select2({
+            theme: 'bootstrap-5',
+            placeholder: '@Html.Raw(Localizer["SelectGenre"])',
+            allowClear: true,
+            closeOnSelect: false,
+            width: '100%',
+            minimumResultsForSearch: 5,
+            dropdownParent: $('#dynamicModal').length ? $('#dynamicModal') : $('body')
+        }).on('change', () => {
+            updateHiddenInputs();
+            validateSelection();
+        });
+    }
+
+    function setSelectedGenres(ids) {
+        if (ids?.length) $('#bookGenres').val(ids).trigger('change');
+    }
+
+    function updateHiddenInputs() {
+        const container = $('#genreInputs');
+        const selectedValues = $('#bookGenres').val() || [];
+
+        container.empty();
+        selectedValues.forEach(value => {
+            container.append(`<input type="hidden" name="GenreIds" value="${value}">`);
+        });
+    }
+
+    function validateSelection() {
+        const select = $('#bookGenres');
+        const isValid = (select.val() || []).length > 0;
+
+        select.toggleClass('is-valid', isValid).toggleClass('is-invalid', !isValid);
+        return isValid;
+    }
 </script>
