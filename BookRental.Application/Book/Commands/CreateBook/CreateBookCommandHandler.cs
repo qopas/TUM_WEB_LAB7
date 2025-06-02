@@ -31,17 +31,17 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             return Result<BookDto>.Failure(bookResult.Errors);
 
         var createdBook = await unitOfWork.Books.CreateAsync(bookResult.Value);
-        AssignGenres(createdBook, genres);
+        await AssignGenres(createdBook.Id, genres);
         await unitOfWork.SaveChangesAsync();
         
         return Result<BookDto>.Success(BookDto.FromEntity(createdBook));
     }
 
-    private static void AssignGenres(BookRental.Domain.Entities.Book book, IEnumerable<BookRental.Domain.Entities.Genre> genres)
+    private async Task AssignGenres(string bookId, IEnumerable<BookRental.Domain.Entities.Genre> genres)
     {
         foreach (var genre in genres)
         {
-            book.Genres.Add(genre);
+            await unitOfWork.BookGenre.CreateAsync(BookRental.Domain.Entities.BookGenre.Create(bookId, genre.Id));
         }
     }
 }

@@ -12,8 +12,8 @@ public class Book : FullAuditableEntity
     public int AvailableQuantity { get; private set; }
     public decimal RentalPrice { get; private set; }
     
-    public virtual ICollection<Genre> Genres { get; private set; } 
-    public virtual ICollection<Rent> Rents { get; private set; } 
+    public virtual ICollection<BookGenre> BookGenres { get; private set; }
+    public virtual ICollection<Rent> Rents { get; private set; }
 
     public static Result<Book> Create(BookModel model)
     {
@@ -23,10 +23,25 @@ public class Book : FullAuditableEntity
             Author = model.Author,
             PublicationDate = model.PublicationDate,
             AvailableQuantity = model.AvailableQuantity,
-            RentalPrice = model.RentalPrice,
-            Genres = []
+            RentalPrice = model.RentalPrice
         };
 
         return Result<Book>.Success(book);
+    }
+
+    public void AddGenre(string genreId)
+    {
+        if (BookGenres.Any(bg => bg.GenreId == genreId)) return;
+        var bookGenre = BookGenre.Create(Id, genreId);
+        BookGenres.Add(bookGenre);
+    }
+
+    public void RemoveGenre(string genreId)
+    {
+        var bookGenre = BookGenres.FirstOrDefault(bg => bg.GenreId == genreId);
+        if (bookGenre != null)
+        {
+            BookGenres.Remove(bookGenre);
+        }
     }
 }

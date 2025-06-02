@@ -10,6 +10,7 @@ public interface IUnitOfWork : IDisposable
     IRefreshTokenRepository RefreshTokens { get; }
     IRentRepository Rents { get; }
     IDestinationRepository Destinations { get; }
+    IBookGenreRepository BookGenre { get; }
         
     Task<int> SaveChangesAsync();
     Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action);
