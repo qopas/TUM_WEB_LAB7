@@ -10,8 +10,7 @@ public class BookViewModel
     public string Title { get; set; }
     public string Author { get; set; }
     public DateTimeOffset PublicationDate { get; set; }
-    
-    public List<string> GenreIds { get; set; } = new();
+    public IEnumerable<string> GenreIds { get; set; } = [];
     public int AvailableQuantity { get; set; }
     public decimal RentalPrice { get; set; }
     
@@ -23,7 +22,7 @@ public class BookViewModel
             Title = dto.Title,
             Author = dto.Author,
             PublicationDate = dto.PublicationDate,
-            GenreIds = dto.Genres.Select(g => g.Id).ToList(),
+            GenreIds = dto.Genres.Select(g => g.Id),
             AvailableQuantity = dto.AvailableQuantity,
             RentalPrice = dto.RentalPrice
         };

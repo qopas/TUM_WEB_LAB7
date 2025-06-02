@@ -22,7 +22,11 @@ public class BookResponse : IResponseOut<BookDto>
             Title = dto.Title,
             Author = dto.Author,
             PublicationDate = dto.PublicationDate,
-            Genres = dto.Genres.Select(g => (GenreResponse)new GenreResponse().Convert(g)),
+            Genres = dto.Genres.Select(g => new GenreResponse
+            {
+                Id = g.Id,
+                Name = g.Name
+            }),
             AvailableQuantity = dto.AvailableQuantity,
             RentalPrice = dto.RentalPrice
         };

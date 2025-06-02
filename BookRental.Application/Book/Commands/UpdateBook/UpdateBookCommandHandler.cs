@@ -14,28 +14,17 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         if (book == null)
             return Result<bool>.Failure(["Book not found"]);
 
-        var genreValidation = await ValidateGenresAsync(request.GenreIds, cancellationToken);
-        if (!genreValidation.IsSuccess)
-            return Result<bool>.Failure(genreValidation.Errors);
+        var genres =  unitOfWork.Genres
+            .Find(g => request.GenreIds.Contains(g.Id));
+            
+        if (genres.Count() != request.GenreIds.Count())
+            return Result<bool>.Failure(["One or more genres not found"]);
         
         await UpdateBookPropertiesAsync(book.Id, request);
-        await UpdateBookGenresAsync(book, request.GenreIds);
+        UpdateBookGenres(book, genres);
         await unitOfWork.SaveChangesAsync();
         
         return Result<bool>.Success(true);
-    }
-
-    private async Task<Result<bool>> ValidateGenresAsync(IEnumerable<string> genreIds, CancellationToken cancellationToken)
-    {
-        if (!genreIds.Any()) return Result<bool>.Success(true);
-        
-        var existingCount = await unitOfWork.Genres
-            .Find(g => genreIds.Contains(g.Id))
-            .CountAsync(cancellationToken);
-            
-        return existingCount == genreIds.Count() 
-            ? Result<bool>.Success(true) 
-            : Result<bool>.Failure(["One or more genres not found"]);
     }
 
     private async Task UpdateBookPropertiesAsync(string bookId, UpdateBookCommand request)
@@ -48,15 +37,10 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             .SetProperty(b => b.RentalPrice, request.RentalPrice));
     }
 
-    private async Task UpdateBookGenresAsync(BookRental.Domain.Entities.Book book, IEnumerable<string> genreIds)
+    private static void UpdateBookGenres(BookRental.Domain.Entities.Book book, IEnumerable<BookRental.Domain.Entities.Genre> genres)
     {
         book.Genres.Clear();
-        
-        if (!genreIds.Any()) return;
-        
-        var genresQuery = unitOfWork.Genres.Find(g => genreIds.Contains(g.Id));
-        
-        await foreach (var genre in genresQuery.AsAsyncEnumerable())
+        foreach (var genre in genres)
         {
             book.Genres.Add(genre);
         }

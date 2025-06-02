@@ -19,22 +19,26 @@ public class AuditableRepository<T>(BookRentalDbContext dbContext, IHttpContextA
         _dbContext.Entry(entity).State = EntityState.Modified;
         return Task.CompletedTask;
     }
-
-    public async Task<int> UpdateAsync(string id, Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> setPropertyCalls)
+    public async Task<int> UpdateAsync(string id,
+        Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> setProperties)
     {
         return await _dbContext.Set<T>()
-            .Where(e => EF.Property<string>(e, "Id") == id)
-            .ExecuteUpdateAsync(calls => AddUpdateFields(setPropertyCalls, calls));
+            .Where(x => x.Id.Equals(id))
+            .ExecuteUpdateAsync(CombinedExpression(setProperties));
     }
 
-    private SetPropertyCalls<T> AddUpdateFields(
-        Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> userSetPropertyCalls,
-        SetPropertyCalls<T> calls)
+
+    private Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> CombinedExpression(
+        Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> s1)
     {
-        var userUpdatedCalls = userSetPropertyCalls.Compile()(calls);
-        
-        return userUpdatedCalls
-            .SetProperty(e => e.UpdatedBy, CurrentUserId)
-            .SetProperty(e => e.UpdatedAt, DateTimeOffset.Now);
+        Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> s2 = x =>
+            x.SetProperty(xx => xx.UpdatedAt, DateTime.Now)
+                .SetProperty(xx => xx.UpdatedBy, CurrentUserId);
+
+        var parameter = Expression.Parameter(typeof(SetPropertyCalls<T>), "x");
+
+        return
+            Expression.Lambda<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>>(
+                Expression.Invoke(s2, Expression.Invoke(s1, parameter)), parameter);
     }
 }
