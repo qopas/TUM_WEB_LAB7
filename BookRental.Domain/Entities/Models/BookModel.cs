@@ -2,10 +2,11 @@
 
 public class BookModel
 {
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public DateTimeOffset PublicationDate { get; set; }
-    public int AvailableQuantity { get; set; }
-    public decimal RentalPrice { get; set; }
-    public string GenreId { get; set; }
+    public string Title { get; init; }
+    public string Author { get; init; }
+    public DateTimeOffset PublicationDate { get; init; }
+    public int AvailableQuantity { get; init; }
+    public decimal RentalPrice { get; init; }
+    public IEnumerable<string> GenreIds { get; init; }
 }
+

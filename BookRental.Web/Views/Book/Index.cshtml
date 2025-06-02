@@ -24,7 +24,6 @@ ViewData["Title"] = Localizer["Books"];
                 <th>@Localizer["PublicationDate"]</th>
                 <th>@Localizer["AvailableQty"]</th>
                 <th>@Localizer["RentalPrice"]</th>
-                <th>@Localizer["Genre"]</th>
                 <th>@Localizer["Actions"]</th>
             </tr>
             </thead>
@@ -60,7 +59,6 @@ ViewData["Title"] = Localizer["Books"];
                         return '$' + parseFloat(data).toFixed(2);
                     }
                 },
-                { data: 'genreId' },
                 {
                     data: 'id',
                     orderable: false,

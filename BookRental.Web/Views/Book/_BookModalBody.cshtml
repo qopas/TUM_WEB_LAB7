@@ -3,7 +3,7 @@
 @model BookViewModel
 @{
     var isEdit = !string.IsNullOrEmpty(Model.Id);
-    var formAction = isEdit ? "/Book/Edit" : "/Book/Create";
+    var formAction = isEdit ? Url.Action("Edit", "Book") : Url.Action("Create", "Book");
 }
 
 <form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="@Localizer["Book"]">
@@ -19,11 +19,17 @@
             <div class="invalid-feedback">@Localizer["PleaseProvideValidTitle"]</div>
         </div>
         <div class="col-md-4 mb-3">
-            <label for="bookGenre" class="form-label">@Localizer["Genre"] <span class="text-danger">*</span></label>
-            <select class="form-select" id="bookGenre" name="GenreId" required data-selected-value="@Model.GenreId">
-                <option value="">@Localizer["Loading"]...</option>
-            </select>
-            <div class="invalid-feedback">@Localizer["PleaseSelectGenre"]</div>
+            <label for="bookGenres" class="form-label">@Localizer["Genres"] <span class="text-danger">*</span></label>
+            <div class="genre-tags-container">
+                <div id="selectedGenres" class="border rounded p-2 mb-2 bg-light" style="min-height: 40px;"></div>
+                <div class="input-group">
+                    <select class="form-select" id="bookGenres">
+                        <option value="">@Localizer["SelectGenre"]...</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-secondary" onclick="addGenre()">@Localizer["Add"]</button>
+                </div>
+            </div>
+            <div class="invalid-feedback">@Localizer["PleaseSelectGenres"]</div>
         </div>
     </div>
 
@@ -55,28 +61,85 @@
             </div>
         </div>
     </div>
+    
+    <div id="genreInputs">
+        @for (int i = 0; i < Model.GenreIds.Count; i++)
+        {
+            <input type="hidden" name="GenreIds[@i]" value="@Model.GenreIds[i]" />
+        }
+    </div>
 </form>
 
 <script>
-$(document).ready(function() {
-    const genreSelect = document.getElementById('bookGenre');
-    if (genreSelect) {
-        const selectedValue = genreSelect.dataset.selectedValue;
+    $(document).ready(function() {
+        loadGenres();
+    });
+    
+    function loadGenres() {
+        const existingIds = @Html.Raw(Json.Serialize(Model.GenreIds ?? new List<string>()));
         
-        apiRequest('/Genre/GetGenresNames', { showError: false })
+        apiRequest('@Url.Action("GetGenresNames", "Genre")', { showError: false })
             .then(genres => {
                 let options = '<option value="">@Html.Raw(Localizer["SelectGenre"])</option>';
-                
                 genres.forEach(genre => {
-                    const selected = genre.id === selectedValue ? 'selected' : '';
-                    options += `<option value="${genre.id}" ${selected}>${genre.name}</option>`;
+                    options += `<option value="${genre.id}">${genre.name}</option>`;
                 });
+                document.getElementById('bookGenres').innerHTML = options;
                 
-                genreSelect.innerHTML = options;
-            })
-            .catch(error => {
-                genreSelect.innerHTML = '<option value="">@Html.Raw(Localizer["ErrorLoadingGenres"])</option>';
+                existingIds.forEach(genreId => {
+                    const genre = genres.find(g => g.id === genreId);
+                    if (genre) {
+                        addGenreTag(genre);
+                    }
+                });
             });
     }
-});
+    
+    function addGenre() {
+        const select = document.getElementById('bookGenres');
+        const selectedValue = select.value;
+        
+        if (selectedValue) {
+            const selectedText = select.options[select.selectedIndex].text;
+            const genre = { id: selectedValue, name: selectedText };
+            
+            if (!document.querySelector(`[data-genre-id="${selectedValue}"]`)) {
+                addGenreTag(genre);
+                updateHiddenInputs();
+                select.value = '';
+            }
+        }
+    }
+    
+    function addGenreTag(genre) {
+        const container = document.getElementById('selectedGenres');
+        const tag = document.createElement('span');
+        tag.className = 'badge bg-primary me-1 mb-1';
+        tag.dataset.genreId = genre.id;
+        tag.innerHTML = `${genre.name} <button type="button" class="btn-close btn-close-white btn-sm ms-1" onclick="removeGenre('${genre.id}')" aria-label="Remove"></button>`;
+        container.appendChild(tag);
+    }
+    
+    function removeGenre(genreId) {
+        const tag = document.querySelector(`[data-genre-id="${genreId}"]`);
+        if (tag) {
+            tag.remove();
+            updateHiddenInputs();
+        }
+    }
+    
+    function updateHiddenInputs() {
+        const container = document.getElementById('genreInputs');
+        const tags = document.querySelectorAll('[data-genre-id]');
+        
+        container.innerHTML = '';
+        
+        tags.forEach((tag, index) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `GenreIds[${index}]`;
+            input.value = tag.dataset.genreId;
+            container.appendChild(input);
+        });
+    }
 </script>

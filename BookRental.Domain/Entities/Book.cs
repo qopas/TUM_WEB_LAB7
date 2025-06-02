@@ -12,9 +12,8 @@ public class Book : FullAuditableEntity
     public int AvailableQuantity { get; private set; }
     public decimal RentalPrice { get; private set; }
     
-    public string GenreId { get; private set; }
-    public virtual Genre Genre { get; private set; }
-    public virtual ICollection<Rent> Rents { get; private set; }
+    public virtual ICollection<Genre> Genres { get; private set; } 
+    public virtual ICollection<Rent> Rents { get; private set; } 
 
     public static Result<Book> Create(BookModel model)
     {
@@ -25,7 +24,7 @@ public class Book : FullAuditableEntity
             PublicationDate = model.PublicationDate,
             AvailableQuantity = model.AvailableQuantity,
             RentalPrice = model.RentalPrice,
-            GenreId = model.GenreId
+            Genres = []
         };
 
         return Result<Book>.Success(book);

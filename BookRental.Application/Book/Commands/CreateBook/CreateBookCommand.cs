@@ -10,7 +10,7 @@ public class CreateBookCommand : IRequest<Result<BookDto>>
     public required string Title { get; init; }
     public required string Author { get; init; }
     public required DateTimeOffset PublicationDate { get; init; }
-    public required string GenreId { get; init; }
+    public required IEnumerable<string> GenreIds { get; init; } 
     public required int AvailableQuantity { get; init; }
     public required decimal RentalPrice { get; init; }
 }
@@ -30,8 +30,10 @@ public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
             .NotEmpty().WithMessage("Publication date is required")
             .LessThanOrEqualTo(DateTimeOffset.Now).WithMessage("Publication date cannot be in the future");
 
-        RuleFor(x => x.GenreId)
-            .NotEmpty().WithMessage("Genre ID is required");
+        RuleFor(x => x.GenreIds)
+            .NotEmpty().WithMessage("At least one genre is required")
+            .Must(ids => ids.All(id => Guid.TryParse(id, out _)))
+            .WithMessage("All genre IDs must be valid GUIDs");
 
         RuleFor(x => x.AvailableQuantity)
             .GreaterThanOrEqualTo(0).WithMessage("Available quantity cannot be negative");

@@ -25,6 +25,21 @@ namespace BookRental.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BookGenres", b =>
+                {
+                    b.Property<string>("BookId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("GenreId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("BookId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("BookGenres");
+                });
+
             modelBuilder.Entity("BookRental.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -127,10 +142,6 @@ namespace BookRental.Infrastructure.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GenreId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -152,8 +163,6 @@ namespace BookRental.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GenreId");
 
                     b.ToTable("Books", (string)null);
                 });
@@ -551,15 +560,19 @@ namespace BookRental.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookRental.Domain.Entities.Book", b =>
+            modelBuilder.Entity("BookGenres", b =>
                 {
-                    b.HasOne("BookRental.Domain.Entities.Genre", "Genre")
-                        .WithMany("Books")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("BookRental.Domain.Entities.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Genre");
+                    b.HasOne("BookRental.Domain.Entities.Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BookRental.Domain.Entities.Customer", b =>
@@ -679,11 +692,6 @@ namespace BookRental.Infrastructure.Migrations
             modelBuilder.Entity("BookRental.Domain.Entities.Destination", b =>
                 {
                     b.Navigation("Rents");
-                });
-
-            modelBuilder.Entity("BookRental.Domain.Entities.Genre", b =>
-                {
-                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }

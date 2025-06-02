@@ -28,11 +28,13 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.RentalPrice)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
-        
-        builder.HasOne(b => b.Genre)
+
+        builder.HasMany(b => b.Genres)
             .WithMany(g => g.Books)
-            .HasForeignKey(b => b.GenreId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .UsingEntity<Dictionary<string, object>>(
+                "BookGenres",
+                j => j.HasOne<Genre>().WithMany().HasForeignKey("GenreId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Book>().WithMany().HasForeignKey("BookId").OnDelete(DeleteBehavior.Cascade));
 
         builder.HasQueryFilter(b => !b.IsDeleted);
         

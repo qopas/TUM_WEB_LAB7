@@ -1,7 +1,6 @@
 ﻿using Application.Book.Commands.CreateBook;
 using Application.Book.Commands.UpdateBook;
 using Application.DTOs.Book;
-using FluentValidation;
 
 namespace BookRental.Web.Models;
 
@@ -11,7 +10,8 @@ public class BookViewModel
     public string Title { get; set; }
     public string Author { get; set; }
     public DateTimeOffset PublicationDate { get; set; }
-    public string GenreId { get; set; }
+    
+    public List<string> GenreIds { get; set; } = new();
     public int AvailableQuantity { get; set; }
     public decimal RentalPrice { get; set; }
     
@@ -23,7 +23,7 @@ public class BookViewModel
             Title = dto.Title,
             Author = dto.Author,
             PublicationDate = dto.PublicationDate,
-            GenreId = dto.GenreId,
+            GenreIds = dto.Genres.Select(g => g.Id).ToList(),
             AvailableQuantity = dto.AvailableQuantity,
             RentalPrice = dto.RentalPrice
         };
@@ -36,11 +36,12 @@ public class BookViewModel
             Title = Title,
             Author = Author,
             PublicationDate = PublicationDate,
-            GenreId = GenreId,
+            GenreIds = GenreIds,
             AvailableQuantity = AvailableQuantity,
             RentalPrice = RentalPrice
         };
     }
+
     public UpdateBookCommand ToUpdateCommand()
     {
         return new UpdateBookCommand
@@ -49,7 +50,7 @@ public class BookViewModel
             Title = Title,
             Author = Author,
             PublicationDate = PublicationDate,
-            GenreId = GenreId,
+            GenreIds = GenreIds,
             AvailableQuantity = AvailableQuantity,
             RentalPrice = RentalPrice
         };

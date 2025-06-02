@@ -1,4 +1,6 @@
-﻿namespace Application.DTOs.Book;
+﻿using Application.DTOs.Genre;
+
+namespace Application.DTOs.Book;
 
 public class BookDto
 {
@@ -6,7 +8,7 @@ public class BookDto
     public string Title { get; set; }
     public string Author { get; set; }
     public DateTimeOffset PublicationDate { get; set; }
-    public string GenreId { get; set; }
+    public IEnumerable<GenreDto> Genres { get; set; }
     public int AvailableQuantity { get; set; }
     public decimal RentalPrice { get; set; }
     
@@ -18,7 +20,7 @@ public class BookDto
             Title = book.Title,
             Author = book.Author,
             PublicationDate = book.PublicationDate,
-            GenreId = book.GenreId,
+            Genres = book.Genres?.Select(GenreDto.FromEntity) ?? [],
             AvailableQuantity = book.AvailableQuantity,
             RentalPrice = book.RentalPrice
         };
