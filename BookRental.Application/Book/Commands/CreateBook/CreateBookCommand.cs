@@ -2,6 +2,7 @@
 using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Commands.CreateBook;
 
@@ -16,29 +17,29 @@ public class CreateBookCommand : IRequest<Result<BookDto>>
 }
 public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
 {
-    public CreateBookCommandValidator()
+    public CreateBookCommandValidator(IStringLocalizer localizer)
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required")
-            .MaximumLength(200).WithMessage("Title cannot exceed 200 characters");
+            .NotEmpty().WithMessage(localizer["titleRequired"])
+            .MaximumLength(200).WithMessage(localizer["titleMaxLength"]);
 
         RuleFor(x => x.Author)
-            .NotEmpty().WithMessage("Author is required")
-            .MaximumLength(100).WithMessage("Author cannot exceed 100 characters");
+            .NotEmpty().WithMessage(localizer["authorRequired"])
+            .MaximumLength(100).WithMessage(localizer["authorMaxLength"]);
 
         RuleFor(x => x.PublicationDate)
-            .NotEmpty().WithMessage("Publication date is required")
-            .LessThanOrEqualTo(DateTimeOffset.Now).WithMessage("Publication date cannot be in the future");
+            .NotEmpty().WithMessage(localizer["publicationDateRequired"])
+            .LessThanOrEqualTo(DateTimeOffset.Now).WithMessage(localizer["publicationDateFuture"]);
 
         RuleFor(x => x.GenreIds)
-            .NotEmpty().WithMessage("At least one genre is required")
+            .NotEmpty().WithMessage(localizer["genreRequired"])
             .Must(ids => ids.All(id => Guid.TryParse(id, out _)))
-            .WithMessage("All genre IDs must be valid GUIDs");
+            .WithMessage(localizer["invalidGenreIds"]);
 
         RuleFor(x => x.AvailableQuantity)
-            .GreaterThanOrEqualTo(0).WithMessage("Available quantity cannot be negative");
+            .GreaterThanOrEqualTo(0).WithMessage(localizer["quantityNegative"]);
 
         RuleFor(x => x.RentalPrice)
-            .GreaterThan(0).WithMessage("Rental price must be greater than zero");
+            .GreaterThan(0).WithMessage(localizer["pricePositive"]);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Book;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Queries.GetBookById;
 
@@ -10,9 +11,9 @@ public class GetBookByIdQuery : IRequest<BookDto>
 }
 public class GetBookByIdQueryValidator : AbstractValidator<GetBookByIdQuery>
 {
-    public GetBookByIdQueryValidator()
+    public GetBookByIdQueryValidator(IStringLocalizer localizer)
     {
         RuleFor(x => x.Id)
-            .NotEmpty().NotNull().WithMessage("Id is required");
+            .NotEmpty().NotNull().WithMessage(localizer["idRequired"]);
     }
 }

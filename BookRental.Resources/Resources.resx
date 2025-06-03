@@ -161,4 +161,107 @@
   <data name="ErrorLoadingForm" xml:space="preserve">
     <value>Error loading form</value>
   </data>
+
+<data name="bookManagement" xml:space="preserve">
+  <value>Book Management</value>
+</data>
+<data name="createNewBook" xml:space="preserve">
+  <value>Create New Book</value>
+</data>
+<data name="updateBook" xml:space="preserve">
+  <value>Update Book</value>
+</data>
+<data name="deleteBook" xml:space="preserve">
+  <value>Delete Book</value>
+</data>
+<data name="getBook" xml:space="preserve">
+  <value>Get Book</value>
+</data>
+<data name="getAllBooks" xml:space="preserve">
+  <value>Get All Books</value>
+</data>
+<data name="bookId" xml:space="preserve">
+  <value>Book ID</value>
+</data>
+<data name="bookTitle" xml:space="preserve">
+  <value>Book Title</value>
+</data>
+<data name="bookAuthor" xml:space="preserve">
+  <value>Book Author</value>
+</data>
+<data name="bookPublicationDate" xml:space="preserve">
+  <value>Publication Date</value>
+</data>
+<data name="bookGenres" xml:space="preserve">
+  <value>Genres</value>
+</data>
+<data name="bookAvailableQuantity" xml:space="preserve">
+  <value>Available Quantity</value>
+</data>
+<data name="bookRentalPrice" xml:space="preserve">
+  <value>Rental Price</value>
+</data>
+<data name="titleRequired" xml:space="preserve">
+  <value>Title is required</value>
+</data>
+<data name="titleMaxLength" xml:space="preserve">
+  <value>Title cannot exceed 200 characters</value>
+</data>
+<data name="authorRequired" xml:space="preserve">
+  <value>Author is required</value>
+</data>
+<data name="authorMaxLength" xml:space="preserve">
+  <value>Author cannot exceed 100 characters</value>
+</data>
+<data name="publicationDateRequired" xml:space="preserve">
+  <value>Publication date is required</value>
+</data>
+<data name="publicationDateFuture" xml:space="preserve">
+  <value>Publication date cannot be in the future</value>
+</data>
+<data name="genreRequired" xml:space="preserve">
+  <value>At least one genre is required</value>
+</data>
+<data name="invalidGenreIds" xml:space="preserve">
+  <value>All genre IDs must be valid GUIDs</value>
+</data>
+<data name="quantityNegative" xml:space="preserve">
+  <value>Available quantity cannot be negative</value>
+</data>
+<data name="pricePositive" xml:space="preserve">
+  <value>Rental price must be greater than zero</value>
+</data>
+<data name="bookIdRequired" xml:space="preserve">
+  <value>Book ID is required</value>
+</data>
+<data name="idRequired" xml:space="preserve">
+  <value>Id is required</value>
+</data>
+<data name="bookCreatedSuccessfully" xml:space="preserve">
+  <value>Book created successfully!</value>
+</data>
+<data name="bookUpdatedSuccessfully" xml:space="preserve">
+  <value>Book updated successfully!</value>
+</data>
+<data name="bookDeletedSuccessfully" xml:space="preserve">
+  <value>Book deleted successfully!</value>
+</data>
+<data name="oneOrMoreGenresNotFound" xml:space="preserve">
+  <value>One or more genres not found</value>
+</data>
+<data name="bookNotFound" xml:space="preserve">
+  <value>Book not found</value>
+</data>
+<data name="errorCreatingBook" xml:space="preserve">
+  <value>Error creating book</value>
+</data>
+<data name="errorUpdatingBook" xml:space="preserve">
+  <value>Error updating book</value>
+</data>
+<data name="errorDeletingBook" xml:space="preserve">
+  <value>Error deleting book</value>
+</data>
+<data name="errorLoadingBook" xml:space="preserve">
+  <value>Error loading book</value>
+</data>
 </root>

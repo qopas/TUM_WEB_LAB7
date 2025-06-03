@@ -153,5 +153,107 @@
   </data>
   <data name="ErrorLoadingForm" xml:space="preserve">
     <value>Ошибка загрузки формы</value>
-  </data>	
+  </data>
+  <data name="bookManagement" xml:space="preserve">
+  <value>Управление Книгами</value>
+</data>
+<data name="createNewBook" xml:space="preserve">
+  <value>Создать Новую Книгу</value>
+</data>
+<data name="updateBook" xml:space="preserve">
+  <value>Обновить Книгу</value>
+</data>
+<data name="deleteBook" xml:space="preserve">
+  <value>Удалить Книгу</value>
+</data>
+<data name="getBook" xml:space="preserve">
+  <value>Получить Книгу</value>
+</data>
+<data name="getAllBooks" xml:space="preserve">
+  <value>Получить Все Книги</value>
+</data>
+<data name="bookId" xml:space="preserve">
+  <value>ID Книги</value>
+</data>
+<data name="bookTitle" xml:space="preserve">
+  <value>Название Книги</value>
+</data>
+<data name="bookAuthor" xml:space="preserve">
+  <value>Автор Книги</value>
+</data>
+<data name="bookPublicationDate" xml:space="preserve">
+  <value>Дата Публикации</value>
+</data>
+<data name="bookGenres" xml:space="preserve">
+  <value>Жанры</value>
+</data>
+<data name="bookAvailableQuantity" xml:space="preserve">
+  <value>Доступное Количество</value>
+</data>
+<data name="bookRentalPrice" xml:space="preserve">
+  <value>Цена Аренды</value>
+</data>
+<data name="titleRequired" xml:space="preserve">
+  <value>Название обязательно</value>
+</data>
+<data name="titleMaxLength" xml:space="preserve">
+  <value>Название не может превышать 200 символов</value>
+</data>
+<data name="authorRequired" xml:space="preserve">
+  <value>Автор обязателен</value>
+</data>
+<data name="authorMaxLength" xml:space="preserve">
+  <value>Автор не может превышать 100 символов</value>
+</data>
+<data name="publicationDateRequired" xml:space="preserve">
+  <value>Дата публикации обязательна</value>
+</data>
+<data name="publicationDateFuture" xml:space="preserve">
+  <value>Дата публикации не может быть в будущем</value>
+</data>
+<data name="genreRequired" xml:space="preserve">
+  <value>Требуется хотя бы один жанр</value>
+</data>
+<data name="invalidGenreIds" xml:space="preserve">
+  <value>Все ID жанров должны быть действительными GUID</value>
+</data>
+<data name="quantityNegative" xml:space="preserve">
+  <value>Доступное количество не может быть отрицательным</value>
+</data>
+<data name="pricePositive" xml:space="preserve">
+  <value>Цена аренды должна быть больше нуля</value>
+</data>
+<data name="bookIdRequired" xml:space="preserve">
+  <value>ID книги обязателен</value>
+</data>
+<data name="idRequired" xml:space="preserve">
+  <value>ID обязателен</value>
+</data>
+<data name="bookCreatedSuccessfully" xml:space="preserve">
+  <value>Книга успешно создана!</value>
+</data>
+<data name="bookUpdatedSuccessfully" xml:space="preserve">
+  <value>Книга успешно обновлена!</value>
+</data>
+<data name="bookDeletedSuccessfully" xml:space="preserve">
+  <value>Книга успешно удалена!</value>
+</data>
+<data name="oneOrMoreGenresNotFound" xml:space="preserve">
+  <value>Один или несколько жанров не найдены</value>
+</data>
+<data name="bookNotFound" xml:space="preserve">
+  <value>Книга не найдена</value>
+</data>
+<data name="errorCreatingBook" xml:space="preserve">
+  <value>Ошибка при создании книги</value>
+</data>
+<data name="errorUpdatingBook" xml:space="preserve">
+  <value>Ошибка при обновлении книги</value>
+</data>
+<data name="errorDeletingBook" xml:space="preserve">
+  <value>Ошибка при удалении книги</value>
+</data>
+<data name="errorLoadingBook" xml:space="preserve">
+  <value>Ошибка при загрузке книги</value>
+</data>
 </root>

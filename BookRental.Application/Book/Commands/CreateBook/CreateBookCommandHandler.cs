@@ -4,18 +4,19 @@ using BookRental.Domain.Common;
 using BookRental.Domain.Entities.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Commands.CreateBook;
 
-public class CreateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateBookCommand, Result<BookDto>>
+public class CreateBookCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer) : IRequestHandler<CreateBookCommand, Result<BookDto>>
 {
     public async Task<Result<BookDto>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
     {
-        var genres =  unitOfWork.Genres
+        var genres = unitOfWork.Genres
             .Find(g => request.GenreIds.Contains(g.Id));
             
         if (genres.Count() != request.GenreIds.Count())
-            return Result<BookDto>.Failure(["One or more genres not found"]);
+            return Result<BookDto>.Failure([localizer["oneOrMoreGenresNotFound"]]);
 
         var bookResult = BookRental.Domain.Entities.Book.Create(new BookModel
         {
