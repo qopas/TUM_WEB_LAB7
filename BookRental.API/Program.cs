@@ -1,5 +1,5 @@
 using Application;
-using BookRental.Middleware;
+using Application.Middleware;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.OpenApi.Models;

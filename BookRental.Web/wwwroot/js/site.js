@@ -8,27 +8,41 @@ window.hideLoading = function() {
     document.getElementById('loadingOverlay').classList.remove('flex');
 };
 
-window.showAlert = function(message, type = 'info') {
+window.showAlert = function(message, type = 'info', stackTrace = null) {
     const toastId = 'toast-' + Date.now();
     const iconClass = type === 'success' ? 'check-circle' :
         type === 'danger' ? 'exclamation-triangle' :
             type === 'warning' ? 'exclamation-circle' : 'info-circle';
 
+    const stackTraceButton = stackTrace ?
+        `<button onclick="toggleStackTrace('${toastId}')" class="ml-2 text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded">
+            Show Details
+        </button>` : '';
+
+    const stackTraceDiv = stackTrace ?
+        `<div id="stackTrace-${toastId}" class="mt-3 text-xs text-gray-600 bg-gray-100 p-3 rounded hidden max-h-80 overflow-y-auto">
+            <pre class="whitespace-pre-wrap break-all text-xs leading-relaxed font-mono">${stackTrace}</pre>
+        </div>` : '';
+
     const toastHtml = `
-                <div id="${toastId}" class="bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-80 transform transition-all duration-300 translate-x-full opacity-0">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-${iconClass} text-${type === 'success' ? 'green' : type === 'danger' ? 'red' : type === 'warning' ? 'yellow' : 'blue'}-500"></i>
-                        </div>
-                        <div class="ml-3 flex-1">
-                            <p class="text-sm font-medium text-gray-900">${message}</p>
-                        </div>
-                        <button onclick="removeToast('${toastId}')" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
+        <div id="${toastId}" class="bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-96 max-w-[95vw] transform transition-all duration-300 translate-x-full opacity-0">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 mt-0.5">
+                    <i class="fas fa-${iconClass} text-${type === 'success' ? 'green' : type === 'danger' ? 'red' : type === 'warning' ? 'yellow' : 'blue'}-500"></i>
                 </div>
-            `;
+                <div class="ml-3 flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 break-words">${message}</p>
+                    ${stackTraceDiv}
+                </div>
+                <div class="ml-4 flex-shrink-0 flex flex-col items-end space-y-1">
+                    ${stackTraceButton}
+                    <button onclick="removeToast('${toastId}')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
 
     const container = document.getElementById('toastContainer');
     container.insertAdjacentHTML('beforeend', toastHtml);
@@ -38,12 +52,25 @@ window.showAlert = function(message, type = 'info') {
         toast.classList.remove('translate-x-full', 'opacity-0');
         toast.classList.add('translate-x-0', 'opacity-100');
     }, 100);
-
-    setTimeout(() => {
-        removeToast(toastId);
-    }, 5000);
+    
+    if (!stackTrace) {
+        setTimeout(() => {
+            removeToast(toastId);
+        }, 5000);
+    }
 };
+window.toggleStackTrace = function(toastId) {
+    const stackTraceDiv = document.getElementById(`stackTrace-${toastId}`);
+    const button = event.target;
 
+    if (stackTraceDiv.classList.contains('hidden')) {
+        stackTraceDiv.classList.remove('hidden');
+        button.textContent = 'Hide Details';
+    } else {
+        stackTraceDiv.classList.add('hidden');
+        button.textContent = 'Show Details';
+    }
+};
 window.removeToast = function(toastId) {
     const toast = document.getElementById(toastId);
     if (toast) {
@@ -79,17 +106,43 @@ window.apiRequest = function(url, options = {}) {
             }
         },
         error: function(xhr, status, error) {
-            console.error(`API ${config.method} Error:`, error);
-
             let errorMessage = window.localizedStrings?.requestFailed || 'Request failed';
+            let stackTrace = null;
 
-            if (xhr.responseJSON && xhr.responseJSON.error) {
-                errorMessage = xhr.responseJSON.error;
+            if (xhr.responseJSON) {
+                const errorData = xhr.responseJSON;
+                if (errorData.errors && errorData.errors.length > 0) {
+                    errorMessage = errorData.errors.length === 1
+                        ? errorData.errors[0]
+                        : errorData.errors.join('\n• ');
+                    
+                    if (errorData.errors.length > 1) {
+                        errorMessage = '• ' + errorMessage;
+                    }
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.error) {
+                    errorMessage = errorData.error;
+                }
+                if (errorData.stackTrace) {
+                    stackTrace = errorData.stackTrace;
+                }
             } else if (xhr.responseText) {
                 try {
                     const errorData = JSON.parse(xhr.responseText);
-                    if (errorData.error) {
+                    if (errorData.errors && errorData.errors.length > 0) {
+                        errorMessage = errorData.errors.join('\n• ');
+                        if (errorData.errors.length > 1) {
+                            errorMessage = '• ' + errorMessage;
+                        }
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    } else if (errorData.error) {
                         errorMessage = errorData.error;
+                    }
+
+                    if (errorData.stackTrace) {
+                        stackTrace = errorData.stackTrace;
                     }
                 } catch (e) {
                     showAlert(e, 'danger');
@@ -97,7 +150,7 @@ window.apiRequest = function(url, options = {}) {
             }
 
             if (config.showError !== false) {
-                showAlert(errorMessage, 'danger');
+                showAlert(errorMessage, 'danger', stackTrace);
             }
 
             if (config.onError) {

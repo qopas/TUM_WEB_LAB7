@@ -1,5 +1,6 @@
 using System.Reflection;
 using Application;
+using Application.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Localization;
 
@@ -41,7 +42,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")

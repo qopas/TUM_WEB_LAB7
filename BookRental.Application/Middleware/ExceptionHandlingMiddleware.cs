@@ -1,11 +1,15 @@
 ﻿using System.Text.Json;
 using Application.Exceptions;
 using BookRental.Domain.Exceptions;
-using BookRental.DTOs.Out;
 using BookRental.Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ApplicationException = Application.Exceptions.ApplicationException;
 
-namespace BookRental.Middleware;
+namespace Application.Middleware;
 
 public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
@@ -45,20 +49,23 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             UnauthorizedAccessException => (401, "Unauthorized access", ["Access denied"]),
             TimeoutException ex => (408, "Request timeout", [ex.Message]),
 
-            _ => (500, "An internal server error occurred", ["Please contact support"])
+            _ => (500, "An internal server error occurred", [exception.Message])
         };
 
         response.StatusCode = statusCode;
 
-        var baseResponse = new BaseResponse<object>
+        var errorResponse = new ErrorResponse
         {
             Success = false,
             Message = message,
-            Data = null,
             Errors = errors
         };
-
-        var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions
+        var environment = context.RequestServices.GetService<IWebHostEnvironment>();
+        if (environment?.IsDevelopment() == true)
+        {
+            errorResponse.StackTrace = exception.StackTrace;
+        }
+        var jsonResponse = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });

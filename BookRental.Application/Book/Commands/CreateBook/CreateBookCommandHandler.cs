@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.Book;
+using Application.Exceptions;
 using BookRental.Domain.Interfaces;
 using BookRental.Domain.Common;
 using BookRental.Domain.Entities.Models;
+using BookRental.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -16,7 +18,7 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer l
             .Find(g => request.GenreIds.Contains(g.Id));
             
         if (genres.Count() != request.GenreIds.Count())
-            return Result<BookDto>.Failure([localizer["oneOrMoreGenresNotFound"]]);
+            throw new BusinessLogicException([localizer["oneOrMoreGenresNotFound"]]);
 
         var bookResult = BookRental.Domain.Entities.Book.Create(new BookModel
         {
@@ -29,7 +31,7 @@ public class CreateBookCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer l
         });
         
         if (!bookResult.IsSuccess)
-            return Result<BookDto>.Failure(bookResult.Errors);
+            throw new CreateEntityException(nameof(Book), bookResult.Errors);
 
         var createdBook = await unitOfWork.Books.CreateAsync(bookResult.Value);
         await AssignGenres(createdBook.Id, genres);
