@@ -11,29 +11,14 @@ public abstract class BaseWebController : Controller
 {
     protected async Task<IActionResult> ExecuteAsync<T>(Func<Task<T>> action)
     {
-        try
-        {
-            var result = await action();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var result = await action();
+        return Ok(result);
     }
 
     protected async Task<IActionResult> ExecuteViewAsync<T>(Func<Task<T>> action)
     {
-        try
-        {
-            var result = await action();
-            return View(result);
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View();
-        }
+        var result = await action();
+        return View(result);
     }
 
     protected async Task SignInUserAsync(string userId, string token, string email)

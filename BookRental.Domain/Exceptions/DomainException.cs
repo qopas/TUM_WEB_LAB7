@@ -4,7 +4,10 @@ public abstract class DomainException : Exception
 {
     public IEnumerable<string> Errors { get; }
 
-    protected DomainException(string message) : base(message)
+    public DomainException()
+    {
+    }
+    public DomainException(string message, IEnumerable<string> errors) : base(message)
     {
         Errors = [message];
     }
