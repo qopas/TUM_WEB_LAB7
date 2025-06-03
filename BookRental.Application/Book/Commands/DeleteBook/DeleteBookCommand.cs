@@ -1,6 +1,7 @@
 ﻿using BookRental.Domain.Common;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Commands.DeleteBook;
 
@@ -10,9 +11,9 @@ public class DeleteBookCommand : IRequest<Result<bool>>
 }
 public class DeleteBookCommandValidator : AbstractValidator<DeleteBookCommand>
 {
-    public DeleteBookCommandValidator()
+    public DeleteBookCommandValidator(IStringLocalizer localizer)
     {
         RuleFor(x => x.Id)
-            .NotEmpty().NotNull().WithMessage("Id is required");
+            .NotEmpty().NotNull().WithMessage(localizer["idRequired"]);
     }
 }

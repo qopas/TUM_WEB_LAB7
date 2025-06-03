@@ -154,4 +154,106 @@
   <data name="ErrorLoadingForm" xml:space="preserve">
     <value>Eroare la încărcarea formularului</value>
   </data>
+  <data name="bookManagement" xml:space="preserve">
+  <value>Gestionarea Cărților</value>
+</data>
+<data name="createNewBook" xml:space="preserve">
+  <value>Creează Carte Nouă</value>
+</data>
+<data name="updateBook" xml:space="preserve">
+  <value>Actualizează Carte</value>
+</data>
+<data name="deleteBook" xml:space="preserve">
+  <value>Șterge Carte</value>
+</data>
+<data name="getBook" xml:space="preserve">
+  <value>Obține Carte</value>
+</data>
+<data name="getAllBooks" xml:space="preserve">
+  <value>Obține Toate Cărțile</value>
+</data>
+<data name="bookId" xml:space="preserve">
+  <value>ID Carte</value>
+</data>
+<data name="bookTitle" xml:space="preserve">
+  <value>Titlul Cărții</value>
+</data>
+<data name="bookAuthor" xml:space="preserve">
+  <value>Autorul Cărții</value>
+</data>
+<data name="bookPublicationDate" xml:space="preserve">
+  <value>Data Publicării</value>
+</data>
+<data name="bookGenres" xml:space="preserve">
+  <value>Genuri</value>
+</data>
+<data name="bookAvailableQuantity" xml:space="preserve">
+  <value>Cantitate Disponibilă</value>
+</data>
+<data name="bookRentalPrice" xml:space="preserve">
+  <value>Preț Închiriere</value>
+</data>
+<data name="titleRequired" xml:space="preserve">
+  <value>Titlul este obligatoriu</value>
+</data>
+<data name="titleMaxLength" xml:space="preserve">
+  <value>Titlul nu poate depăși 200 de caractere</value>
+</data>
+<data name="authorRequired" xml:space="preserve">
+  <value>Autorul este obligatoriu</value>
+</data>
+<data name="authorMaxLength" xml:space="preserve">
+  <value>Autorul nu poate depăși 100 de caractere</value>
+</data>
+<data name="publicationDateRequired" xml:space="preserve">
+  <value>Data publicării este obligatorie</value>
+</data>
+<data name="publicationDateFuture" xml:space="preserve">
+  <value>Data publicării nu poate fi în viitor</value>
+</data>
+<data name="genreRequired" xml:space="preserve">
+  <value>Cel puțin un gen este obligatoriu</value>
+</data>
+<data name="invalidGenreIds" xml:space="preserve">
+  <value>Toate ID-urile de gen trebuie să fie GUID-uri valide</value>
+</data>
+<data name="quantityNegative" xml:space="preserve">
+  <value>Cantitatea disponibilă nu poate fi negativă</value>
+</data>
+<data name="pricePositive" xml:space="preserve">
+  <value>Prețul de închiriere trebuie să fie mai mare decât zero</value>
+</data>
+<data name="bookIdRequired" xml:space="preserve">
+  <value>ID-ul cărții este obligatoriu</value>
+</data>
+<data name="idRequired" xml:space="preserve">
+  <value>ID-ul este obligatoriu</value>
+</data>
+<data name="bookCreatedSuccessfully" xml:space="preserve">
+  <value>Cartea a fost creată cu succes!</value>
+</data>
+<data name="bookUpdatedSuccessfully" xml:space="preserve">
+  <value>Cartea a fost actualizată cu succes!</value>
+</data>
+<data name="bookDeletedSuccessfully" xml:space="preserve">
+  <value>Cartea a fost ștearsă cu succes!</value>
+</data>
+<data name="oneOrMoreGenresNotFound" xml:space="preserve">
+  <value>Unul sau mai multe genuri nu au fost găsite</value>
+</data>
+<data name="bookNotFound" xml:space="preserve">
+  <value>Cartea nu a fost găsită</value>
+</data>
+<data name="errorCreatingBook" xml:space="preserve">
+  <value>Eroare la crearea cărții</value>
+</data>
+<data name="errorUpdatingBook" xml:space="preserve">
+  <value>Eroare la actualizarea cărții</value>
+</data>
+<data name="errorDeletingBook" xml:space="preserve">
+  <value>Eroare la ștergerea cărții</value>
+</data>
+<data name="errorLoadingBook" xml:space="preserve">
+  <value>Eroare la încărcarea cărții</value>
+</data>
 </root>

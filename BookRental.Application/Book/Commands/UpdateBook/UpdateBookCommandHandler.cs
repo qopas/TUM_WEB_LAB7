@@ -2,10 +2,11 @@
 using BookRental.Domain.Common;
 using BookRental.Infrastructure.Extensions;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Book.Commands.UpdateBook;
 
-public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookCommand, Result<bool>>
+public class UpdateBookCommandHandler(IUnitOfWork unitOfWork, IStringLocalizer localizer) : IRequestHandler<UpdateBookCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
     {
@@ -15,7 +16,7 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             .Find(g => request.GenreIds.Contains(g.Id));
             
         if (genres.Count() != request.GenreIds.Count())
-            return Result<bool>.Failure(["One or more genres not found"]);
+            return Result<bool>.Failure([localizer["oneOrMoreGenresNotFound"]]);
         
         await UpdateBookPropertiesAsync(book.Id, request);
         await UpdateBookGenresAsync(book, request.GenreIds);
