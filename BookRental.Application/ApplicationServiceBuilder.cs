@@ -11,6 +11,7 @@ using BookRental.Infrastructure.Data;
 using BookRental.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -77,7 +78,9 @@ public static class ApplicationServiceBuilder
         services.AddSingleton(sp =>
             sp.GetRequiredService<IStringLocalizerFactory>()
                 .Create("BookRental.Resources.Resources", "BookRental.Resources"));
-
+        
+        
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddFluentValidation(fv =>
         {
