@@ -217,6 +217,8 @@ function submitModalForm(formAction, operation, entity, onSuccess) {
             if (onSuccess) {
                 onSuccess();
             }
+        },
+        onError: () => {
         }
     }).always(() => {
         submitBtn.innerHTML = originalText;

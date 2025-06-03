@@ -2,7 +2,6 @@
 using BookRental.Domain.Common;
 using BookRental.Infrastructure.Extensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Book.Commands.UpdateBook;
 
