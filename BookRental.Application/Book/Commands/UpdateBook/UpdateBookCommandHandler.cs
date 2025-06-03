@@ -38,10 +38,9 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
     private async Task UpdateBookGenresAsync(BookRental.Domain.Entities.Book book, IEnumerable<string> genreIds)
     {
         var currentGenreIds = book.BookGenres.Select(bg => bg.GenreId);
-        var newGenreIds = genreIds;
         
-        var genresToRemove = book.BookGenres.Where(bg => !newGenreIds.Contains(bg.GenreId));
-        var genreIdsToAdd = newGenreIds.Except(currentGenreIds);
+        var genresToRemove = book.BookGenres.Where(bg => !genreIds.Contains(bg.GenreId));
+        var genreIdsToAdd = genreIds.Except(currentGenreIds);
         
         foreach (var bookGenre in genresToRemove)
         {
