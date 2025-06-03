@@ -13,7 +13,8 @@ public class UnitOfWork(
     IDestinationRepository destinationRepository,
     ICustomerRepository customerRepository,
     IRentRepository rentRepository,
-    IRefreshTokenRepository refreshTokenRepository)
+    IRefreshTokenRepository refreshTokenRepository,
+    IBookGenreRepository bookGenreRepository)
     : IUnitOfWork
 {
     private IDbContextTransaction _transaction;
@@ -25,6 +26,7 @@ public class UnitOfWork(
     public ICustomerRepository Customers { get; } = customerRepository;
     public IRefreshTokenRepository RefreshTokens { get; } = refreshTokenRepository;
     public IRentRepository Rents { get; } = rentRepository;
+    public IBookGenreRepository BookGenre { get; } = bookGenreRepository;
 
     public async Task<int> SaveChangesAsync()
     {

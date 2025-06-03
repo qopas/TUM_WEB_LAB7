@@ -48,6 +48,7 @@ public static class ApplicationServiceBuilder
         services.AddScoped<IDestinationRepository, DestinationRespository>();
         services.AddScoped<IRentRepository, RentRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IBookGenreRepository, BookGenreRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserService, UserService>();
         services.AddHttpContextAccessor();

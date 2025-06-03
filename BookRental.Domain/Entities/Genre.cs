@@ -7,7 +7,7 @@ namespace BookRental.Domain.Entities;
 public class Genre : TrackableEntity
 {
     public string Name { get; private set; }
-    public virtual ICollection<Book> Books { get; private set; }
+    public virtual ICollection<BookGenre> BookGenres { get; private set; }
 
     public static Result<Genre> Create(GenreModel model)
     {

@@ -13,6 +13,11 @@ public class GenreConfiguration : IEntityTypeConfiguration<Genre>
         builder.Property(g => g.Name)
             .IsRequired()
             .HasMaxLength(50);
+
+        builder.HasMany(g => g.BookGenres)
+            .WithOne(bg => bg.Genre)
+            .HasForeignKey(bg => bg.GenreId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         builder.ToTable("Genres");
     }

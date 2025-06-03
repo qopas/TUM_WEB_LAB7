@@ -11,6 +11,8 @@ public class BookDto
     public IEnumerable<GenreDto> Genres { get; set; }
     public int AvailableQuantity { get; set; }
     public decimal RentalPrice { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
     
     public static BookDto FromEntity(BookRental.Domain.Entities.Book book)
     {
@@ -20,9 +22,11 @@ public class BookDto
             Title = book.Title,
             Author = book.Author,
             PublicationDate = book.PublicationDate,
-            Genres = book.Genres?.Select(GenreDto.FromEntity) ?? [],
+            Genres = book.BookGenres.Select(bg => GenreDto.FromEntity(bg.Genre)),
             AvailableQuantity = book.AvailableQuantity,
-            RentalPrice = book.RentalPrice
+            RentalPrice = book.RentalPrice,
+            CreatedAt = book.CreatedAt,
+            UpdatedAt = book.UpdatedAt
         };
     }
 }

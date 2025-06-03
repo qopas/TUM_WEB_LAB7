@@ -11,17 +11,15 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
     public async Task<Result<bool>> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
     {
         var book = await unitOfWork.Books.GetByIdOrThrowAsync(request.Id);
-        if (book == null)
-            return Result<bool>.Failure(["Book not found"]);
 
-        var genres =  unitOfWork.Genres
+        var genres = unitOfWork.Genres
             .Find(g => request.GenreIds.Contains(g.Id));
             
         if (genres.Count() != request.GenreIds.Count())
             return Result<bool>.Failure(["One or more genres not found"]);
         
         await UpdateBookPropertiesAsync(book.Id, request);
-        UpdateBookGenres(book, genres);
+        await UpdateBookGenresAsync(book, request.GenreIds);
         await unitOfWork.SaveChangesAsync();
         
         return Result<bool>.Success(true);
@@ -37,12 +35,22 @@ public class UpdateBookCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             .SetProperty(b => b.RentalPrice, request.RentalPrice));
     }
 
-    private static void UpdateBookGenres(BookRental.Domain.Entities.Book book, IEnumerable<BookRental.Domain.Entities.Genre> genres)
+    private async Task UpdateBookGenresAsync(BookRental.Domain.Entities.Book book, IEnumerable<string> genreIds)
     {
-        book.Genres.Clear();
-        foreach (var genre in genres)
+        var currentGenreIds = book.BookGenres.Select(bg => bg.GenreId);
+        
+        var genresToRemove = book.BookGenres.Where(bg => !genreIds.Contains(bg.GenreId));
+        var genreIdsToAdd = genreIds.Except(currentGenreIds);
+        
+        foreach (var bookGenre in genresToRemove)
         {
-            book.Genres.Add(genre);
+            await unitOfWork.BookGenre.SoftDeleteAsync(bookGenre.Id); 
+        }
+        
+        foreach (var genreId in genreIdsToAdd)
+        {
+            var newBookGenre = BookRental.Domain.Entities.BookGenre.Create(book.Id, genreId);
+            await unitOfWork.BookGenre.CreateAsync(newBookGenre);
         }
     }
 }
