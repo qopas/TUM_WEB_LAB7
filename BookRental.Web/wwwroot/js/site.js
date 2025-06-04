@@ -276,7 +276,7 @@ function changeCulture(culture) {
     window.location.reload();
 }
 
-function initializeDataTable(tableId, urlAction, config = {}) {
+function initializeDataTable(tableId, urlAction, config = {}, type = "GET") {
     const defaultConfig = {
         processing: true,
         serverSide: false,
@@ -285,7 +285,7 @@ function initializeDataTable(tableId, urlAction, config = {}) {
         order: [[0, 'asc']],
         ajax: {
             url: urlAction,
-            type: 'GET'
+            type: type
         }
     };
     return $(tableId).DataTable(Object.assign({}, defaultConfig, config));
