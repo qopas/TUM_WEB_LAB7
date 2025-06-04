@@ -85,6 +85,7 @@ window.apiRequest = function(url, options = {}) {
     const defaults = {
         method: 'GET',
         data: null,
+        async: true,
         showError: true,
         successMessage: null,
         onSuccess: null,
@@ -96,6 +97,7 @@ window.apiRequest = function(url, options = {}) {
     const ajaxSettings = {
         url: url,
         method: config.method,
+        async: config.async,
         success: function(result) {
             if (config.successMessage) {
                 showAlert(config.successMessage, 'success');
@@ -115,7 +117,7 @@ window.apiRequest = function(url, options = {}) {
                     errorMessage = errorData.errors.length === 1
                         ? errorData.errors[0]
                         : errorData.errors.join('\n• ');
-                    
+
                     if (errorData.errors.length > 1) {
                         errorMessage = '• ' + errorMessage;
                     }
@@ -127,28 +129,7 @@ window.apiRequest = function(url, options = {}) {
                 if (errorData.stackTrace) {
                     stackTrace = errorData.stackTrace;
                 }
-            } else if (xhr.responseText) {
-                try {
-                    const errorData = JSON.parse(xhr.responseText);
-                    if (errorData.errors && errorData.errors.length > 0) {
-                        errorMessage = errorData.errors.join('\n• ');
-                        if (errorData.errors.length > 1) {
-                            errorMessage = '• ' + errorMessage;
-                        }
-                    } else if (errorData.message) {
-                        errorMessage = errorData.message;
-                    } else if (errorData.error) {
-                        errorMessage = errorData.error;
-                    }
-
-                    if (errorData.stackTrace) {
-                        stackTrace = errorData.stackTrace;
-                    }
-                } catch (e) {
-                    showAlert(e, 'danger');
-                }
             }
-
             if (config.showError !== false) {
                 showAlert(errorMessage, 'danger', stackTrace);
             }
@@ -172,7 +153,7 @@ window.apiRequest = function(url, options = {}) {
     return $.ajax(ajaxSettings);
 };
 
-window.openModal = function(partialUrl, options = {}) {
+window.openModal = function(partialUrl, rowData = null, options = {}) {
     const defaults = {
         modalSize: 'modal-xl',
         onSuccess: null,
@@ -181,10 +162,11 @@ window.openModal = function(partialUrl, options = {}) {
 
     const config = { ...defaults, ...options };
 
-    $.ajax({
-        url: partialUrl,
-        method: 'GET',
-        success: function(html) {
+    apiRequest(partialUrl, {
+        method: 'POST',
+        data: rowData,
+        showError: false,
+        onSuccess: function(html) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             const form = tempDiv.querySelector('form');
@@ -232,7 +214,7 @@ window.openModal = function(partialUrl, options = {}) {
 
             $('#dynamicModal').modal('show');
         },
-        error: function(xhr, status, error) {
+        onError: function(xhr, status, error) {
             console.error('Error opening modal:', error);
             showAlert(window.localizedStrings?.errorLoadingForm || 'Error loading form', 'danger');
 
@@ -294,13 +276,17 @@ function changeCulture(culture) {
     window.location.reload();
 }
 
-function initializeDataTable(tableId, config) {
+function initializeDataTable(tableId, urlAction, config = {}) {
     const defaultConfig = {
         processing: true,
         serverSide: false,
         pageLength: 25,
         lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-        order: [[0, 'asc']]
+        order: [[0, 'asc']],
+        ajax: {
+            url: urlAction,
+            type: 'GET'
+        }
     };
     return $(tableId).DataTable(Object.assign({}, defaultConfig, config));
 }

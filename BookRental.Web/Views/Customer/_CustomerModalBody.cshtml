@@ -1,8 +1,7 @@
 ﻿@model CustomerViewModel
 @{
     var isEdit = !string.IsNullOrEmpty(Model.Id);
-    var formAction = isEdit ? "/Customer/Edit" : "/Customer/Create";
-    var modalTitle = isEdit ? "Edit Customer" : "Add New Customer";
+    var formAction = isEdit ? Url.Action("Edit", "Customer") : Url.Action("Create", "Customer");
 }
 
 <form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Customer">

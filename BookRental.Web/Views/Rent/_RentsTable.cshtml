@@ -1,0 +1,95 @@
+﻿<table id="rentsTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+    <tr>
+        <th>Book</th>
+        <th>Customer</th>
+        <th>Destination</th>
+        <th>Rent Date</th>
+        <th>Due Date</th>
+        <th>Return Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rentsTable = initializeDataTable('#rentsTable', '@Url.Action("GetRentsData", "Rent")', {
+            columns: [
+                { data: 'bookTitle' },
+                { data: 'customerName' },
+                { data: 'destinationName' },
+                {
+                    data: 'rentDate',
+                    render: function(data) {
+                        return new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                    }
+                },
+                {
+                    data: 'dueDate',
+                    render: function(data) {
+                        return new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                    }
+                },
+                {
+                    data: 'returnDate',
+                    render: function(data) {
+                        return data ? new Date(data).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }) : '<span class="text-muted">-</span>';
+                    }
+                },
+                {
+                    data: 'status',
+                    render: function(data) {
+                        const statusMap = {
+                            0: '<span class="badge bg-primary">Active</span>',
+                            1: '<span class="badge bg-success">Returned</span>',
+                            2: '<span class="badge bg-danger">Overdue</span>'
+                        };
+                        return statusMap[data] || '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        const returnBtn = row.status === 0 ?
+                            `<button type="button" class="btn btn-sm btn-outline-success" onclick="returnRent('${row.id}')">Return</button>` : '';
+
+                        return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick='editRent(${JSON.stringify(row)})'>
+                                    Edit
+                                </button>
+                                ${returnBtn}
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            order: [[3, 'desc']]
+        });
+
+        window.rentsTable = rentsTable;
+    });
+
+    function editRent(rentData) {
+        openModal('@Url.Action("GetModalBody", "Rent")', rentData, {
+            onSuccess: () => window.rentsTable.ajax.reload(null, false)
+        });
+    }
+
+    function returnRent(rentId) {
+        if (confirm('Are you sure you want to mark this rental as returned?')) {
+            const returnUrl = '@Url.Action("Return", "Rent")' + '/' + rentId;
+            apiRequest(returnUrl, {
+                method: 'POST',
+                successMessage: 'Book returned successfully!',
+                onSuccess: () => {
+                    window.rentsTable.ajax.reload(null, false);
+                }
+            });
+        }
+    }
+</script>

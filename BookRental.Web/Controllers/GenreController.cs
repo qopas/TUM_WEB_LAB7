@@ -31,19 +31,11 @@ public class GenreController(IMediator mediator) : BaseWebController
         });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetModalBody(string? id = null)
+    [HttpPost]
+    public IActionResult GetModalBody([FromForm] GenreViewModel? model = null)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return PartialView("_GenreModalBody", new GenreViewModel());
-        }
-        else
-        {
-            var genre = await mediator.Send(new GetGenreByIdQuery { Id = id });
-            var viewModel = GenreViewModel.FromDto(genre);
-            return PartialView("_GenreModalBody", viewModel);
-        }
+        var viewModel = model ?? new GenreViewModel();
+        return PartialView("_GenreModalBody", viewModel);
     }
 
     [HttpGet]

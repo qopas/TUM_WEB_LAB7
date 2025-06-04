@@ -1,0 +1,63 @@
+﻿<table id="customersTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const customersTable = initializeDataTable('#customersTable', '@Url.Action("GetCustomersData", "Customer")', {
+            columns: [
+                { data: 'firstName' },
+                { data: 'lastName' },
+                { data: 'address' },
+                { data: 'city' },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick='editCustomer(${JSON.stringify(row)})'>
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteCustomer('${row.id}')">
+                                    Delete
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            ]
+        });
+
+        window.customersTable = customersTable;
+    });
+
+    function editCustomer(customerData) {
+        openModal('@Url.Action("GetModalBody", "Customer")', customerData, {
+            onSuccess: () => window.customersTable.ajax.reload(null, false),
+            modalSize: 'lg'
+        });
+    }
+
+    function deleteCustomer(customerId) {
+        if (confirm('Are you sure you want to delete this customer? This action cannot be undone.')) {
+            const deleteUrl = '@Url.Action("Delete", "Customer")' + '/' + customerId;
+            apiRequest(deleteUrl, {
+                method: 'POST',
+                successMessage: 'Customer deleted successfully!',
+                onSuccess: () => {
+                    window.customersTable.ajax.reload(null, false);
+                }
+            });
+        }
+    }
+</script>

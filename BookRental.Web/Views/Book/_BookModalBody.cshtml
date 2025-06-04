@@ -2,8 +2,8 @@
 @inject IStringLocalizer Localizer
 @model BookViewModel
 @{
-var isEdit = !string.IsNullOrEmpty(Model.Id);
-var formAction = isEdit ? Url.Action("Edit", "Book") : Url.Action("Create", "Book");
+    var isEdit = !string.IsNullOrEmpty(Model.Id);
+    var formAction = isEdit ? Url.Action("Edit", "Book") : Url.Action("Create", "Book");
 }
 
 <form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="@Localizer["Book"]">

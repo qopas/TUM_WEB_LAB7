@@ -1,8 +1,7 @@
 ﻿@model RentViewModel
 @{
     var isEdit = !string.IsNullOrEmpty(Model.Id);
-    var formAction = isEdit ? "/Rent/Edit" : "/Rent/Create";
-    var modalTitle = isEdit ? "Edit Rental" : "Add New Rental";
+    var formAction = isEdit ? Url.Action("Edit", "Rent") : Url.Action("Create", "Rent");
 }
 
 <form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Rental">
@@ -88,7 +87,7 @@ $(document).ready(function() {
         const selectedValue = bookSelect.dataset.selectedValue;
         
         try {
-            const response = await apiRequest('/Book/GetBooksData', { showError: false });
+            const response = await apiRequest('@Url.Action("GetBooksData", "Book")', { showError: false });
             const books = response.data || [];
             
             let options = '<option value="">Select Book</option>';
@@ -108,7 +107,7 @@ $(document).ready(function() {
         const selectedValue = customerSelect.dataset.selectedValue;
         
         try {
-            const response = await apiRequest('/Customer/GetCustomersData', { showError: false });
+            const response = await apiRequest('@Url.Action("GetCustomersData", "Customer")', { showError: false });
             const customers = response.data || [];
             
             let options = '<option value="">Select Customer</option>';
@@ -128,7 +127,7 @@ $(document).ready(function() {
         const selectedValue = destinationSelect.dataset.selectedValue;
         
         try {
-            const response = await apiRequest('/Destination/GetDestinationsData', { showError: false });
+            const response = await apiRequest('@Url.Action("GetDestinationsData", "Destination")', { showError: false });
             const destinations = response.data || [];
             
             let options = '<option value="">Select Destination</option>';

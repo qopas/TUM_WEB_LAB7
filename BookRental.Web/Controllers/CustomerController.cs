@@ -31,19 +31,11 @@ public class CustomerController(IMediator mediator) : BaseWebController
         });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetModalBody(string? id = null)
+    [HttpPost]
+    public IActionResult GetModalBody([FromForm] CustomerViewModel? model = null)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return PartialView("_CustomerModalBody", new CustomerViewModel());
-        }
-        else
-        {
-            var customer = await mediator.Send(new GetCustomerByIdQuery { Id = id });
-            var viewModel = CustomerViewModel.FromDto(customer);
-            return PartialView("_CustomerModalBody", viewModel);
-        }
+        var viewModel = model ?? new CustomerViewModel();
+        return PartialView("_CustomerModalBody", viewModel);
     }
 
     [HttpGet]

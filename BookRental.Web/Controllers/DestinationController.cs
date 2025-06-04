@@ -31,20 +31,13 @@ public class DestinationController(IMediator mediator) : BaseWebController
         });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetModalBody(string? id = null)
+    [HttpPost]
+    public IActionResult GetModalBody([FromForm] DestinationViewModel? model = null)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return PartialView("_DestinationModalBody", new DestinationViewModel());
-        }
-        else
-        {
-            var destination = await mediator.Send(new GetDestinationByIdQuery { Id = id });
-            var viewModel = DestinationViewModel.FromDto(destination);
-            return PartialView("_DestinationModalBody", viewModel);
-        }
+        var viewModel = model ?? new DestinationViewModel();
+        return PartialView("_DestinationModalBody", viewModel);
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Details(string id)
