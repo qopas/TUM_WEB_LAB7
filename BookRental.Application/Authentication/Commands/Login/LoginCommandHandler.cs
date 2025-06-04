@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.Authentication;
+using Application.Exceptions;
 using BookRental.Domain.Common;
 using BookRental.Domain.Interfaces.Services;
 using MediatR;
+using ApplicationException = Application.Exceptions.ApplicationException;
 
 namespace Application.Authentication.Commands.Login;
 
@@ -12,11 +14,11 @@ public class LoginCommandHandler(IUserService userService, ITokenGenerationServi
     {
         var userResult = await userService.LoginAsync(request.Email, request.Password);
         if (!userResult.IsSuccess)
-            return Result<AuthResponseDto>.Failure(userResult.Errors);
+            throw new UnauthorizedException("Incorrect email or password");
 
         var tokenResult = await tokenGenerationService.GenerateAuthenticationResult(userResult.Value);
         if (!tokenResult.IsSuccess)
-            return Result<AuthResponseDto>.Failure(tokenResult.Errors);
+            throw new ApplicationException(tokenResult.Errors);
 
         var authResponse = AuthResponseDto.CreateSuccess(
             tokenResult.Value.Token,

@@ -1,15 +1,15 @@
 ﻿namespace Application.Exceptions;
 
-public abstract class ApplicationException : Exception
+public class ApplicationException : Exception
 {
     public IEnumerable<string> Errors { get; }
 
-    protected ApplicationException(string message) : base(message)
+    public ApplicationException(string message) : base(message)
     {
         Errors = [message];
     }
 
-    protected ApplicationException(IEnumerable<string> errors) : base(string.Join(", ", errors))
+    public ApplicationException(IEnumerable<string> errors) : base(string.Join(", ", errors))
     {
         Errors = errors;
     }
