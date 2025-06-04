@@ -1,0 +1,56 @@
+﻿<table id="genresTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const genresTable = initializeDataTable('#genresTable', '@Url.Action("GetGenresData", "Genre")', {
+            columns: [
+                { data: 'name' },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick='editGenre(${JSON.stringify(row)})'>
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteGenre('${row.id}')">
+                                    Delete
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            ]
+        });
+
+        window.genresTable = genresTable;
+    });
+
+    function editGenre(genreData) {
+        openModal('@Url.Action("GetModalBody", "Genre")', genreData, {
+            onSuccess: () => window.genresTable.ajax.reload(null, false)
+        });
+    }
+
+    function deleteGenre(genreId) {
+        if (confirm('Are you sure you want to delete this genre? This action cannot be undone.')) {
+            const deleteUrl = '@Url.Action("Delete", "Genre")' + '/' + genreId;
+            apiRequest(deleteUrl, {
+                method: 'POST',
+                successMessage: 'Genre deleted successfully!',
+                onSuccess: () => {
+                    window.genresTable.ajax.reload(null, false);
+                }
+            });
+        }
+    }
+</script>

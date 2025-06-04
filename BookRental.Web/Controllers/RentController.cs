@@ -32,23 +32,11 @@ public class RentController(IMediator mediator) : BaseWebController
             };
         });
     }
-
-    [HttpGet]
-    public async Task<IActionResult> GetModalBody(string? id = null)
+    [HttpPost]
+    public IActionResult GetModalBody([FromForm] RentViewModel? model = null)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return PartialView("_RentModalBody", new RentViewModel 
-            { 
-                RentDate = DateTimeOffset.Now
-            });
-        }
-        else
-        {
-            var rent = await mediator.Send(new GetRentByIdQuery { Id = id });
-            var viewModel = RentViewModel.FromDto(rent);
-            return PartialView("_RentModalBody", viewModel);
-        }
+        var viewModel = model ?? new RentViewModel();
+        return PartialView("_RentModalBody", viewModel);
     }
 
     [HttpGet]

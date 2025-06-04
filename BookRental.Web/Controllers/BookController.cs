@@ -18,7 +18,7 @@ public class BookController(IMediator mediator) : BaseWebController
             return books.Select(BookViewModel.FromDto);
         });
     }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetBooksData()
     {
@@ -31,19 +31,11 @@ public class BookController(IMediator mediator) : BaseWebController
         });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetModalBody(string? id = null)
+    [HttpPost]
+    public IActionResult GetModalBody([FromForm] BookViewModel? model = null)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return PartialView("_BookModalBody", new BookViewModel());
-        }
-        else
-        {
-            var book = await mediator.Send(new GetBookByIdQuery { Id = id });
-            var viewModel = BookViewModel.FromDto(book);
-            return PartialView("_BookModalBody", viewModel);
-        }
+        var viewModel = model ?? new BookViewModel();
+        return PartialView("_BookModalBody", viewModel);
     }
 
     [HttpGet]

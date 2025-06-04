@@ -1,8 +1,15 @@
 ﻿@model GenreViewModel
 @{
+    var isEdit = !string.IsNullOrEmpty(Model.Id);
+    var formAction = isEdit ? Url.Action("Edit", "Genre") : Url.Action("Create", "Genre");
 }
 
-<form class="needs-validation" novalidate data-action="@Url.Action("Create","Genre")" data-operation="create" data-entity="Genre">
+<form class="needs-validation" novalidate data-action="@formAction" data-operation="@(isEdit ? "edit" : "create")" data-entity="Genre">
+    @if (isEdit)
+    {
+        <input type="hidden" name="Id" value="@Model.Id" />
+    }
+
     <div class="mb-3">
         <label for="genreName" class="form-label">Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="genreName" name="Name" value="@Model.Name" required maxlength="50" 

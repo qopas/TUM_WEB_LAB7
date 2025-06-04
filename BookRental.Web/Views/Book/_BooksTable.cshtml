@@ -1,0 +1,83 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+
+<table id="booksTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+    <tr>
+        <th>@Localizer["Title"]</th>
+        <th>@Localizer["Author"]</th>
+        <th>@Localizer["PublicationDate"]</th>
+        <th>@Localizer["AvailableQty"]</th>
+        <th>@Localizer["RentalPrice"]</th>
+        <th>@Localizer["Actions"]</th>
+    </tr>
+    </thead>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const booksTable = initializeDataTable('#booksTable', '@Url.Action("GetBooksData", "Book")', {
+            columns: [
+                { data: 'title' },
+                { data: 'author' },
+                {
+                    data: 'publicationDate',
+                    render: function(data) {
+                        return new Date(data).toLocaleDateString();
+                    }
+                },
+                {
+                    data: 'availableQuantity',
+                    render: function(data) {
+                        return `<span class="badge ${data > 0 ? 'bg-success' : 'bg-danger'}">${data}</span>`;
+                    }
+                },
+                {
+                    data: 'rentalPrice',
+                    render: function(data) {
+                        return '$' + parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        return `
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick='editBook(${JSON.stringify(row)})'>
+                                    @Html.Raw(Localizer["Edit"])
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteBook('${row.id}')">
+                                    @Html.Raw(Localizer["Delete"])
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            ]
+        });
+
+        window.booksTable = booksTable;
+    });
+
+    function editBook(bookData) {
+        console.log(bookData);
+        openModal('@Url.Action("GetModalBody", "Book")', bookData, {
+            onSuccess: () => window.booksTable.ajax.reload(null, false)
+        });
+    }
+
+    function deleteBook(bookId) {
+        if (confirm('@Html.Raw(Localizer["ConfirmDeleteBook"])')) {
+            const deleteUrl = '@Url.Action("Delete", "Book")' + '/' + bookId;
+            apiRequest(deleteUrl, {
+                method: 'POST',
+                successMessage: '@Html.Raw(Localizer["BookDeletedSuccessfully"])',
+                onSuccess: () => {
+                    window.booksTable.ajax.reload(null, false);
+                }
+            });
+        }
+    }
+</script>

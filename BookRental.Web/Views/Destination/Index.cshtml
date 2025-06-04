@@ -15,87 +15,15 @@ Layout = "_Layout";
     </div>
 
     <div class="p-6">
-        <table id="destinationsTable" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Contact Person</th>
-                <th>Phone Number</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-        </table>
+        @await Html.PartialAsync("_DestinationsTable")
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const destinationsTable = initializeDataTable('#destinationsTable', {
-            ajax: {
-                url: '@Url.Action("GetDestinationsData", "Destination")',
-                type: 'GET'
-            },
-            columns: [
-                { data: 'name' },
-                {
-                    data: 'address',
-                    render: function(data) {
-                        return data.length > 50 ? data.substring(0, 50) + '...' : data;
-                    }
-                },
-                { data: 'city' },
-                { data: 'contactPerson' },
-                { data: 'phoneNumber' },
-                {
-                    data: 'id',
-                    orderable: false,
-                    searchable: false,
-                    render: function(data) {
-                        return `
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editDestination('${data}')">
-                                    Edit
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteDestination('${data}')">
-                                    Delete
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-            ]
-        });
-
-        window.destinationsTable = destinationsTable;
-    });
-
     function addDestination() {
-        openModal('@Url.Action("GetModalBody", "Destination")', {
+        openModal('@Url.Action("GetModalBody", "Destination")', null, {
             onSuccess: () => window.destinationsTable.ajax.reload(null, false),
             modalSize: 'lg'
         });
-    }
-
-    function editDestination(destinationId) {
-        const editUrl = '@Url.Action("GetModalBody", "Destination")' + '/' + destinationId;
-        openModal(editUrl, {
-            onSuccess: () => window.destinationsTable.ajax.reload(null, false),
-            modalSize: 'lg'
-        });
-    }
-
-    function deleteDestination(destinationId) {
-        if (confirm('Are you sure you want to delete this destination? This action cannot be undone.')) {
-            const deleteUrl = '@Url.Action("Delete", "Destination")' + '/' + destinationId;
-            apiRequest(deleteUrl, {
-                method: 'POST',
-                successMessage: 'Destination deleted successfully!',
-                onSuccess: () => {
-                    window.destinationsTable.ajax.reload(null, false);
-                }
-            });
-        }
     }
 </script>

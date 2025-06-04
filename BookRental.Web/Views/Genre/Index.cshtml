@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<GenreViewModel>
 @{
-    ViewData["Title"] = "Genres";
+ViewData["Title"] = "Genres";
 }
 
 <div class="bg-white rounded-lg shadow">
@@ -14,33 +14,13 @@
     </div>
 
     <div class="p-6">
-        <table id="genresTable" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-            <tr>
-                <th>Name</th>
-            </tr>
-            </thead>
-        </table>
+        @await Html.PartialAsync("_GenresTable")
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const genresTable = initializeDataTable('#genresTable', {
-            ajax: {
-                url: '@Url.Action("GetGenresData", "Genre")',
-                type: 'GET'
-            },
-            columns: [
-                { data: 'name' }
-            ]
-        });
-
-        window.genresTable = genresTable;
-    });
-
     function addGenre() {
-        openModal('@Url.Action("GetModalBody", "Genre")', {
+        openModal('@Url.Action("GetModalBody", "Genre")', null, {
             onSuccess: () => window.genresTable.ajax.reload(null, false)
         });
     }
